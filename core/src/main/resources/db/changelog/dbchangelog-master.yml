@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2
+      author: user
+      changes:
+        -createTable:
+          tableName: test1
+          remarks: tstt1
+          columns:
+            - column:
+                name: id
+                type: Long
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  primaryKeyName: taaaa
+                  nullable: false
+            - column:
+                name: idd
+                type: Long
+                constraints:
+                  nullable: false
