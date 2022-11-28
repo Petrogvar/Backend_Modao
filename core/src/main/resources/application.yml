@@ -13,9 +13,9 @@ spring:
           lob:
             non_contextual_creation: true
   liquibase:
-    change-log: classpath:db/changelog/dbchangelog-master.yml
+    enabled: false
+    #change-log: classpath:db/changelog/dbchangelog-master.yml
 
-#spring.liquibase.enabled = false
 
 #spring.datasource.url=jdbc:postgresql://localhost/store
 #spring.datasource.username=postgres

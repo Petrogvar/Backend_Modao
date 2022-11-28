@@ -1,7 +1,7 @@
 package com.SpringProject.core.controllers;
 
 import com.SpringProject.core.Services.MessageService;
-import com.SpringProject.core.domain.Message;
+import com.SpringProject.core.Entity.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

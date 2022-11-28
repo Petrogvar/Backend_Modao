@@ -1,7 +1,7 @@
 package com.SpringProject.core.Services;
 
 import com.SpringProject.core.Repository.MessageRepository;
-import com.SpringProject.core.domain.Message;
+import com.SpringProject.core.Entity.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

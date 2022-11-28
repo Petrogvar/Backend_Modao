@@ -75,3 +75,65 @@ databaseChangeLog:
               - column:
                   name: email
                   value: "guest@servwerer.com"
+  - changeSet:
+      id: 3
+      author: your_liquibase_username
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: username
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: password
+                  type: varchar(512)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone_number
+                  type: varchar(12)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: bank
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: id_picture
+                  type: Integer
+                  constraints:
+                    nullable: false
+  - changeSet:
+      id: 4
+      author: your_liquibase_username
+      comment: "Create admin user"
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: username
+                  value: "admin"
+              - column:
+                  name: password
+                  value: "admin"
+              - column:
+                  name: phone_number
+                  value: "345"
+              - column:
+                  name: bank
+                  value: "345"
+              - column:
+                  name: id_picture
+                  value: 123
