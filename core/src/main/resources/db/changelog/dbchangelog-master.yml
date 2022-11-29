@@ -2,82 +2,7 @@ databaseChangeLog:
   - logicalFilePath: db/changelog/db.changelog-lesson1.yaml
   - changeSet:
       id: 1
-      author: your_liquibase_username
-      changes:
-        - createTable:
-            tableName: users1
-            columns:
-              - column:
-                  name: id
-                  type: BIGINT
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-                    nullable: false
-              - column:
-                  name: username
-                  type: varchar(50)
-                  constraints:
-                    unique: true
-                    nullable: false
-              - column:
-                  name: password
-                  type: varchar(512)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: first_name
-                  type: varchar(50)
-              - column:
-                  name: last_name
-                  type: varchar(50)
-              - column:
-                  name: email
-                  type: varchar(50)
-  - changeSet:
-      id: 2
-      author: your_liquibase_username
-      comment: "Create admin user"
-      changes:
-        - insert:
-            tableName: users1
-            columns:
-              - column:
-                  name: username
-                  value: "admin"
-              - column:
-                  name: password
-                  value: "admin"
-              - column:
-                  name: email
-                  value: "admin@server.com"
-        - insert:
-            tableName: users1
-            columns:
-              - column:
-                  name: username
-                  value: "guest"
-              - column:
-                  name: password
-                  value: "guest"
-              - column:
-                  name: email
-                  value: "guest@server.com"
-        - insert:
-            tableName: users1
-            columns:
-              - column:
-                  name: username
-                  value: "guewerst"
-              - column:
-                  name: password
-                  value: "guewerst"
-              - column:
-                  name: email
-                  value: "guest@servwerer.com"
-  - changeSet:
-      id: 3
-      author: your_liquibase_username
+      author: I
       changes:
         - createTable:
             tableName: users
@@ -115,25 +40,26 @@ databaseChangeLog:
                   constraints:
                     nullable: false
   - changeSet:
-      id: 4
-      author: your_liquibase_username
-      comment: "Create admin user"
+      id: 2
+      author: I
       changes:
-        - insert:
-            tableName: users
+        - createTable:
+            tableName: groups
             columns:
               - column:
-                  name: username
-                  value: "admin"
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
               - column:
-                  name: password
-                  value: "admin"
+                  name: group_name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
               - column:
-                  name: phone_number
-                  value: "345"
-              - column:
-                  name: bank
-                  value: "345"
-              - column:
-                  name: id_picture
-                  value: 123
+                  name: type_group
+                  type: Integer
+                  constraints:
+                    nullable: false

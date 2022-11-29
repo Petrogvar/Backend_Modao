@@ -12,9 +12,14 @@ spring:
         jdbc:
           lob:
             non_contextual_creation: true
+  security:
+    user:
+      name: admon
+      password: 123
+
   liquibase:
-    enabled: false
-    #change-log: classpath:db/changelog/dbchangelog-master.yml
+    change-log: classpath:db/changelog/dbchangelog-master.yml
+
 
 
 #spring.datasource.url=jdbc:postgresql://localhost/store
