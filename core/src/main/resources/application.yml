@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost/store
     username: postgres
-    password: "goha77737www"
+    password: "qwerty"
   jpa:
     generate-ddl: true
     properties:
@@ -16,15 +16,5 @@ spring:
     user:
       name: admon
       password: 123
-
   liquibase:
     change-log: classpath:db/changelog/dbchangelog-master.yml
-
-
-
-#spring.datasource.url=jdbc:postgresql://localhost/store
-#spring.datasource.username=postgres
-#spring.datasource.password=goha77737www
-#spring.jpa.generate-ddl=true
-
-#spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true

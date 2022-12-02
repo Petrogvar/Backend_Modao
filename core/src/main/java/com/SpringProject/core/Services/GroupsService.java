@@ -7,4 +7,5 @@ public interface GroupsService {
   Long createGroups(GroupsEntity groupsTable);
   void deleteGroups(Long id);
   void updateGroups(Long id, GroupsEntity groupsTable);
+
 }

@@ -7,4 +7,5 @@ public interface UsersService {
   Long createUsers(UsersEntity usersTable);
   void deleteUsers(Long id);
   void updateUsers(Long id, UsersEntity usersTable);
+  Long findUser (UsersEntity user);
 }

@@ -22,6 +22,7 @@ public class UsersEntity {
   @GeneratedValue(strategy = GenerationType.AUTO)
    private Long id;
    private String username;
+   private String login;
    private String password;
    private String phone_number;
    private String bank;

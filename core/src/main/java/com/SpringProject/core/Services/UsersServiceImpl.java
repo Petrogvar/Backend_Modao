@@ -15,8 +15,11 @@ public class UsersServiceImpl implements UsersService {
     return usersRepository.findById(id).get();
   }
   @Override
-  public Long createUsers(UsersEntity usersTable) {
-    return usersRepository.save(usersTable).getId();
+  public Long createUsers(UsersEntity user) {
+    if (usersRepository.findByLogin(user.getLogin())!=null)
+      return -1L;
+    else
+      return usersRepository.save(user).getId();
   }
 
   @Override
@@ -29,5 +32,13 @@ public class UsersServiceImpl implements UsersService {
   @Override
   public void deleteUsers(Long id) {
     usersRepository.deleteById(id);
+  }
+  @Override
+  public  Long findUser(UsersEntity user) {
+    UsersEntity a = usersRepository.findByLoginAndPassword(user.getLogin(), user.getPassword());
+    if (a == null)
+      return -1L;
+    else
+      return a.getId();
   }
 }

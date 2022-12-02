@@ -21,8 +21,13 @@ public class UsersController {
 
 
   @GetMapping("/{id}")
-  public UsersEntity sayHello(@PathVariable Long id) {
+  public UsersEntity getById(@PathVariable Long id) {
     return usersService.getUsers(id);
+  }
+
+  @PostMapping("/in")
+  public Long authorization(@RequestBody UsersEntity usersTable){
+    return usersService.findUser(usersTable);
   }
   @PostMapping
   public Long create(@RequestBody UsersEntity usersTable ){
@@ -33,7 +38,7 @@ public class UsersController {
     usersService.deleteUsers(id);
   }
   @PutMapping("/{id}")
-  void update(@PathVariable Long id, @RequestBody UsersEntity usersTable){
-    usersService.updateUsers(id, usersTable);
+  void update(@PathVariable Long id, @RequestBody UsersEntity user){
+    usersService.updateUsers(id, user);
   }
 }
