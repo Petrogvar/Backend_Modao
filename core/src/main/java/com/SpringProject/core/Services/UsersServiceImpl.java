@@ -18,8 +18,15 @@ public class UsersServiceImpl implements UsersService {
   public Long createUsers(UsersEntity user) {
     if (usersRepository.findByLogin(user.getLogin())!=null)
       return -1L;
-    else
+    else{
+      if (user.getBank()==null)
+        user.setBank("-");
+      if (user.getPhone_number()==null)
+        user.setPhone_number("-");
+      if (user.getId_picture()==null)
+        user.setId_picture(-1);
       return usersRepository.save(user).getId();
+      }
   }
 
   @Override
