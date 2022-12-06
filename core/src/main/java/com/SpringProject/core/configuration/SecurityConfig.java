@@ -13,4 +13,6 @@ public class SecurityConfig extends
     http.
         csrf().disable();
   }
+  //сюда попробуй
+
 }

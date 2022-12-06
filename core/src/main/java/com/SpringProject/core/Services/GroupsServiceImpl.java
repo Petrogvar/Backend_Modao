@@ -1,7 +1,12 @@
 package com.SpringProject.core.Services;
 
 import com.SpringProject.core.Entity.GroupsEntity;
+import com.SpringProject.core.Entity.UserGroup;
+import com.SpringProject.core.Entity.UsersEntity;
 import com.SpringProject.core.Repository.GroupsRepository;
+import com.SpringProject.core.Repository.UsersRepository;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -10,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class GroupsServiceImpl implements GroupsService{
 
   private final GroupsRepository groupsRepository;
+  private final UsersRepository usersRepository;
 
   @Override
   public GroupsEntity getGroups(Long id){
@@ -18,7 +24,18 @@ public class GroupsServiceImpl implements GroupsService{
 
 
   @Override
-  public Long createGroups(GroupsEntity groupsTable) {
+  public Long createGroups(GroupsEntity groupsTable, Long id) {
+    UsersEntity a = usersRepository.findById(id).get();
+    if (a==null)
+      return -1L;
+    UserGroup ug = new UserGroup();
+    ug.setUser(a);
+    ug.setGroup(groupsTable);
+    ug.setRole(0);
+    a.getGroup().add(ug);
+    List listU = new ArrayList();
+    groupsTable.setUser(listU);
+    groupsTable.getUser().add(ug);
     return groupsRepository.save(groupsTable).getId();
   }
 

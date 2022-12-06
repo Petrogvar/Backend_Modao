@@ -26,9 +26,9 @@ public class GroupsController {
     return groupsService.getGroups(id);
   }
 
-  @PostMapping
-  public Long createGroups(@RequestBody GroupsEntity groupsTable ){
-    return groupsService.createGroups(groupsTable);
+  @PostMapping({"/{id}"})
+  public Long createGroups(@RequestBody GroupsEntity groupsTable, @PathVariable Long id){
+    return groupsService.createGroups(groupsTable, id);
   }
 
   @DeleteMapping("/{id}")

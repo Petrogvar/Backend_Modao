@@ -1,7 +1,10 @@
 package com.SpringProject.core.Services;
 
+import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Repository.UsersRepository;
 import com.SpringProject.core.Entity.UsersEntity;
+import com.SpringProject.core.controllers.Error.ThereIsNoSuchUserException;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,7 +15,16 @@ public class UsersServiceImpl implements UsersService {
   private final UsersRepository usersRepository;
   @Override
   public UsersEntity getUsers(Long id){
-    return usersRepository.findById(id).get();
+    UsersEntity a = usersRepository.findById(id).get();
+    /*if (a == null)
+     throw new ThereIsNoSuchUserException();
+    else {
+      UsersEntity f = a.get();
+      //a.setUsername("qweqweqwe");
+      f.setGroup(null);
+      return f;
+    }*/
+    return a;
   }
   @Override
   public Long createUsers(UsersEntity user) {

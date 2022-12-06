@@ -68,3 +68,30 @@ databaseChangeLog:
                   type: Integer
                   constraints:
                     nullable: false
+  - changeSet:
+      id: 3
+      author: I
+      changes:
+        - createTable:
+            tableName: user_group
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: group_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: role
+                  type: INT
