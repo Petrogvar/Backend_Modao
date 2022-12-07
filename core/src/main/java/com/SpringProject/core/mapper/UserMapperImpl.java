@@ -17,7 +17,7 @@ public class UserMapperImpl {
     userDto.setPhone_number(user.getPhone_number());
     userDto.setBank(user.getBank());
     userDto.setGroups(new ArrayList<>());
-    for (int i=0;i < user.getGroup().size(); i++){
+    for (int i = 0; i < user.getGroup().size(); i++) {
       userDto.getGroups().add(user.getGroup().get(i).getGroup().getId());
     }
     return userDto;
@@ -34,6 +34,4 @@ public class UserMapperImpl {
     user.setBank(userDto.getBank());
     return user;
   }
-
-
 }

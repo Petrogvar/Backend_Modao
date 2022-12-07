@@ -11,18 +11,21 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ControllerError extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ThereIsNoSuchUserException.class)
-    protected ResponseEntity<AwesomeException> handleThereIsNoSuchUserException() {
-      return new ResponseEntity<>(new AwesomeException("not found"), HttpStatus.NOT_FOUND);
-    }
-   @ExceptionHandler(LoginException.class)
-    protected ResponseEntity<AwesomeException> loginException() {
-      return new ResponseEntity<>(new AwesomeException("login already exists"), HttpStatus.BAD_REQUEST);
-    }
+  @ExceptionHandler(ThereIsNoSuchUserException.class)
+  protected ResponseEntity<AwesomeException> handleThereIsNoSuchUserException() {
+    return new ResponseEntity<>(new AwesomeException("not found"), HttpStatus.NOT_FOUND);
+  }
 
-    @Data
-    @AllArgsConstructor
-    private static class AwesomeException {
-      private String message;
-    }
+  @ExceptionHandler(LoginException.class)
+  protected ResponseEntity<AwesomeException> loginException() {
+    return new ResponseEntity<>(new AwesomeException("login already exists"),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @Data
+  @AllArgsConstructor
+  private static class AwesomeException {
+
+    private String message;
+  }
 }

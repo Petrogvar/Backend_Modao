@@ -13,30 +13,36 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
   private final UserRepository usersRepository;
+
   @Override
-  public UserDto getUser(Long id){
+  public UserDto getUser(Long id) {
     Optional<User> optionalUser = usersRepository.findById(id);
-    if (optionalUser.isEmpty())
-     throw new ThereIsNoSuchUserException();
-    else {
+    if (optionalUser.isEmpty()) {
+      throw new ThereIsNoSuchUserException();
+    } else {
       User user = optionalUser.get();
       return UserMapperImpl.toUserDto(user);
     }
   }
+
   public Long createUser(UserDto userDto) {
     User user = UserMapperImpl.toUser(userDto);
-    if (usersRepository.findByLogin(user.getLogin())!=null)
-      throw  new LoginException();
-    else{
-      if (user.getBank()==null)
+    if (usersRepository.findByLogin(user.getLogin()) != null) {
+      throw new LoginException();
+    } else {
+      if (user.getBank() == null) {
         user.setBank("-");
-      if (user.getPhone_number()==null)
-        user.setPhone_number("-");
-      if (user.getIdPicture()==null)
-        user.setIdPicture(-1);
-      return usersRepository.save(user).getId();
       }
+      if (user.getPhone_number() == null) {
+        user.setPhone_number("-");
+      }
+      if (user.getIdPicture() == null) {
+        user.setIdPicture(-1);
+      }
+      return usersRepository.save(user).getId();
+    }
   }
 
 
@@ -54,12 +60,14 @@ public class UserServiceImpl implements UserService {
   public void deleteUser(Long id) {
     usersRepository.deleteById(id);
   }
+
   @Override
-  public  Long authorizationUser(UserDto userDto) {
+  public Long authorizationUser(UserDto userDto) {
     User user = usersRepository.findByLoginAndPassword(userDto.getLogin(), userDto.getPassword());
-    if (user == null)
+    if (user == null) {
       throw new ThereIsNoSuchUserException();
-    else
+    } else {
       return user.getId();
+    }
   }
 }

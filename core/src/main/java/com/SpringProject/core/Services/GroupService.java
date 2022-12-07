@@ -4,9 +4,13 @@ import com.SpringProject.core.Entity.Group;
 import com.SpringProject.core.dto.GroupDto;
 
 public interface GroupService {
-  GroupDto getGroups(Long id);
-  Long createGroups(GroupDto groupDto, Long id);
-  void deleteGroups(Long id);
-  void updateGroups(Long id, GroupDto groupDto);
+
+  GroupDto getGroup(Long id);
+
+  Long createGroup(GroupDto groupDto, Long id);
+
+  void deleteGroup(Long id);
+
+  void updateGroup(Long id, GroupDto groupDto);
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/group")
 public class GroupController {
+
   private final GroupService groupService;
 
 
@@ -24,22 +25,22 @@ public class GroupController {
   }
 
   @GetMapping("/{id}")
-  public GroupDto getGroups(@PathVariable Long id) {
-    return groupService.getGroups(id);
+  public GroupDto getGroup(@PathVariable Long id) {
+    return groupService.getGroup(id);
   }
 
   @PostMapping({"/{id}"})
-  public Long createGroups(@RequestBody GroupDto groupDto, @PathVariable Long id){
-    return groupService.createGroups(groupDto, id);
+  public Long createGroup(@RequestBody GroupDto groupDto, @PathVariable Long id) {
+    return groupService.createGroup(groupDto, id);
   }
 
   @DeleteMapping("/{id}")
-  void deleteGroups(@PathVariable Long id){
-    groupService.deleteGroups(id);
+  void deleteGroup(@PathVariable Long id) {
+    groupService.deleteGroup(id);
   }
 
   @PutMapping("/{id}")
-  void updateGroups(@PathVariable Long id, @RequestBody GroupDto groupDto){
-    groupService.updateGroups(id, groupDto);
+  void updateGroup(@PathVariable Long id, @RequestBody GroupDto groupDto) {
+    groupService.updateGroup(id, groupDto);
   }
 }

@@ -1,4 +1,5 @@
 package com.SpringProject.core.Entity;
+
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Group {
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;

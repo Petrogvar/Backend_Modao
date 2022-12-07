@@ -22,22 +22,23 @@ public class GroupServiceImpl implements GroupService {
   private final UserRepository usersRepository;
 
   @Override
-  public GroupDto getGroups(Long id){
+  public GroupDto getGroup(Long id) {
     Optional<Group> optionalGroup = groupRepository.findById(id);
-    if (optionalGroup.isEmpty())
+    if (optionalGroup.isEmpty()) {
       throw new ThereIsNoSuchUserException();
-    else
+    } else {
       return GroupMapperImpl.toGroupDto(optionalGroup.get());
+    }
   }
 
 
   @Override
-  public Long createGroups(GroupDto groupDto, Long id) {
+  public Long createGroup(GroupDto groupDto, Long id) {
     Group group = GroupMapperImpl.toGroup(groupDto);
     Optional<User> optionalUser = usersRepository.findById(id);
-    if (optionalUser.isEmpty())
+    if (optionalUser.isEmpty()) {
       throw new ThereIsNoSuchUserException();
-    else {
+    } else {
       User user = optionalUser.get();
       UserGroup userGroup = new UserGroup();
       userGroup.setUser(user);
@@ -52,7 +53,7 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
-  public void updateGroups(Long id, GroupDto groupDto) {
+  public void updateGroup(Long id, GroupDto groupDto) {
     Group group = groupRepository.findById(id).get();
     group.setDescription(groupDto.getDescription());
     group.setGroupName(groupDto.getGroupName());
@@ -60,7 +61,7 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
-  public void deleteGroups(Long id) {
+  public void deleteGroup(Long id) {
     groupRepository.deleteById(id);
   }
 }

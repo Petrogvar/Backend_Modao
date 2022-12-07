@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EventDto {
+
   private String name;
   private Integer type;
   private Long group_id;
