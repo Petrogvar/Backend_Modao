@@ -24,7 +24,6 @@ public class UserGroup {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "user_id")
   private User user;

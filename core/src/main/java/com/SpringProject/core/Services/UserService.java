@@ -1,11 +1,12 @@
 package com.SpringProject.core.Services;
 
 import com.SpringProject.core.Entity.User;
+import com.SpringProject.core.dto.UserDto;
 
 public interface UserService {
-  User getUsers(Long id);
-  Long createUsers(User usersTable);
-  void deleteUsers(Long id);
-  void updateUsers(Long id, User usersTable);
-  Long findUser (User user);
+  UserDto getUser(Long id);
+  Long createUser(UserDto user);
+  void deleteUser(Long id);
+  void updateUser(Long id, UserDto user);
+  Long authorizationUser (UserDto user);
 }

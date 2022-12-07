@@ -3,32 +3,31 @@ package com.SpringProject.core.Services;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.controllers.Error.ThereIsNoSuchUserException;
-import com.SpringProject.core.controllers.Error.loginException;
+import com.SpringProject.core.controllers.Error.LoginException;
+import com.SpringProject.core.dto.UserDto;
+import com.SpringProject.core.mapper.UserMapperImpl;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
   private final UserRepository usersRepository;
   @Override
-  public User getUsers(Long id){
-    User a = usersRepository.findById(id).get();
-    /*if (a == null)
+  public UserDto getUser(Long id){
+    Optional<User> optionalUser = usersRepository.findById(id);
+    if (optionalUser.isEmpty())
      throw new ThereIsNoSuchUserException();
     else {
-      UsersEntity f = a.get();
-      //a.setUsername("qweqweqwe");
-      f.setGroup(null);
-      return f;
-    }*/
-    return a;
+      User user = optionalUser.get();
+      return UserMapperImpl.toUserDto(user);
+    }
   }
-  @Override
-  public Long createUsers(User user) {
+  public Long createUser(UserDto userDto) {
+    User user = UserMapperImpl.toUser(userDto);
     if (usersRepository.findByLogin(user.getLogin())!=null)
-      throw  new loginException();
+      throw  new LoginException();
     else{
       if (user.getBank()==null)
         user.setBank("-");
@@ -40,23 +39,27 @@ public class UserServiceImpl implements UserService {
       }
   }
 
+
   @Override
-  public void updateUsers(Long id, User usersTable) {
-    User old = usersRepository.findById(id).get();
-    old.setBank(usersTable.getBank());
-    usersRepository.save(old);
+  public void updateUser(Long id, UserDto userDto) {
+    User user = usersRepository.findById(id).get();
+    user.setBank(userDto.getBank());
+    user.setPhone_number(userDto.getPhone_number());
+    user.setUsername(userDto.getUsername());
+    user.setIdPicture(userDto.getIdPicture());
+    usersRepository.save(user);
   }
 
   @Override
-  public void deleteUsers(Long id) {
+  public void deleteUser(Long id) {
     usersRepository.deleteById(id);
   }
   @Override
-  public  Long findUser(User user) {
-    User a = usersRepository.findByLoginAndPassword(user.getLogin(), user.getPassword());
-    if (a == null)
+  public  Long authorizationUser(UserDto userDto) {
+    User user = usersRepository.findByLoginAndPassword(userDto.getLogin(), userDto.getPassword());
+    if (user == null)
       throw new ThereIsNoSuchUserException();
     else
-      return a.getId();
+      return user.getId();
   }
 }

@@ -24,6 +24,7 @@ public class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    //@Id
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private User user;

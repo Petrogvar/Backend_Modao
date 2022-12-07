@@ -1,7 +1,7 @@
 package com.SpringProject.core.controllers;
 
-import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Services.UserService;
+import com.SpringProject.core.dto.UserDto;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,24 +21,24 @@ public class UserController {
 
 
   @GetMapping("/{id}")
-  public User getById(@PathVariable Long id) {
-    return userService.getUsers(id);
+  public UserDto getById(@PathVariable Long id) {
+    return userService.getUser(id);
   }
 
   @PostMapping("/in")
-  public Long authorization(@RequestBody User usersTable){
-    return userService.findUser(usersTable);
+  public Long authorization(@RequestBody UserDto userDto){
+    return userService.authorizationUser(userDto);
   }
   @PostMapping
-  public Long create(@RequestBody User usersTable ){
-    return userService.createUsers(usersTable);
+  public Long create(@RequestBody UserDto userDto ){
+    return userService.createUser(userDto);
   }
   @DeleteMapping("/{id}")
   void delete(@PathVariable Long id){
-    userService.deleteUsers(id);
+    userService.deleteUser(id);
   }
   @PutMapping("/{id}")
-  void update(@PathVariable Long id, @RequestBody User user){
-    userService.updateUsers(id, user);
+  void update(@PathVariable Long id, @RequestBody UserDto userDto){
+    userService.updateUser(id, userDto);
   }
 }
