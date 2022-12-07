@@ -1,21 +1,20 @@
 package com.SpringProject.core.Services;
 
-import com.SpringProject.core.Entity.UserGroup;
-import com.SpringProject.core.Repository.UsersRepository;
-import com.SpringProject.core.Entity.UsersEntity;
+import com.SpringProject.core.Repository.UserRepository;
+import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.controllers.Error.ThereIsNoSuchUserException;
-import java.util.Optional;
+import com.SpringProject.core.controllers.Error.loginException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class UsersServiceImpl implements UsersService {
+public class UserServiceImpl implements UserService {
 
-  private final UsersRepository usersRepository;
+  private final UserRepository usersRepository;
   @Override
-  public UsersEntity getUsers(Long id){
-    UsersEntity a = usersRepository.findById(id).get();
+  public User getUsers(Long id){
+    User a = usersRepository.findById(id).get();
     /*if (a == null)
      throw new ThereIsNoSuchUserException();
     else {
@@ -27,23 +26,23 @@ public class UsersServiceImpl implements UsersService {
     return a;
   }
   @Override
-  public Long createUsers(UsersEntity user) {
+  public Long createUsers(User user) {
     if (usersRepository.findByLogin(user.getLogin())!=null)
-      return -1L;
+      throw  new loginException();
     else{
       if (user.getBank()==null)
         user.setBank("-");
       if (user.getPhone_number()==null)
         user.setPhone_number("-");
-      if (user.getId_picture()==null)
-        user.setId_picture(-1);
+      if (user.getIdPicture()==null)
+        user.setIdPicture(-1);
       return usersRepository.save(user).getId();
       }
   }
 
   @Override
-  public void updateUsers(Long id, UsersEntity usersTable) {
-    UsersEntity old = usersRepository.findById(id).get();
+  public void updateUsers(Long id, User usersTable) {
+    User old = usersRepository.findById(id).get();
     old.setBank(usersTable.getBank());
     usersRepository.save(old);
   }
@@ -53,10 +52,10 @@ public class UsersServiceImpl implements UsersService {
     usersRepository.deleteById(id);
   }
   @Override
-  public  Long findUser(UsersEntity user) {
-    UsersEntity a = usersRepository.findByLoginAndPassword(user.getLogin(), user.getPassword());
+  public  Long findUser(User user) {
+    User a = usersRepository.findByLoginAndPassword(user.getLogin(), user.getPassword());
     if (a == null)
-      return -1L;
+      throw new ThereIsNoSuchUserException();
     else
       return a.getId();
   }

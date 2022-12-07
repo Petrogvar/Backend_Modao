@@ -1,4 +1,5 @@
 package com.SpringProject.core.Entity;
+
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -13,24 +14,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "groups")
+@Table(name = "users")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GroupsEntity {
+public class User {
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
-  private String group_name;
-  private Integer type_group;
-
-  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<UserGroup> user;
-
-  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Event> event;
+   private Long id;
+   private String username;
+   private String login;
+   private String password;
+   private String phone_number;
+   private String bank;
+   private Integer idPicture;
+   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+   private List<UserGroup> group;
+   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+   private List<UserEvent> event;
 
 
 }
-

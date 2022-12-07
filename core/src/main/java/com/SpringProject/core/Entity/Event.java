@@ -11,7 +11,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import liquibase.pro.packaged.L;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,12 +26,12 @@ public class Event {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
-  private String event_name;
+  private String eventName;
   //private Integer type_event;
   private  Long pat_pay_id;
   @ManyToOne (fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "group_id")
-  private GroupsEntity group;
+  private Group group;
   @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserEvent> user;
 
