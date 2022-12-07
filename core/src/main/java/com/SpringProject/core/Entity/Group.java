@@ -24,12 +24,13 @@ public class Group {
   private Long id;
   private String groupName;
   private Integer typeGroup;
+  private String description;
 
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserGroup> user;
 
-  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Event> event;
+  //@OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+  //private List<Event> event;
 
 
 }

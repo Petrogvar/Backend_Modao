@@ -5,8 +5,12 @@ import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
+import com.SpringProject.core.controllers.Error.ThereIsNoSuchUserException;
+import com.SpringProject.core.dto.GroupDto;
+import com.SpringProject.core.mapper.GroupMapperImpl;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,32 +22,41 @@ public class GroupServiceImpl implements GroupService {
   private final UserRepository usersRepository;
 
   @Override
-  public Group getGroups(Long id){
-    return groupRepository.findById(id).get();
+  public GroupDto getGroups(Long id){
+    Optional<Group> optionalGroup = groupRepository.findById(id);
+    if (optionalGroup.isEmpty())
+      throw new ThereIsNoSuchUserException();
+    else
+      return GroupMapperImpl.toGroupDto(optionalGroup.get());
   }
 
 
   @Override
-  public Long createGroups(Group groupsTable, Long id) {
-    User a = usersRepository.findById(id).get();
-    if (a==null)
-      return -1L;
-    UserGroup ug = new UserGroup();
-    ug.setUser(a);
-    ug.setGroup(groupsTable);
-    ug.setRole(0);
-    a.getGroup().add(ug);
-    List listU = new ArrayList();
-    groupsTable.setUser(listU);
-    groupsTable.getUser().add(ug);
-    return groupRepository.save(groupsTable).getId();
+  public Long createGroups(GroupDto groupDto, Long id) {
+    Group group = GroupMapperImpl.toGroup(groupDto);
+    Optional<User> optionalUser = usersRepository.findById(id);
+    if (optionalUser.isEmpty())
+      throw new ThereIsNoSuchUserException();
+    else {
+      User user = optionalUser.get();
+      UserGroup userGroup = new UserGroup();
+      userGroup.setUser(user);
+      userGroup.setGroup(group);
+      userGroup.setRole(0);
+      user.getGroup().add(userGroup);
+      List listU = new ArrayList();
+      group.setUser(listU);
+      group.getUser().add(userGroup);
+      return groupRepository.save(group).getId();
+    }
   }
 
   @Override
-  public void updateGroups(Long id, Group groupsTable) {
-    Group old = groupRepository.findById(id).get();
-    old.setTypeGroup(groupsTable.getTypeGroup());
-    groupRepository.save(old);
+  public void updateGroups(Long id, GroupDto groupDto) {
+    Group group = groupRepository.findById(id).get();
+    group.setDescription(groupDto.getDescription());
+    group.setGroupName(groupDto.getGroupName());
+    groupRepository.save(group);
   }
 
   @Override

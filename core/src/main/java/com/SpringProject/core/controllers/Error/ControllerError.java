@@ -13,7 +13,7 @@ public class ControllerError extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ThereIsNoSuchUserException.class)
     protected ResponseEntity<AwesomeException> handleThereIsNoSuchUserException() {
-      return new ResponseEntity<>(new AwesomeException("invalid password or login"), HttpStatus.NOT_FOUND);
+      return new ResponseEntity<>(new AwesomeException("not found"), HttpStatus.NOT_FOUND);
     }
    @ExceptionHandler(LoginException.class)
     protected ResponseEntity<AwesomeException> loginException() {

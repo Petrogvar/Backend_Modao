@@ -3,6 +3,7 @@ package com.SpringProject.core.controllers;
 
 import com.SpringProject.core.Entity.Group;
 import com.SpringProject.core.Services.GroupService;
+import com.SpringProject.core.dto.GroupDto;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,13 +24,13 @@ public class GroupController {
   }
 
   @GetMapping("/{id}")
-  public Group getGroups(@PathVariable Long id) {
+  public GroupDto getGroups(@PathVariable Long id) {
     return groupService.getGroups(id);
   }
 
   @PostMapping({"/{id}"})
-  public Long createGroups(@RequestBody Group groupsTable, @PathVariable Long id){
-    return groupService.createGroups(groupsTable, id);
+  public Long createGroups(@RequestBody GroupDto groupDto, @PathVariable Long id){
+    return groupService.createGroups(groupDto, id);
   }
 
   @DeleteMapping("/{id}")
@@ -38,7 +39,7 @@ public class GroupController {
   }
 
   @PutMapping("/{id}")
-  void updateGroups(@PathVariable Long id, @RequestBody Group groupsTable){
-    groupService.updateGroups(id, groupsTable);
+  void updateGroups(@PathVariable Long id, @RequestBody GroupDto groupDto){
+    groupService.updateGroups(id, groupDto);
   }
 }

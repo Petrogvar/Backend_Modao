@@ -1,5 +1,5 @@
 package com.SpringProject.core.Entity;
-
+/*
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -24,7 +24,6 @@ public class UserEvent {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    //@Id
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")
     private User user;
@@ -33,4 +32,4 @@ public class UserEvent {
     private Event event;
     private Double k;
 
-}
+}*/

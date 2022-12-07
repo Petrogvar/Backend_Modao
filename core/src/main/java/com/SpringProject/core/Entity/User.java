@@ -32,8 +32,8 @@ public class User {
    private Integer idPicture;
    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
    private List<UserGroup> group;
-   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-   private List<UserEvent> event;
+   //@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+   //private List<UserEvent> event;
 
 
 }

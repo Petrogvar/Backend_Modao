@@ -1,7 +1,9 @@
 package com.SpringProject.core.mapper;
 
+import antlr.collections.List;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.dto.UserDto;
+import java.util.ArrayList;
 
 public class UserMapperImpl {
 
@@ -12,7 +14,12 @@ public class UserMapperImpl {
     userDto.setLogin(user.getLogin());
     userDto.setPassword(user.getPassword());
     userDto.setIdPicture(user.getIdPicture());
+    userDto.setPhone_number(user.getPhone_number());
     userDto.setBank(user.getBank());
+    userDto.setGroups(new ArrayList<>());
+    for (int i=0;i < user.getGroup().size(); i++){
+      userDto.getGroups().add(user.getGroup().get(i).getGroup().getId());
+    }
     return userDto;
   }
 
@@ -23,7 +30,10 @@ public class UserMapperImpl {
     user.setLogin(userDto.getLogin());
     user.setPassword(userDto.getPassword());
     user.setIdPicture(userDto.getIdPicture());
+    user.setPhone_number(user.getPhone_number());
     user.setBank(userDto.getBank());
     return user;
   }
+
+
 }

@@ -1,5 +1,5 @@
 package com.SpringProject.core.Entity;
-
+/*
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -36,4 +36,4 @@ public class Event {
   private List<UserEvent> user;
 
 
-}
+}*/

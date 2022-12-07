@@ -1,11 +1,12 @@
 package com.SpringProject.core.Services;
 
 import com.SpringProject.core.Entity.Group;
+import com.SpringProject.core.dto.GroupDto;
 
 public interface GroupService {
-  Group getGroups(Long id);
-  Long createGroups(Group groupsTable, Long id);
+  GroupDto getGroups(Long id);
+  Long createGroups(GroupDto groupDto, Long id);
   void deleteGroups(Long id);
-  void updateGroups(Long id, Group groupsTable);
+  void updateGroups(Long id, GroupDto groupDto);
 
 }
