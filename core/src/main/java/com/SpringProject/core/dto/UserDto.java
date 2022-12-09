@@ -1,5 +1,6 @@
 package com.SpringProject.core.dto;
 
+import java.util.AbstractMap;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,6 @@ public class UserDto {
   private String phone_number;
   private String bank;
   private Integer idPicture;
-  private List<Long> groups;
+  private List<AbstractMap.SimpleEntry<Long, String>> groups;
   //private List<Long> event;
 }

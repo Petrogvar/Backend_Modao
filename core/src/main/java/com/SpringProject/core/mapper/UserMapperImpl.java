@@ -1,8 +1,8 @@
 package com.SpringProject.core.mapper;
 
-import antlr.collections.List;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.dto.UserDto;
+import java.util.AbstractMap;
 import java.util.ArrayList;
 
 public class UserMapperImpl {
@@ -17,8 +17,11 @@ public class UserMapperImpl {
     userDto.setPhone_number(user.getPhone_number());
     userDto.setBank(user.getBank());
     userDto.setGroups(new ArrayList<>());
-    for (int i = 0; i < user.getGroup().size(); i++) {
-      userDto.getGroups().add(user.getGroup().get(i).getGroup().getId());
+    AbstractMap.SimpleEntry<Long, String> entry;
+    //Pair<Long, String> pair;
+     for (int i = 0; i < user.getGroup().size(); i++) {
+       entry = new AbstractMap.SimpleEntry<>(user.getGroup().get(i).getGroup().getId(), user.getGroup().get(i).getGroup().getGroupName());
+       userDto.getGroups().add(entry);
     }
     return userDto;
   }
