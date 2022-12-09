@@ -1,5 +1,6 @@
 package com.SpringProject.core.dto;
 
+import com.SpringProject.core.dto.my.CustomPair;
 import java.util.AbstractMap;
 import java.util.List;
 import lombok.Getter;
@@ -16,6 +17,6 @@ public class UserDto {
   private String phone_number;
   private String bank;
   private Integer idPicture;
-  private List<AbstractMap.SimpleEntry<Long, String>> groups;
+  private List<CustomPair> groups;
   //private List<Long> event;
 }
