@@ -18,5 +18,4 @@ public class UserDto {
   private String bank;
   private Integer idPicture;
   private List<CustomPair> groups;
-  //private List<Long> event;
 }

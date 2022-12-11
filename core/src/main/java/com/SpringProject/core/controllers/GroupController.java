@@ -1,7 +1,6 @@
 package com.SpringProject.core.controllers;
 
 
-import com.SpringProject.core.Entity.Group;
 import com.SpringProject.core.Services.GroupService;
 import com.SpringProject.core.dto.GroupDto;
 import org.springframework.web.bind.annotation.DeleteMapping;

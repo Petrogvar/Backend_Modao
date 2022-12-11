@@ -48,12 +48,17 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void updateUser(Long id, UserDto userDto) {
-    User user = usersRepository.findById(id).get();
-    user.setBank(userDto.getBank());
-    user.setPhone_number(userDto.getPhone_number());
-    user.setUsername(userDto.getUsername());
-    user.setIdPicture(userDto.getIdPicture());
-    usersRepository.save(user);
+    Optional<User> optionalUser = usersRepository.findById(id);
+    if (optionalUser.isEmpty()) {
+      throw new ThereIsNoSuchUserException();
+    } else {
+      User user = optionalUser.get();
+      user.setBank(userDto.getBank());
+      user.setPhone_number(userDto.getPhone_number());
+      user.setUsername(userDto.getUsername());
+      user.setIdPicture(userDto.getIdPicture());
+      usersRepository.save(user);
+    }
   }
 
   @Override

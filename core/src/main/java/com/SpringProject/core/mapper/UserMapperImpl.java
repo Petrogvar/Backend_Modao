@@ -3,7 +3,6 @@ package com.SpringProject.core.mapper;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.dto.my.CustomPair;
-import java.util.AbstractMap;
 import java.util.ArrayList;
 
 public class UserMapperImpl {
@@ -23,7 +22,6 @@ public class UserMapperImpl {
        customPair = new CustomPair();
        customPair.setId(user.getGroup().get(i).getGroup().getId());
        customPair.setName(user.getGroup().get(i).getGroup().getGroupName());
-       //entry = new AbstractMap.SimpleEntry<>(user.getGroup().get(i).getGroup().getId(), user.getGroup().get(i).getGroup().getGroupName());
        userDto.getGroups().add(customPair);
     }
     return userDto;

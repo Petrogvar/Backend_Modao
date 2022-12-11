@@ -19,22 +19,20 @@ repositories {
 }
 
 dependencies {
+
+
 	implementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.liquibase:liquibase-core'
-	//implementation 'javax.xml.bind:jaxb-api'
-	//implementation 'com.sun.xml.bind:jaxb-impl'
-	//implementation 'com.sun.xml.bind:jaxb-core'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
-}
+	implementation 'io.springfox:springfox-swagger2:3.0.0'
+	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
 
-/*tasks.named('test') {
-	useJUnitPlatform()
-}*/
+}

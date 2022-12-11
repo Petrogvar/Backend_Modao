@@ -54,10 +54,15 @@ public class GroupServiceImpl implements GroupService {
 
   @Override
   public void updateGroup(Long id, GroupDto groupDto) {
-    Group group = groupRepository.findById(id).get();
-    group.setDescription(groupDto.getDescription());
-    group.setGroupName(groupDto.getGroupName());
-    groupRepository.save(group);
+    Optional<Group> optionalGroup = groupRepository.findById(id);
+    if (optionalGroup.isEmpty()) {
+      throw new ThereIsNoSuchUserException();
+    } else {
+      Group group = optionalGroup.get();
+      group.setDescription(groupDto.getDescription());
+      group.setGroupName(groupDto.getGroupName());
+      groupRepository.save(group);
+    }
   }
 
   @Override
