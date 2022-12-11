@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost/store
+    username: postgres
+    password: "qwerty"
+  jpa:
+    generate-ddl: true
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  security:
+    user:
+      name: admon
+      password: 123
+  liquibase:
+    change-log: classpath:db/changelog/dbchangelog-master.yml
