@@ -65,7 +65,6 @@ public class UserServiceImpl implements UserService {
   public void deleteUser(Long id) {
     usersRepository.deleteById(id);
   }
-
   @Override
   public Long authorizationUser(UserDto userDto) {
     User user = usersRepository.findByLoginAndPassword(userDto.getLogin(), userDto.getPassword());
