@@ -31,5 +31,8 @@ public class Group {
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserGroup> user;
 
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Event> event;
+
 }
 

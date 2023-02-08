@@ -9,8 +9,8 @@ import lombok.Setter;
 public class EventDto {
 
   private String name;
-  private Integer type;
   private Long group_id;
+  private Integer price;
   private List<Long> participants_id;
   private List<Double> participants_k;
 }

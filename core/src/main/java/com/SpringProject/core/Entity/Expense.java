@@ -14,25 +14,26 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "user_group")
+@Table(name = "expense")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserGroup {
-
-
+public class Expense {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "user_id")
-  private User user;
+  @JoinColumn(name = "event_id")
+  private Event event;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "group_id")
-  private Group group;
-  private Integer role;
+  @JoinColumn(name = "user1_id")
+  private User user1;
 
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "user2_id")
+  private User user2;
 
+  Double transferAmount;
 }

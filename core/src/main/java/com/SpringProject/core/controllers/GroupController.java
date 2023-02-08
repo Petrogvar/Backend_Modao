@@ -32,7 +32,6 @@ public class GroupController {
   public Long createGroup(@RequestBody GroupDto groupDto, @PathVariable Long id) {
     return groupService.createGroup(groupDto, id);
   }
-
   @DeleteMapping("/{id}")
   void deleteGroup(@PathVariable Long id) {
     groupService.deleteGroup(id);
@@ -41,5 +40,10 @@ public class GroupController {
   @PutMapping("/{id}")
   void updateGroup(@PathVariable Long id, @RequestBody GroupDto groupDto) {
     groupService.updateGroup(id, groupDto);
+  }
+
+  @PutMapping("/{userOrgId}/{groupId}/{userId}")
+  void addUserInGroup(@PathVariable Long userOrgId, @PathVariable Long groupId, @PathVariable Long userId) {
+    groupService.addUserInGroup(userOrgId, groupId, userId);
   }
 }
