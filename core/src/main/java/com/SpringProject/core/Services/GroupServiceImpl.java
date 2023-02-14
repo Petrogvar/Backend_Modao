@@ -7,14 +7,13 @@ import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Repository.DebtRepository;
 import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
-import com.SpringProject.core.controllers.Error.ThereIsNoSuchUserException;
+import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.mapper.GroupMapperImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.dynamic.DynamicType.Builder.FieldDefinition;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -23,14 +22,13 @@ public class GroupServiceImpl implements GroupService {
 
   private final GroupRepository groupRepository;
   private final UserRepository usersRepository;
-
   private final DebtRepository debtRepository;
 
   @Override
-  public GroupDto getGroup(Long id) {
-    Optional<Group> optionalGroup = groupRepository.findById(id);
+  public GroupDto getGroup(Long groupId) {
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
+      throw new NotFoundException();
     } else {
       return GroupMapperImpl.toGroupDto(optionalGroup.get());
     }
@@ -38,30 +36,30 @@ public class GroupServiceImpl implements GroupService {
 
 
   @Override
-  public Long createGroup(GroupDto groupDto, Long id) {
+  public Long createGroup(GroupDto groupDto, Long userId) {
     Group group = GroupMapperImpl.toGroup(groupDto);
-    Optional<User> optionalUser = usersRepository.findById(id);
+    Optional<User> optionalUser = usersRepository.findById(userId);
     if (optionalUser.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
+      throw new NotFoundException();
     } else {
       User user = optionalUser.get();
       UserGroup userGroup = new UserGroup();
       userGroup.setUser(user);
       userGroup.setGroup(group);
-      userGroup.setRole(0);
-      user.getGroup().add(userGroup);
+      userGroup.setRole(1);
+      user.getUserGroupsList().add(userGroup);
       List listU = new ArrayList();
-      group.setUser(listU);
-      group.getUser().add(userGroup);
+      group.setUserGroupList(listU);
+      group.getUserGroupList().add(userGroup);
       return groupRepository.save(group).getId();
     }
   }
 
   @Override
-  public void updateGroup(Long id, GroupDto groupDto) {
-    Optional<Group> optionalGroup = groupRepository.findById(id);
+  public void updateGroup(Long groupId, GroupDto groupDto) {
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
+      throw new NotFoundException();
     } else {
       Group group = optionalGroup.get();
       group.setDescription(groupDto.getDescription());
@@ -79,13 +77,13 @@ public class GroupServiceImpl implements GroupService {
   public void addUserInGroup(Long userOrgId, Long groupId, Long userId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
+      throw new NotFoundException();
     } else {
       Optional<User> optionalUser = usersRepository.findById(userId);
       if (optionalUser.isEmpty()) {
-        throw new ThereIsNoSuchUserException();
+        throw new NotFoundException();
       } else {
-        for(int i=0; i<optionalGroup.get().getUser().size(); i++) {
+        for(int i=0; i<optionalGroup.get().getUserGroupList().size(); i++) {
           Debt debt = new Debt();
           Debt debtBack = new Debt();
           debtBack.setDebt(0D);
@@ -93,20 +91,19 @@ public class GroupServiceImpl implements GroupService {
           debtBack.setGroup(optionalGroup.get());
           debt.setGroup(optionalGroup.get());
           debtBack.setUserFrom(optionalUser.get());
-          debtBack.setUserTo(optionalGroup.get().getUser().get(i).getUser());
-          debt.setUserFrom(optionalGroup.get().getUser().get(i).getUser());
+          debtBack.setUserTo(optionalGroup.get().getUserGroupList().get(i).getUser());
+          debt.setUserFrom(optionalGroup.get().getUserGroupList().get(i).getUser());
           debt.setUserTo(optionalUser.get());
+//          optionalUser.get().getDebtList().add(debt);
           debtRepository.save(debt);
           debtRepository.save(debtBack);
         }
-
         UserGroup userGroup =  new UserGroup();
+        userGroup.setRole(0);
         userGroup.setUser(optionalUser.get());
         userGroup.setGroup(optionalGroup.get());
-        optionalUser.get().getGroup().add(userGroup);
-//        optionalGroup.get().getUser().add(userGroup);
+        optionalUser.get().getUserGroupsList().add(userGroup);
         usersRepository.save(optionalUser.get());
-//        groupRepository.save(optionalGroup.get());
       }
     }
 

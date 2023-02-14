@@ -5,13 +5,13 @@ import com.SpringProject.core.dto.UserDto;
 
 public interface UserService {
 
-  UserDto getUser(Long id);
+  UserDto getUser(Long userId);
 
-  Long createUser(UserDto user);
+  Long createUser(UserDto userDto);
 
-  void deleteUser(Long id);
+  void deleteUser(Long userId);
 
-  void updateUser(Long id, UserDto user);
+  void updateUser(Long id, UserDto userDto);
 
-  Long authorizationUser(UserDto user);
+  Long authorizationUser(UserDto userDto);
 }

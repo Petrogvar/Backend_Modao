@@ -5,12 +5,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 public interface GroupService {
 
-  GroupDto getGroup(Long id);
+  GroupDto getGroup(Long groupId);
 
-  Long createGroup(GroupDto groupDto, Long id);
+  Long createGroup(GroupDto groupDto, Long userId);
 
-  void deleteGroup(Long id);
+  void deleteGroup(Long groupId);
 
-  void updateGroup(Long id, GroupDto groupDto);
+  void updateGroup(Long groupId, GroupDto groupDto);
   void addUserInGroup(Long userOrgId, Long groupId, Long userId);
 }

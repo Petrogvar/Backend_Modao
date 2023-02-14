@@ -2,10 +2,10 @@ package com.SpringProject.core.mapper;
 
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.dto.UserDto;
-import com.SpringProject.core.dto.my.CustomPair;
+import com.SpringProject.core.dto.my.CustomPairIdName;
 import java.util.ArrayList;
 
-public class UserMapperImpl {
+public class                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 UserMapperImpl {
 
   public static UserDto toUserDto(User user) {
     UserDto userDto = new UserDto();
@@ -14,15 +14,15 @@ public class UserMapperImpl {
     userDto.setLogin(user.getLogin());
     userDto.setPassword(user.getPassword());
     userDto.setIdPicture(user.getIdPicture());
-    userDto.setPhone_number(user.getPhone_number());
+    userDto.setPhoneNumber(user.getPhoneNumber());
     userDto.setBank(user.getBank());
-    userDto.setGroups(new ArrayList<>());
-    CustomPair customPair;
-     for (int i = 0; i < user.getGroup().size(); i++) {
-       customPair = new CustomPair();
-       customPair.setId(user.getGroup().get(i).getGroup().getId());
-       customPair.setName(user.getGroup().get(i).getGroup().getGroupName());
-       userDto.getGroups().add(customPair);
+    userDto.setGroupCustomPairIdNameList(new ArrayList<>());
+    CustomPairIdName customPairIdName;
+     for (int i = 0; i < user.getUserGroupsList().size(); i++) {
+       customPairIdName = new CustomPairIdName();
+       customPairIdName.setId(user.getUserGroupsList().get(i).getGroup().getId());
+       customPairIdName.setName(user.getUserGroupsList().get(i).getGroup().getGroupName());
+       userDto.getGroupCustomPairIdNameList().add(customPairIdName);
     }
     return userDto;
   }
@@ -34,7 +34,7 @@ public class UserMapperImpl {
     user.setLogin(userDto.getLogin());
     user.setPassword(userDto.getPassword());
     user.setIdPicture(userDto.getIdPicture());
-    user.setPhone_number(user.getPhone_number());
+    user.setPhoneNumber(user.getPhoneNumber());
     user.setBank(userDto.getBank());
     return user;
   }

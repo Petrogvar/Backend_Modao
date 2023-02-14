@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class CustomPair {
+public class CustomPairIdName {
   private Long id;
   private String Name;
 }

@@ -23,23 +23,23 @@ public class GroupController {
     this.groupService = groupService;
   }
 
-  @GetMapping("/{id}")
-  public GroupDto getGroup(@PathVariable Long id) {
-    return groupService.getGroup(id);
+  @GetMapping("/{groupId}")
+  public GroupDto getGroup(@PathVariable Long groupId) {
+    return groupService.getGroup(groupId);
   }
 
-  @PostMapping({"/{id}"})
-  public Long createGroup(@RequestBody GroupDto groupDto, @PathVariable Long id) {
-    return groupService.createGroup(groupDto, id);
+  @PostMapping({"/{userId}"})
+  public Long createGroup(@RequestBody GroupDto groupDto, @PathVariable Long userId) {
+    return groupService.createGroup(groupDto, userId);
   }
-  @DeleteMapping("/{id}")
-  void deleteGroup(@PathVariable Long id) {
-    groupService.deleteGroup(id);
+  @DeleteMapping("/{groupId}")
+  void deleteGroup(@PathVariable Long groupId) {
+    groupService.deleteGroup(groupId);
   }
 
-  @PutMapping("/{id}")
-  void updateGroup(@PathVariable Long id, @RequestBody GroupDto groupDto) {
-    groupService.updateGroup(id, groupDto);
+  @PutMapping("/{groupId}")
+  void updateGroup(@PathVariable Long groupId, @RequestBody GroupDto groupDto) {
+    groupService.updateGroup(groupId, groupDto);
   }
 
   @PutMapping("/{userOrgId}/{groupId}/{userId}")

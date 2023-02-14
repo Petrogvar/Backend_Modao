@@ -12,5 +12,5 @@ public class GroupDto {
   private String groupName;
   private String description;
   private Integer typeGroup;
-  private List<Long> users;
+  private List<Long> userIdList;
 }

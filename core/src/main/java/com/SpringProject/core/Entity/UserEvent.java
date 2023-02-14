@@ -1,7 +1,5 @@
 package com.SpringProject.core.Entity;
 
-import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,30 +14,22 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "event")
+@Table(name = "user_event")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Event {
+public class UserEvent {
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long id;
+  Long id;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "group_id")
-  private Group group;
+  @JoinColumn(name = "user_id")
+  User user;
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "event_id")
+  Event event;
 
-  @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-  private List<Expense> expenseList;
-
-  @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
-  private List<UserEvent> userEventList ;
-
-  private Long userPayingId; // ->user
-  private String usernamePaying; //del
-
-  private Integer price;
-  private String eventName;
-  private Integer status;
+  Double coefficient;
 }

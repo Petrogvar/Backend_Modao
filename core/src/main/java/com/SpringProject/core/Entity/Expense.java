@@ -28,12 +28,13 @@ public class Expense {
   private Event event;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "user1_id")
-  private User user1;
+  @JoinColumn(name = "userFrom_id")
+  private User userFrom;
 
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
-  @JoinColumn(name = "user2_id")
-  private User user2;
+  @JoinColumn(name = "userTo_id")
+  private User userTo;
 
   Double transferAmount;
+  Double Coefficient;
 }

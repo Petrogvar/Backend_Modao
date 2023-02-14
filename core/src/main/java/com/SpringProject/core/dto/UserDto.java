@@ -1,6 +1,7 @@
 package com.SpringProject.core.dto;
 
-import com.SpringProject.core.dto.my.CustomPair;
+
+import com.SpringProject.core.dto.my.CustomPairIdName;
 import java.util.AbstractMap;
 import java.util.List;
 import lombok.Getter;
@@ -14,8 +15,8 @@ public class UserDto {
   private String username;
   private String login;
   private String password;
-  private String phone_number;
+  private String phoneNumber;
   private String bank;
   private Integer idPicture;
-  private List<CustomPair> groups;
+  private List<CustomPairIdName> groupCustomPairIdNameList;
 }

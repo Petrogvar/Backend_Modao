@@ -22,9 +22,9 @@ public class UserController {
   }
 
 
-  @GetMapping("/{id}")
-  public UserDto getById(@PathVariable Long id) {
-    return userService.getUser(id);
+  @GetMapping("/{userId}")
+  public UserDto getById(@PathVariable Long userId) {
+    return userService.getUser(userId);
   }
 
   @PostMapping("/in")
@@ -37,13 +37,13 @@ public class UserController {
     return userService.createUser(userDto);
   }
 
-  @DeleteMapping("/{id}")
-  void delete(@PathVariable Long id) {
-    userService.deleteUser(id);
+  @DeleteMapping("/{userId}")
+  void delete(@PathVariable Long userId) {
+    userService.deleteUser(userId);
   }
 
-  @PutMapping("/{id}")
-  void update(@PathVariable Long id, @RequestBody UserDto userDto) {
-    userService.updateUser(id, userDto);
+  @PutMapping("/{userId}")
+  void update(@PathVariable Long userId, @RequestBody UserDto userDto) {
+    userService.updateUser(userId, userDto);
   }
 }

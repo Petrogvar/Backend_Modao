@@ -2,7 +2,7 @@ package com.SpringProject.core.Services;
 
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Entity.User;
-import com.SpringProject.core.controllers.Error.ThereIsNoSuchUserException;
+import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.controllers.Error.LoginException;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.mapper.UserMapperImpl;
@@ -17,10 +17,10 @@ public class UserServiceImpl implements UserService {
   private final UserRepository usersRepository;
 
   @Override
-  public UserDto getUser(Long id) {
-    Optional<User> optionalUser = usersRepository.findById(id);
+  public UserDto getUser(Long userId) {
+    Optional<User> optionalUser = usersRepository.findById(userId);
     if (optionalUser.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
+      throw new NotFoundException();
     } else {
       User user = optionalUser.get();
       return UserMapperImpl.toUserDto(user);
@@ -35,8 +35,8 @@ public class UserServiceImpl implements UserService {
       if (user.getBank() == null) {
         user.setBank("-");
       }
-      if (user.getPhone_number() == null) {
-        user.setPhone_number("-");
+      if (user.getPhoneNumber() == null) {
+        user.setPhoneNumber("-");
       }
       if (user.getIdPicture() == null) {
         user.setIdPicture(-1);
@@ -47,14 +47,14 @@ public class UserServiceImpl implements UserService {
 
 
   @Override
-  public void updateUser(Long id, UserDto userDto) {
-    Optional<User> optionalUser = usersRepository.findById(id);
+  public void updateUser(Long userId, UserDto userDto) {
+    Optional<User> optionalUser = usersRepository.findById(userId);
     if (optionalUser.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
+      throw new NotFoundException();
     } else {
       User user = optionalUser.get();
       user.setBank(userDto.getBank());
-      user.setPhone_number(userDto.getPhone_number());
+      user.setPhoneNumber(userDto.getPhoneNumber());
       user.setUsername(userDto.getUsername());
       user.setIdPicture(userDto.getIdPicture());
       usersRepository.save(user);
@@ -62,15 +62,15 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public void deleteUser(Long id) {
-    usersRepository.deleteById(id);
+  public void deleteUser(Long userId) {
+    usersRepository.deleteById(userId);
   }
 
   @Override
   public Long authorizationUser(UserDto userDto) {
     User user = usersRepository.findByLoginAndPassword(userDto.getLogin(), userDto.getPassword());
     if (user == null) {
-      throw new ThereIsNoSuchUserException();
+      throw new NotFoundException();
     } else {
       return user.getId();
     }

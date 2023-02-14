@@ -29,10 +29,10 @@ public class Group {
   private String description;
 
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<UserGroup> user;
+  private List<UserGroup> userGroupList;
 
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<Event> event;
+  private List<Event> eventList;
 
 }
 
