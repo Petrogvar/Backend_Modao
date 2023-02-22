@@ -32,7 +32,7 @@ public class UserController {
     return userService.authorizationUser(userDto);
   }
 
-  @PostMapping
+  @PostMapping("/new")
   public Long create(@RequestBody UserDto userDto) {
     return userService.createUser(userDto);
   }

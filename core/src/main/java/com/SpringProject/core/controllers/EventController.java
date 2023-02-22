@@ -20,9 +20,9 @@ public class EventController {
     this.eventService = eventService;
   }
 
-  @PostMapping("/{id}")
-  public Long createEvent(@RequestBody EventDto eventDto, @PathVariable Long id) {
-    return eventService.createEvent(eventDto, id);
+  @PostMapping()
+  public Long createEvent(@RequestBody EventDto eventDto) {
+    return eventService.createEvent(eventDto);
   }
 
   @PutMapping("/{userId}/{eventId}")

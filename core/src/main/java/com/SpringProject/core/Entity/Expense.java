@@ -36,5 +36,4 @@ public class Expense {
   private User userTo;
 
   Double transferAmount;
-  Double Coefficient;
 }

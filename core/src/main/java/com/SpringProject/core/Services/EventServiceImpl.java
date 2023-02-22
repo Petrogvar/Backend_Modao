@@ -33,7 +33,7 @@ public class EventServiceImpl implements EventService {
   private final UserRepository userRepository;
 
   @Override
-  public Long createEvent(EventDto eventDto, Long groupId) {
+  public Long createEvent(EventDto eventDto) {
     Optional<Group> optionalGroup = groupRepository.findById(eventDto.getGroupId());
     if (optionalGroup.isEmpty()) {
       throw new NotFoundException();
