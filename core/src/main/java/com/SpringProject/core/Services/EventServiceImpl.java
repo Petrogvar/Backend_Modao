@@ -33,12 +33,15 @@ public class EventServiceImpl implements EventService {
   private final UserRepository userRepository;
 
   @Override
-  public Long createEvent(EventDto eventDto) {
+  public Long createEvent(EventDto eventDto, String userLoginCreator) {
+    Optional<User> optionalUserCreator = userRepository.getByLogin(userLoginCreator);
+    Optional<User> optionalUserPaying = userRepository.findById(
+        eventDto.getCustomPairIdCoefficientPaying().getId());
     Optional<Group> optionalGroup = groupRepository.findById(eventDto.getGroupId());
-    if (optionalGroup.isEmpty()) {
+    if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty() || optionalUserPaying.isEmpty()) {
       throw new NotFoundException();
     } else {
-      Double sum = 0D;
+      Double sum = eventDto.getCustomPairIdCoefficientPaying().getCoefficient();
       Group group = optionalGroup.get();
       List<Optional<User>> optionalUserList = new ArrayList<>();
       List<Long> userIdList = new ArrayList<>();
@@ -65,10 +68,12 @@ public class EventServiceImpl implements EventService {
       event.setPrice(eventDto.getPrice());
       event.setGroup(group);
       event.setExpenseList(new ArrayList<>());
-      User paying = optionalUserList.get(0).get();
+      User paying = optionalUserPaying.get();
       event.setUserPayingId(paying.getId());
       event.setUsernamePaying(paying.getUsername());
-      for (int i = 1; i < size; i++) {
+      event.setUserCreatorId(optionalUserCreator.get().getId());
+      event.setUsernameCreator(optionalUserCreator.get().getUsername());
+      for (int i = 0; i < size; i++) {
         User participant = optionalUserList.get(i).get();
         Expense expense = new Expense();
         expense.setEvent(event);
@@ -96,8 +101,8 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
-  public void confirmationEvent(Long userId, Long eventId) {
-    Optional<User> optionalUser = userRepository.findById(userId);
+  public void confirmationEvent(String userLogin, Long eventId) {
+    Optional<User> optionalUser = userRepository.getByLogin(userLogin);
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
     if (optionalUser.isEmpty() || optionalEvent.isEmpty()) {
       throw new NotFoundException();

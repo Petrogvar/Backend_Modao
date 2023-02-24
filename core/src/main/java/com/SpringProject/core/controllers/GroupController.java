@@ -1,8 +1,14 @@
 package com.SpringProject.core.controllers;
 
 
+import com.SpringProject.core.Services.Auth.AuthService;
 import com.SpringProject.core.Services.GroupService;
 import com.SpringProject.core.dto.GroupDto;
+import com.SpringProject.core.dto.UserDto;
+import com.SpringProject.core.dto.domain.JwtAuthentication;
+import java.security.Security;
+import java.util.List;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,31 +24,38 @@ public class GroupController {
 
   private final GroupService groupService;
 
-
-  public GroupController(GroupService groupService) {
+  public GroupController(GroupService groupService, AuthService authService) {
     this.groupService = groupService;
   }
 
-  @GetMapping("/{groupId}")
+
+  @GetMapping("/{groupId}") //may ++
   public GroupDto getGroup(@PathVariable Long groupId) {
     return groupService.getGroup(groupId);
   }
 
-  @PostMapping({"/{userId}"})
-  public Long createGroup(@RequestBody GroupDto groupDto, @PathVariable Long userId) {
-    return groupService.createGroup(groupDto, userId);
+  @PostMapping
+  public Long createGroup(@RequestBody GroupDto groupDto) {
+    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getName();
+    return groupService.createGroup(groupDto, userLoginCreator);
   }
-  @DeleteMapping("/{groupId}")
+  @DeleteMapping("/{groupId}") /// +++
   void deleteGroup(@PathVariable Long groupId) {
     groupService.deleteGroup(groupId);
   }
 
-  @PutMapping("/{groupId}")
+  @PutMapping("/{groupId}") /// ++++
   void updateGroup(@PathVariable Long groupId, @RequestBody GroupDto groupDto) {
     groupService.updateGroup(groupId, groupDto);
   }
 
-  @PutMapping("/{userOrgId}/{groupId}/{userId}")
+  @GetMapping("/getListUsers/{groupId}")
+  List<UserDto> getUsersInGroup(@PathVariable Long groupId){
+    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getName();
+    return groupService.getUsersInGroup(groupId, userLoginCreator);
+  }
+
+  @PutMapping("/{userOrgId}/{groupId}/{userId}") ///++++
   void addUserInGroup(@PathVariable Long userOrgId, @PathVariable Long groupId, @PathVariable Long userId) {
     groupService.addUserInGroup(userOrgId, groupId, userId);
   }

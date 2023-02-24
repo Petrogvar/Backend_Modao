@@ -7,12 +7,12 @@ import java.util.ArrayList;
 
 public class                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 UserMapperImpl {
 
-  public static UserDto toUserDto(User user) {
+  public static UserDto toUserDtoWithGroupWithoutPasswordAndLogin(User user) {
     UserDto userDto = new UserDto();
     userDto.setId(user.getId());
     userDto.setUsername(user.getUsername());
-    userDto.setLogin(user.getLogin());
-    userDto.setPassword(user.getPassword());
+//    userDto.setLogin(user.getLogin());
+//    userDto.setPassword(user.getPassword());
     userDto.setIdPicture(user.getIdPicture());
     userDto.setPhoneNumber(user.getPhoneNumber());
     userDto.setBank(user.getBank());
@@ -24,6 +24,30 @@ public class                                                                    
        customPairIdName.setName(user.getUserGroupsList().get(i).getGroup().getGroupName());
        userDto.getGroupCustomPairIdNameList().add(customPairIdName);
     }
+    return userDto;
+  }
+
+  public static UserDto toUserDto(User user) {
+    UserDto userDto = new UserDto();
+    userDto.setId(user.getId());
+    userDto.setUsername(user.getUsername());
+    userDto.setLogin(user.getLogin());
+    userDto.setPassword(user.getPassword());
+    userDto.setIdPicture(user.getIdPicture());
+    userDto.setPhoneNumber(user.getPhoneNumber());
+    userDto.setBank(user.getBank());
+    return userDto;
+  }
+
+  public static UserDto toUserDtoWithoutPasswordAndLogin(User user) {
+    UserDto userDto = new UserDto();
+    userDto.setId(user.getId());
+    userDto.setUsername(user.getUsername());
+//    userDto.setLogin(user.getLogin());
+//    userDto.setPassword(user.getPassword());
+    userDto.setIdPicture(user.getIdPicture());
+    userDto.setPhoneNumber(user.getPhoneNumber());
+    userDto.setBank(user.getBank());
     return userDto;
   }
 

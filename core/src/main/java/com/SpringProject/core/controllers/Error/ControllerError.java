@@ -32,7 +32,7 @@ public class ControllerError extends ResponseEntityExceptionHandler {
 
   @ExceptionHandler(NotRightException.class)
   protected ResponseEntity<AwesomeException> NotRightException() {
-    return new ResponseEntity<>(new AwesomeException("nor right"),
+    return new ResponseEntity<>(new AwesomeException("not right"),
         HttpStatus.BAD_REQUEST);
   }
 

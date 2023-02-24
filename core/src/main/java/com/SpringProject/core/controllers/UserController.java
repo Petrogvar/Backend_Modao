@@ -27,22 +27,22 @@ public class UserController {
     return userService.getUser(userId);
   }
 
-  @PostMapping("/in")
-  public Long authorization(@RequestBody UserDto userDto) {
-    return userService.authorizationUser(userDto);
-  }
+//  @PostMapping("/in")
+//  public Long authorization(@RequestBody UserDto userDto) {
+//    return userService.authorizationUser(userDto);
+//  }
 
   @PostMapping("/new")
   public Long create(@RequestBody UserDto userDto) {
     return userService.createUser(userDto);
   }
 
-  @DeleteMapping("/{userId}")
+  @DeleteMapping("/{userId}") //+++ проверки // may del
   void delete(@PathVariable Long userId) {
     userService.deleteUser(userId);
   }
 
-  @PutMapping("/{userId}")
+  @PutMapping("/{userId}") //+++ проверки, несколько для каждой информации
   void update(@PathVariable Long userId, @RequestBody UserDto userDto) {
     userService.updateUser(userId, userDto);
   }

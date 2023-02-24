@@ -13,5 +13,5 @@ public interface UserService {
 
   void updateUser(Long id, UserDto userDto);
 
-  Long authorizationUser(UserDto userDto);
+  //Long authorizationUser(UserDto userDto);
 }

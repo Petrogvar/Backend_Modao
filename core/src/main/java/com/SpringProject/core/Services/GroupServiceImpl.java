@@ -8,8 +8,11 @@ import com.SpringProject.core.Repository.DebtRepository;
 import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.controllers.Error.NotFoundException;
+import com.SpringProject.core.controllers.Error.NotRightException;
 import com.SpringProject.core.dto.GroupDto;
+import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.mapper.GroupMapperImpl;
+import com.SpringProject.core.mapper.UserMapperImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +27,8 @@ public class GroupServiceImpl implements GroupService {
   private final UserRepository usersRepository;
   private final DebtRepository debtRepository;
 
+  private final CommonService commonService;
+
   @Override
   public GroupDto getGroup(Long groupId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
@@ -36,9 +41,9 @@ public class GroupServiceImpl implements GroupService {
 
 
   @Override
-  public Long createGroup(GroupDto groupDto, Long userId) {
+  public Long createGroup(GroupDto groupDto, String userLoginCreator) {
     Group group = GroupMapperImpl.toGroup(groupDto);
-    Optional<User> optionalUser = usersRepository.findById(userId);
+    Optional<User> optionalUser = usersRepository.getByLogin(userLoginCreator);
     if (optionalUser.isEmpty()) {
       throw new NotFoundException();
     } else {
@@ -74,6 +79,23 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
+  public List<UserDto> getUsersInGroup(Long groupId, String userLoginCreator) {
+    Optional<User> optionalUserCreator = usersRepository.getByLogin(userLoginCreator);
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty())
+      throw new NotFoundException();
+    if (commonService.userInGroup(optionalUserCreator.get(), optionalGroup.get()))
+      throw new NotRightException();
+    List<UserDto> userDtoList = new ArrayList<>();
+    int groupSize = optionalGroup.get().getUserGroupList().size();
+    for (int i =0 ; i < groupSize; i++){
+      userDtoList.add(UserMapperImpl.toUserDtoWithoutPasswordAndLogin(
+          optionalGroup.get().getUserGroupList().get(i).getUser()));
+    }
+    return userDtoList;
+    }
+
+  @Override
   public void addUserInGroup(Long userOrgId, Long groupId, Long userId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty()) {
@@ -106,7 +128,9 @@ public class GroupServiceImpl implements GroupService {
         usersRepository.save(optionalUser.get());
       }
     }
-
   }
+
+
+
 }
 

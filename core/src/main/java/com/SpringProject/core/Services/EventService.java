@@ -4,8 +4,8 @@ import com.SpringProject.core.dto.EventDto;
 import java.util.List;
 
 public interface EventService {
-  Long createEvent(EventDto eventDto);
-  void confirmationEvent(Long userId, Long eventId);
+  Long createEvent(EventDto eventDto, String userLoginCreator);
+  void confirmationEvent(String userlogin, Long eventId);
   List<EventDto> GetСonfirmedEventList(Long groupId);
   EventDto GetEvent(Long eventId);
 }

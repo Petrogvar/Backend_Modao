@@ -38,6 +38,9 @@ public class User {
    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
    private List<UserEvent> userEventList;
 
+   @ManyToMany
+   private List<User> friends;
+
 //   @OneToMany(mappedBy = "userTo", cascade = CascadeType.ALL)
 //   private List<Debt> debtList;
 

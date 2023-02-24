@@ -23,7 +23,7 @@ public class UserServiceImpl implements UserService {
       throw new NotFoundException();
     } else {
       User user = optionalUser.get();
-      return UserMapperImpl.toUserDto(user);
+      return UserMapperImpl.toUserDtoWithGroupWithoutPasswordAndLogin(user);
     }
   }
 
@@ -66,13 +66,15 @@ public class UserServiceImpl implements UserService {
     usersRepository.deleteById(userId);
   }
 
-  @Override
-  public Long authorizationUser(UserDto userDto) {
-    User user = usersRepository.findByLoginAndPassword(userDto.getLogin(), userDto.getPassword());
-    if (user == null) {
-      throw new NotFoundException();
-    } else {
-      return user.getId();
-    }
-  }
+//  @Override
+//  public Long authorizationUser(UserDto userDto) {
+//    User user = usersRepository.findByLoginAndPassword(userDto.getLogin(), userDto.getPassword());
+//    if (user == null) {
+//      throw new NotFoundException();
+//    } else {
+//      return user.getId();
+//    }
+//  }
+
+
 }

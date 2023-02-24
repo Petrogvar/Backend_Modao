@@ -39,6 +39,8 @@ public class Event {
 
   private Long userPayingId; // ->user
   private String usernamePaying; //del
+  private Long userCreatorId; // ->user
+  private String usernameCreator; //del
 
   private Integer price;
   private String eventName;
