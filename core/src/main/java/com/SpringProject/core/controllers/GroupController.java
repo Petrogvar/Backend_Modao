@@ -52,7 +52,7 @@ public class GroupController {
 
   @GetMapping("/listUsers/{groupId}")
   List<UserDto> getUsersInGroup(@PathVariable Long groupId){
-    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getName();
+    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     return groupService.getUsersInGroup(groupId, userLoginCreator);
   }
 

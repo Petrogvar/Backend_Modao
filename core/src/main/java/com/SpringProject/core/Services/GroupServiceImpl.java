@@ -84,7 +84,7 @@ public class GroupServiceImpl implements GroupService {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty())
       throw new NotFoundException();
-    if (commonService.userInGroup(optionalUserCreator.get(), optionalGroup.get()))
+    if (!commonService.userInGroup(optionalUserCreator.get(), optionalGroup.get()))
       throw new NotRightException();
     List<UserDto> userDtoList = new ArrayList<>();
     int groupSize = optionalGroup.get().getUserGroupList().size();
