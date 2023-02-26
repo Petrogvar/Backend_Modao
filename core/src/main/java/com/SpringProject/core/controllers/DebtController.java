@@ -24,7 +24,7 @@ public class DebtController {
 
   @GetMapping("/{userId}/{groupId}")
   public List<DebtDto> GetDebtListByUserAndGroup(@PathVariable Long userId,@PathVariable Long groupId){
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if (!commonService.userHaveRightGetDebt(userId, groupId, userLogin))
       throw new NotRightException();
     return debtService.GetDebtListByUserAndGroup(userId, groupId);

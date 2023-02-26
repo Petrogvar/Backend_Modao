@@ -29,14 +29,15 @@ public class GroupController {
   }
 
 
-  @GetMapping("/{groupId}") //may ++
+  @GetMapping("/info/{groupId}") //may ++
   public GroupDto getGroup(@PathVariable Long groupId) {
     return groupService.getGroup(groupId);
   }
 
-  @PostMapping
+  @PostMapping("/create")
   public Long createGroup(@RequestBody GroupDto groupDto) {
-    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getName();
+    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    System.out.println(userLoginCreator);
     return groupService.createGroup(groupDto, userLoginCreator);
   }
   @DeleteMapping("/{groupId}") /// +++
@@ -49,14 +50,15 @@ public class GroupController {
     groupService.updateGroup(groupId, groupDto);
   }
 
-  @GetMapping("/getListUsers/{groupId}")
+  @GetMapping("/listUsers/{groupId}")
   List<UserDto> getUsersInGroup(@PathVariable Long groupId){
     String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getName();
     return groupService.getUsersInGroup(groupId, userLoginCreator);
   }
 
-  @PutMapping("/{userOrgId}/{groupId}/{userId}") ///++++
+  @PutMapping("/addUserInGroup{userOrgId}/{groupId}/{userId}") ///++++
   void addUserInGroup(@PathVariable Long userOrgId, @PathVariable Long groupId, @PathVariable Long userId) {
     groupService.addUserInGroup(userOrgId, groupId, userId);
   }
+
 }

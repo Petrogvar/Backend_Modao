@@ -93,7 +93,7 @@ public class GroupServiceImpl implements GroupService {
           optionalGroup.get().getUserGroupList().get(i).getUser()));
     }
     return userDtoList;
-    }
+  }
 
   @Override
   public void addUserInGroup(Long userOrgId, Long groupId, Long userId) {
@@ -129,8 +129,5 @@ public class GroupServiceImpl implements GroupService {
       }
     }
   }
-
-
-
 }
 

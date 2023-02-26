@@ -25,32 +25,32 @@ public class EventController {
     this.commonService = commonService;
   }
 
-  @PostMapping //+++ time
+  @PostMapping ("/create")//+++ time
   public Long createEvent(@RequestBody EventDto eventDto) {
-    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getName();
+    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     return eventService.createEvent(eventDto, userLoginCreator);
   }
 
-  @PutMapping("/{eventId}") // time who
+  // time who
   public void confirmationEvent(@PathVariable Long eventId) {
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if (!commonService.userIsOrganizerByLoginAndGroupId(userLogin, eventId))
       throw new NotRightException();
     eventService.confirmationEvent(userLogin, eventId);
   }
 
-  @GetMapping("/list/{groupId}") // time
+  @GetMapping("/listEventsСonfirmed/{groupId}") // time
   public List<EventDto> GetСonfirmedEventList(@PathVariable Long groupId){
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if (commonService.userInGroupByLoginAndGroupId(userLogin, groupId))
       throw new NotRightException();
     return eventService.GetСonfirmedEventList(groupId);
   }
 
 
-  @GetMapping("/{eventId}") // time
+  @GetMapping("/info/{eventId}") // time
   public EventDto getEvent(@PathVariable Long eventId){
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getName();
+    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if (commonService.userInGroupByLoginAndEventId(userLogin, eventId))
       throw new NotRightException();
     return eventService.GetEvent(eventId);

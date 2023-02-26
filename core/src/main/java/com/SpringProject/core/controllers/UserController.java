@@ -22,7 +22,7 @@ public class UserController {
   }
 
 
-  @GetMapping("/{userId}")
+  @GetMapping("/info/{userId}")
   public UserDto getById(@PathVariable Long userId) {
     return userService.getUser(userId);
   }
@@ -32,7 +32,7 @@ public class UserController {
 //    return userService.authorizationUser(userDto);
 //  }
 
-  @PostMapping("/new")
+  @PostMapping("/reg")
   public Long create(@RequestBody UserDto userDto) {
     return userService.createUser(userDto);
   }
@@ -46,4 +46,7 @@ public class UserController {
   void update(@PathVariable Long userId, @RequestBody UserDto userDto) {
     userService.updateUser(userId, userDto);
   }
+
+
+
 }
