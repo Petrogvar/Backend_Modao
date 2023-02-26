@@ -42,7 +42,7 @@ public class EventController {
   @GetMapping("/listEventsСonfirmed/{groupId}") // time
   public List<EventDto> GetСonfirmedEventList(@PathVariable Long groupId){
     String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (commonService.userInGroupByLoginAndGroupId(userLogin, groupId))
+    if (!commonService.userInGroupByLoginAndGroupId(userLogin, groupId))
       throw new NotRightException();
     return eventService.GetСonfirmedEventList(groupId);
   }
@@ -51,7 +51,7 @@ public class EventController {
   @GetMapping("/info/{eventId}") // time
   public EventDto getEvent(@PathVariable Long eventId){
     String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (commonService.userInGroupByLoginAndEventId(userLogin, eventId))
+    if (!commonService.userInGroupByLoginAndEventId(userLogin, eventId))
       throw new NotRightException();
     return eventService.GetEvent(eventId);
   }
