@@ -32,6 +32,7 @@ public class EventController {
   }
 
   // time who
+  @PutMapping("/confirmation/{eventId}")
   public void confirmationEvent(@PathVariable Long eventId) {
     String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if (!commonService.userIsOrganizerByLoginAndGroupId(userLogin, eventId))
@@ -39,7 +40,7 @@ public class EventController {
     eventService.confirmationEvent(userLogin, eventId);
   }
 
-  @GetMapping("/listEventsСonfirmed/{groupId}") // time
+  @GetMapping("/listEventsConfirmed/{groupId}") // time
   public List<EventDto> GetСonfirmedEventList(@PathVariable Long groupId){
     String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if (!commonService.userInGroupByLoginAndGroupId(userLogin, groupId))
