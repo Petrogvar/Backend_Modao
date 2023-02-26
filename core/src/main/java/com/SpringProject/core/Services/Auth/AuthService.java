@@ -2,6 +2,7 @@ package com.SpringProject.core.Services.Auth;
 
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.controllers.Error.LoginException;
+import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
 import com.SpringProject.core.dto.domain.JwtRequest;
@@ -27,7 +28,7 @@ public class AuthService  {
 
   public JwtResponse login(@NonNull JwtRequest authRequest) {
     final UserDto userDto = UserMapperImpl.toUserDto(userRepository.getByLogin(authRequest.getLogin())
-        .orElseThrow(() -> new LoginException()));
+        .orElseThrow(() -> new NotFoundException()));
     if (userDto.getPassword().equals(authRequest.getPassword())) {
       final String accessToken = jwtProvider.generateAccessToken(userDto);
       final String refreshToken = jwtProvider.generateRefreshToken(userDto);
@@ -45,7 +46,7 @@ public class AuthService  {
       final String saveRefreshToken = refreshStorage.get(login);
       if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
         final UserDto userDto = UserMapperImpl.toUserDto(userRepository.getByLogin(login)
-            .orElseThrow(() -> new LoginException()));
+            .orElseThrow(() -> new NotFoundException()));
         final String accessToken = jwtProvider.generateAccessToken(userDto);
         return new JwtResponse(accessToken, null);
       }
@@ -61,7 +62,7 @@ public class AuthService  {
       final String saveRefreshToken = refreshStorage.get(login);
       if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
         final UserDto userDto = UserMapperImpl.toUserDto(userRepository.getByLogin(login)
-            .orElseThrow(() -> new LoginException()));
+            .orElseThrow(() -> new NotFoundException()));
         final String accessToken = jwtProvider.generateAccessToken(userDto);
         final String newRefreshToken = jwtProvider.generateRefreshToken(userDto);
         refreshStorage.put(userDto.getLogin(), newRefreshToken);
