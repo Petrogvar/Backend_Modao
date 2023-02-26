@@ -33,7 +33,7 @@ public class AuthService  {
       final String accessToken = jwtProvider.generateAccessToken(userDto);
       final String refreshToken = jwtProvider.generateRefreshToken(userDto);
       refreshStorage.put(userDto.getLogin(), refreshToken);
-      return new JwtResponse(accessToken, refreshToken);
+      return new JwtResponse(userDto.getId() ,accessToken, refreshToken);
     } else {
       throw new LoginException();
     }
@@ -48,10 +48,10 @@ public class AuthService  {
         final UserDto userDto = UserMapperImpl.toUserDto(userRepository.getByLogin(login)
             .orElseThrow(() -> new NotFoundException()));
         final String accessToken = jwtProvider.generateAccessToken(userDto);
-        return new JwtResponse(accessToken, null);
+        return new JwtResponse(null, accessToken, null);
       }
     }
-    return new JwtResponse(null, null);
+    return new JwtResponse(null, null, null);
   }
 
 
@@ -66,7 +66,7 @@ public class AuthService  {
         final String accessToken = jwtProvider.generateAccessToken(userDto);
         final String newRefreshToken = jwtProvider.generateRefreshToken(userDto);
         refreshStorage.put(userDto.getLogin(), newRefreshToken);
-        return new JwtResponse(accessToken, newRefreshToken);
+        return new JwtResponse(null, accessToken, newRefreshToken);
       }
     }
     throw new LoginException();
