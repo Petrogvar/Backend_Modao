@@ -56,7 +56,7 @@ public class GroupController {
     return groupService.getUsersInGroup(groupId, userLoginCreator);
   }
 
-  @PutMapping("/addUserInGroup{userOrgId}/{groupId}/{userId}") ///++++
+  @PutMapping("/addUserInGroup/{userOrgId}/{groupId}/{userId}") ///++++
   void addUserInGroup(@PathVariable Long userOrgId, @PathVariable Long groupId, @PathVariable Long userId) {
     groupService.addUserInGroup(userOrgId, groupId, userId);
   }

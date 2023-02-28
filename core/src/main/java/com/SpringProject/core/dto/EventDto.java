@@ -13,7 +13,7 @@ public class EventDto {
   private Long id;
   private String name;
   private Long groupId;
-  private Integer price;
+  private Double price;
   private Long userPayingId;
   private String usernamePaying;
   private CustomPairIdCoefficient customPairIdCoefficientPaying;

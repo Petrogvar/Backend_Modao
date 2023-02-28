@@ -42,7 +42,7 @@ public class Event {
   private Long userCreatorId; // ->user
   private String usernameCreator; //del
 
-  private Integer price;
+  private Double price;
   private String eventName;
   private Integer status;
 }
