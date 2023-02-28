@@ -35,7 +35,7 @@ public class EventController {
   @PutMapping("/confirmation/{eventId}")
   public void confirmationEvent(@PathVariable Long eventId) {
     String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (!commonService.userIsOrganizerByLoginAndGroupId(userLogin, eventId))
+    if (!commonService.userIsOrganizerByLoginAndEventId(userLogin, eventId))
       throw new NotRightException();
     eventService.confirmationEvent(userLogin, eventId);
   }

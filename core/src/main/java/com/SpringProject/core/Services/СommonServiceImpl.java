@@ -91,11 +91,8 @@ public class СommonServiceImpl implements CommonService{
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty() || optionalUser.isEmpty())
       throw new NotFoundException();
-    if (optionalUser.get().getId() != optionalUserCreator.get().getId() &&
-        !(userInGroup(optionalUserCreator.get(), optionalGroup.get()) &&
-            userIsOrganizer(optionalUserCreator.get(), optionalGroup.get()))) {
-      throw new NotRightException();
-    }
-    return true;
+    return (optionalUser.get().getId() == optionalUserCreator.get().getId() ||
+        (userInGroup(optionalUserCreator.get(), optionalGroup.get()) &&
+            userIsOrganizer(optionalUserCreator.get(), optionalGroup.get())));
   }
 }
