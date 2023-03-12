@@ -17,4 +17,6 @@ public interface GroupService {
 
   void updateGroup(Long groupId, GroupDto groupDto);
   void addUserInGroup(Long userOrgId, Long groupId, Long userId);
+
+  List<UserDto> getOrganizersInGroup(Long groupId, String userLoginCreator);
 }

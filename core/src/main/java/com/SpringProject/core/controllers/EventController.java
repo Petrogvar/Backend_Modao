@@ -40,12 +40,28 @@ public class EventController {
     eventService.confirmationEvent(userLogin, eventId);
   }
 
+
+  @PutMapping("/unconfirmation/{eventId}")
+  public void unconfirmationEvent(@PathVariable Long eventId) {
+    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    if (!commonService.userIsOrganizerByLoginAndEventId(userLogin, eventId))
+      throw new NotRightException();
+    eventService.unconfirmationEvent(userLogin, eventId);
+  }
   @GetMapping("/listEventsConfirmed/{groupId}") // time
   public List<EventDto> GetСonfirmedEventList(@PathVariable Long groupId){
     String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if (!commonService.userInGroupByLoginAndGroupId(userLogin, groupId))
       throw new NotRightException();
     return eventService.GetСonfirmedEventList(groupId);
+  }
+
+  @GetMapping("/listEventsUnconfirmed/{groupId}") // time
+  public List<EventDto> GetUnconfirmedEventList(@PathVariable Long groupId){
+    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    if (!commonService.userInGroupByLoginAndGroupId(userLogin, groupId))
+      throw new NotRightException();
+    return eventService.GetUnconfirmedEventList(groupId);
   }
 
 

@@ -5,9 +5,11 @@ import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.controllers.Error.LoginException;
 import com.SpringProject.core.dto.UserDto;
-import com.SpringProject.core.mapper.UserMapperImpl;
+import com.SpringProject.core.Mapper.UserMapperImpl;
+import java.security.SecureRandom;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -29,6 +31,9 @@ public class UserServiceImpl implements UserService {
 
   public Long createUser(UserDto userDto) {
     User user = UserMapperImpl.toUser(userDto);
+    SecureRandom random = new SecureRandom();
+    String salt = BCrypt.gensalt(4, random);
+    user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
     if (usersRepository.findByLogin(user.getLogin()) != null) {
       throw new LoginException();
     } else {

@@ -3,7 +3,6 @@ package com.SpringProject.core.Services;
 
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.controllers.Error.UserNotGroupException;
-import java.util.Optional;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

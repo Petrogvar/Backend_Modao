@@ -11,8 +11,8 @@ import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.controllers.Error.NotRightException;
 import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
-import com.SpringProject.core.mapper.GroupMapperImpl;
-import com.SpringProject.core.mapper.UserMapperImpl;
+import com.SpringProject.core.Mapper.GroupMapperImpl;
+import com.SpringProject.core.Mapper.UserMapperImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -128,6 +128,26 @@ public class GroupServiceImpl implements GroupService {
         usersRepository.save(optionalUser.get());
       }
     }
+  }
+
+  @Override
+  public List<UserDto> getOrganizersInGroup(Long groupId, String userLoginCreator) {
+    Optional<User> optionalUserCreator = usersRepository.getByLogin(userLoginCreator);
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty())
+      throw new NotFoundException();
+    if (!commonService.userInGroup(optionalUserCreator.get(), optionalGroup.get())
+        || !commonService.userIsOrganizer(optionalUserCreator.get(), optionalGroup.get()))
+      throw new NotRightException();
+    List<UserDto> userDtoList = new ArrayList<>();
+    int groupSize = optionalGroup.get().getUserGroupList().size();
+    for (int i =0 ; i < groupSize; i++){
+      if(optionalGroup.get().getUserGroupList().get(i).getRole() == 1) {
+        userDtoList.add(UserMapperImpl.toUserDtoWithoutPasswordAndLogin(
+            optionalGroup.get().getUserGroupList().get(i).getUser()));
+      }
+    }
+    return userDtoList;
   }
 }
 

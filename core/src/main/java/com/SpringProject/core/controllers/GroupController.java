@@ -56,6 +56,13 @@ public class GroupController {
     return groupService.getUsersInGroup(groupId, userLoginCreator);
   }
 
+  @GetMapping("/listOrganizers/{groupId}")
+  List<UserDto> getOrganizersInGroup(@PathVariable Long groupId){
+    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    return groupService.getOrganizersInGroup(groupId, userLoginCreator);
+  }
+
+
   @PutMapping("/addUserInGroup/{userOrgId}/{groupId}/{userId}") ///++++
   void addUserInGroup(@PathVariable Long userOrgId, @PathVariable Long groupId, @PathVariable Long userId) {
     groupService.addUserInGroup(userOrgId, groupId, userId);

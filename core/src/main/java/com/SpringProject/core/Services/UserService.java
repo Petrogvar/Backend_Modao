@@ -1,6 +1,5 @@
 package com.SpringProject.core.Services;
 
-import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.dto.UserDto;
 
 public interface UserService {

@@ -9,7 +9,7 @@ import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.controllers.Error.UserNotGroupException;
 import com.SpringProject.core.dto.DebtDto;
-import com.SpringProject.core.mapper.DebtMapperImpl;
+import com.SpringProject.core.Mapper.DebtMapperImpl;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;

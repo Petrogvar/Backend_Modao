@@ -41,6 +41,12 @@ public class ControllerError extends ResponseEntityExceptionHandler {
     return new ResponseEntity<>(new AwesomeException("BAD_REQUEST"),
         HttpStatus.BAD_REQUEST);
   }
+
+  @ExceptionHandler(AuthException.class)
+  protected ResponseEntity<AwesomeException> AuthException() {
+    return new ResponseEntity<>(new AwesomeException("the password or login is not correct"),
+        HttpStatus.BAD_REQUEST);
+  }
   @Data
   @AllArgsConstructor
   private static class AwesomeException {

@@ -1,12 +1,9 @@
-package com.SpringProject.core.mapper;
+package com.SpringProject.core.Mapper;
 
-import com.SpringProject.core.Entity.Debt;
 import com.SpringProject.core.Entity.Event;
-import com.SpringProject.core.dto.DebtDto;
 import com.SpringProject.core.dto.EventDto;
 import java.util.ArrayList;
 import java.util.List;
-import liquibase.pro.packaged.E;
 
 public class EventMapperImpl {
   public static EventDto toEventDto(Event event){

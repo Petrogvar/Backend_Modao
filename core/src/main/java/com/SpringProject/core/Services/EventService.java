@@ -8,5 +8,9 @@ public interface EventService {
   void confirmationEvent(String userlogin, Long eventId);
   List<EventDto> GetСonfirmedEventList(Long groupId);
   EventDto GetEvent(Long eventId);
+
+  List<EventDto> GetUnconfirmedEventList(Long groupId);
+
+  void unconfirmationEvent(String userLogin, Long eventId);
 }
 

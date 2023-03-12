@@ -1,4 +1,4 @@
-package com.SpringProject.core.mapper;
+package com.SpringProject.core.Mapper;
 
 import com.SpringProject.core.Entity.Debt;
 import com.SpringProject.core.dto.DebtDto;
