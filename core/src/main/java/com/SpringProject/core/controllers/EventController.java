@@ -1,9 +1,10 @@
 package com.SpringProject.core.controllers;
 
-import com.SpringProject.core.Services.CommonService;
+import com.SpringProject.core.Services.h.CommonService;
 import com.SpringProject.core.Services.EventService;
 import com.SpringProject.core.controllers.Error.NotRightException;
 import com.SpringProject.core.dto.EventDto;
+import com.SpringProject.core.dto.domain.JwtAuthentication;
 import java.util.List;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,49 +28,53 @@ public class EventController {
 
   @PostMapping ("/create")//+++ time
   public Long createEvent(@RequestBody EventDto eventDto) {
-    String userLoginCreator = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    return eventService.createEvent(eventDto, userLoginCreator);
+    Long userIdCreator = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    int role = commonService.getRoleInGroup(userIdCreator, eventDto.getGroupId());
+    Long eventId = eventService.createEvent(eventDto, userIdCreator);
+    if (role == 1)
+      eventService.confirmationEvent(userIdCreator, eventDto.getGroupId(), eventId);
+    return eventId;
   }
 
   // time who
-  @PutMapping("/confirmation/{eventId}")
-  public void confirmationEvent(@PathVariable Long eventId) {
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (!commonService.userIsOrganizerByLoginAndEventId(userLogin, eventId))
+  @PutMapping("/confirmation/{groupId}/{eventId}")
+  public void confirmationEvent(@PathVariable Long groupId, @PathVariable Long eventId) {
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if (!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId))
       throw new NotRightException();
-    eventService.confirmationEvent(userLogin, eventId);
+    eventService.confirmationEvent(userId, groupId, eventId);
   }
 
 
-  @PutMapping("/unconfirmation/{eventId}")
-  public void unconfirmationEvent(@PathVariable Long eventId) {
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (!commonService.userIsOrganizerByLoginAndEventId(userLogin, eventId))
+  @PutMapping("/unconfirmation/{groupId}/{eventId}")
+  public void unconfirmationEvent(@PathVariable Long groupId, @PathVariable Long eventId) {
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if (!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId))
       throw new NotRightException();
-    eventService.unconfirmationEvent(userLogin, eventId);
+    eventService.unconfirmationEvent(userId, groupId, eventId);
   }
-  @GetMapping("/listEventsConfirmed/{groupId}") // time
-  public List<EventDto> GetСonfirmedEventList(@PathVariable Long groupId){
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (!commonService.userInGroupByLoginAndGroupId(userLogin, groupId))
+  @GetMapping("/listEventsConfirmed/{groupId}/{mode}/{type}") // time
+  public List<EventDto> getСonfirmedEventList(@PathVariable Long groupId, @PathVariable int mode, @PathVariable int type){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId))
       throw new NotRightException();
-    return eventService.GetСonfirmedEventList(groupId);
+    return eventService.getСonfirmedEventList(groupId, mode, type);
   }
 
   @GetMapping("/listEventsUnconfirmed/{groupId}") // time
-  public List<EventDto> GetUnconfirmedEventList(@PathVariable Long groupId){
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (!commonService.userInGroupByLoginAndGroupId(userLogin, groupId))
+  public List<EventDto> getUnconfirmedEventList(@PathVariable Long groupId){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId))
       throw new NotRightException();
-    return eventService.GetUnconfirmedEventList(groupId);
+    return eventService.getUnconfirmedEventList(groupId);
   }
 
 
-  @GetMapping("/info/{eventId}") // time
-  public EventDto getEvent(@PathVariable Long eventId){
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (!commonService.userInGroupByLoginAndEventId(userLogin, eventId))
+  @GetMapping("/info/{groupId}/{eventId}") // time
+  public EventDto getEvent(@PathVariable Long groupId, @PathVariable Long eventId){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId))
       throw new NotRightException();
-    return eventService.GetEvent(eventId);
+    return eventService.getEvent(groupId, eventId);
   }
 }

@@ -1,9 +1,10 @@
 package com.SpringProject.core.controllers;
 
-import com.SpringProject.core.Services.CommonService;
+import com.SpringProject.core.Services.h.CommonService;
 import com.SpringProject.core.Services.DebtService;
 import com.SpringProject.core.controllers.Error.NotRightException;
 import com.SpringProject.core.dto.DebtDto;
+import com.SpringProject.core.dto.domain.JwtAuthentication;
 import java.util.List;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,8 +25,8 @@ public class DebtController {
 
   @GetMapping("/{userId}/{groupId}")
   public List<DebtDto> GetDebtListByUserAndGroup(@PathVariable Long userId,@PathVariable Long groupId){
-    String userLogin = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
-    if (!commonService.userHaveRightGetDebt(userId, groupId, userLogin))
+    Long userIdCreator = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if (!commonService.userHaveRightGetDebt(userId, groupId, userIdCreator))
       throw new NotRightException();
     return debtService.GetDebtListByUserAndGroup(userId, groupId);
   }

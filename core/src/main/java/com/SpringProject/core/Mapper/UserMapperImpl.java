@@ -6,26 +6,6 @@ import com.SpringProject.core.dto.my.CustomPairIdName;
 import java.util.ArrayList;
 public class  UserMapperImpl {
 
-  public static UserDto toUserDtoWithGroupWithoutPasswordAndLogin(User user) {
-    UserDto userDto = new UserDto();
-    userDto.setId(user.getId());
-    userDto.setUsername(user.getUsername());
-//    userDto.setLogin(user.getLogin());
-//    userDto.setPassword(user.getPassword());
-    userDto.setIdPicture(user.getIdPicture());
-    userDto.setPhoneNumber(user.getPhoneNumber());
-    userDto.setBank(user.getBank());
-    userDto.setGroupCustomPairIdNameList(new ArrayList<>());
-    CustomPairIdName customPairIdName;
-    for (int i = 0; i < user.getUserGroupsList().size(); i++) {
-      customPairIdName = new CustomPairIdName();
-      customPairIdName.setId(user.getUserGroupsList().get(i).getGroup().getId());
-      customPairIdName.setName(user.getUserGroupsList().get(i).getGroup().getGroupName());
-      userDto.getGroupCustomPairIdNameList().add(customPairIdName);
-    }
-    return userDto;
-  }
-
   public static UserDto toUserDto(User user) {
     UserDto userDto = new UserDto();
     userDto.setId(user.getId());
@@ -35,15 +15,25 @@ public class  UserMapperImpl {
     userDto.setIdPicture(user.getIdPicture());
     userDto.setPhoneNumber(user.getPhoneNumber());
     userDto.setBank(user.getBank());
+    userDto.setUuid(user.getUuid());
     return userDto;
   }
 
-  public static UserDto toUserDtoWithoutPasswordAndLogin(User user) {
+  public static UserDto toUserDtoMyInfo(User user) {
     UserDto userDto = new UserDto();
     userDto.setId(user.getId());
     userDto.setUsername(user.getUsername());
-//    userDto.setLogin(user.getLogin());
-//    userDto.setPassword(user.getPassword());
+    userDto.setIdPicture(user.getIdPicture());
+    userDto.setPhoneNumber(user.getPhoneNumber());
+    userDto.setBank(user.getBank());
+    userDto.setUuid(user.getUuid());
+    return userDto;
+  }
+
+  public static UserDto toUserDtoWithoutUuid(User user) {
+    UserDto userDto = new UserDto();
+    userDto.setId(user.getId());
+    userDto.setUsername(user.getUsername());
     userDto.setIdPicture(user.getIdPicture());
     userDto.setPhoneNumber(user.getPhoneNumber());
     userDto.setBank(user.getBank());

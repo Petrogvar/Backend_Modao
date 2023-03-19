@@ -15,8 +15,9 @@ public class UserDto {
   private String username;
   private String login;
   private String password;
+  private String uuid;
   private String phoneNumber;
   private String bank;
   private Integer idPicture;
-  private List<CustomPairIdName> groupCustomPairIdNameList;
+
 }

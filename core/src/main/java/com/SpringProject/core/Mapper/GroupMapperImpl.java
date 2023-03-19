@@ -16,7 +16,7 @@ public class GroupMapperImpl {
 
   public static Group toGroup(GroupDto groupDto) {
     Group group = new Group();
-    group.setId(groupDto.getId());
+    //group.setId(groupDto.getId());
     group.setGroupName(groupDto.getGroupName());
     group.setTypeGroup(groupDto.getTypeGroup());
     group.setDescription(groupDto.getDescription());

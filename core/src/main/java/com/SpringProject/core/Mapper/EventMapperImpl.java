@@ -15,6 +15,7 @@ public class EventMapperImpl {
     eventDto.setUserPayingId(event.getUserPayingId());
     eventDto.setUserCreatorId(event.getUserCreatorId());
     eventDto.setUsernameCreator(event.getUsernameCreator());
+    eventDto.setType(eventDto.getType());
 //    eventDto.setGroupId(event.getGroup().getId());
     return eventDto;
   }

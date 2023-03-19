@@ -4,13 +4,13 @@ import com.SpringProject.core.dto.EventDto;
 import java.util.List;
 
 public interface EventService {
-  Long createEvent(EventDto eventDto, String userLoginCreator);
-  void confirmationEvent(String userlogin, Long eventId);
-  List<EventDto> GetСonfirmedEventList(Long groupId);
-  EventDto GetEvent(Long eventId);
+  Long createEvent(EventDto eventDto, Long userIdCreator);
+  void confirmationEvent(Long userId, Long groupId,  Long eventId);
+  List<EventDto> getСonfirmedEventList(Long groupId, int mode, int type);
+  EventDto getEvent(Long groupId, Long eventId);
 
-  List<EventDto> GetUnconfirmedEventList(Long groupId);
+  List<EventDto> getUnconfirmedEventList(Long groupId);
 
-  void unconfirmationEvent(String userLogin, Long eventId);
+  void unconfirmationEvent(Long userId, Long groupId,  Long eventId);
 }
 

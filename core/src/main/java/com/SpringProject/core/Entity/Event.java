@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -37,11 +38,16 @@ public class Event {
   @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
   private List<UserEvent> userEventList ;
 
+//  @ManyToMany(fetch = FetchType.LAZY)
+//  private List<User> userList;
+
+
   private Long userPayingId; // ->user
   private String usernamePaying; //del
   private Long userCreatorId; // ->user
   private String usernameCreator; //del
 
+  private Integer type;
   private Double price;
   private String eventName;
   private Integer status;

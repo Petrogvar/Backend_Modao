@@ -3,7 +3,6 @@ package com.SpringProject.core.configuration;
 
 
 import com.SpringProject.core.Filter.JwtFilter;
-import com.SpringProject.core.Services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

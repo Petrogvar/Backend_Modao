@@ -2,6 +2,7 @@ package com.SpringProject.core.Entity;
 
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,24 +25,32 @@ public class User {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
-   private Long id;
-   private String username;
-   private String login;
-   private String password;
-   private String phoneNumber;
-   private String bank;
-   private Integer idPicture;
-   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-   private List<UserGroup> userGroupsList;
+  private Long id;
+  private String username;
+  private String login;
+  private String password;
+  @Column(unique = true)
+  private String uuid;
+  private String phoneNumber;
+  private String bank;
+  private Integer idPicture;
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<UserGroup> userGroupsList;
 
-   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-   private List<UserEvent> userEventList;
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<UserEvent> userEventList;
 
-   @ManyToMany
-   private List<User> friends;
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<InvitationInGroup> invitationInGroupList;
 
-//   @OneToMany(mappedBy = "userTo", cascade = CascadeType.ALL)
-//   private List<Debt> debtList;
+  @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+  private List<InvitationFriend> invitationFriendList;
+
+  @ManyToMany
+  private List<User> friends;
+
+//  @ManyToMany(mappedBy = "userList", cascade = CascadeType.ALL)
+//  private List<Event> eventList;
 
 
 }

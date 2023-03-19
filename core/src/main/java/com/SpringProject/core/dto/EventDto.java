@@ -16,6 +16,7 @@ public class EventDto {
   private Double price;
   private Long userPayingId;
   private String usernamePaying;
+  private Integer type;
   private CustomPairIdCoefficient customPairIdCoefficientPaying;
   private List<CustomPairIdCoefficient> customPairIdCoefficientList;
   private String usernameCreator;
