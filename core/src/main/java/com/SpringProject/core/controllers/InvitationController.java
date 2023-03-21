@@ -31,6 +31,12 @@ private final CommonService commonService;
     invitationService.createInvitationFriend(userIdCreator, uuid);
   }
 
+  @PostMapping("/createInvitationFriendByGroup/{groupId}/{userId}")
+  void createInvitationFriendByGroup(@PathVariable Long groupId, @PathVariable Long userId){
+    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
+    invitationService.createInvitationFriendByGroup(userIdCreator, groupId, userId);
+  }
+
   @PostMapping("/declineInvitationFriend/{invitationId}")
   void declineInvitationFriend(@PathVariable Long invitationId){
     Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();

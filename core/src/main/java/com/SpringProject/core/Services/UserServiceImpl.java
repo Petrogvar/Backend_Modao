@@ -50,6 +50,18 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public List<UserDto> getListFriends(Long userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    List<UserDto> userDtoList = new ArrayList<>();
+    int size = optionalUser.get().getFriends().size();
+    for (int i=0; i<size; i++){
+      userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(
+          optionalUser.get().getFriends().get(i)));
+    }
+    return userDtoList;
+  }
+
+  @Override
   public UserDto getUser(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
     if (optionalUser.isEmpty()) {

@@ -66,6 +66,12 @@ public class UserController {
     return userService.getNewUuid(userId);
   }
 
+  @GetMapping("/listFriends")
+  List<UserDto> getListFriends(){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    return userService.getListFriends(userId);
+  }
+
 //  @PostMapping("/in")
 //  public Long authorization(@RequestBody UserDto userDto) {
 //    return userService.authorizationUser(userDto);

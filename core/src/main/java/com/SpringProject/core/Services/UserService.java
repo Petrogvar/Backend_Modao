@@ -22,5 +22,7 @@ public interface UserService {
 
   UserDto getNewUuid(Long userId);
 
+  List<UserDto> getListFriends(Long userId);
+
   //Long authorizationUser(UserDto userDto);
 }

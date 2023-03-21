@@ -13,5 +13,4 @@ public class GroupDto {
   private String description;
   private String uuid;
   private Integer typeGroup;
-  private List<Long> userIdList;
 }

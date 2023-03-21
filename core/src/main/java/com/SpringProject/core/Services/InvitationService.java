@@ -16,4 +16,6 @@ public interface InvitationService {
   List<InvitationInGroupDto> getInvitationsInGroup(Long userIdCreator);
 
   List<InvitationFriendDto> getInvitationsFriend(Long userIdCreator);
+
+  void createInvitationFriendByGroup(Long userIdCreator, Long groupId, Long userId);
 }

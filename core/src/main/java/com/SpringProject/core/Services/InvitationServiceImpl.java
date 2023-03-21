@@ -20,6 +20,7 @@ import com.SpringProject.core.dto.InvitationInGroupDto;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import liquibase.pro.packaged.G;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -92,6 +93,7 @@ public class InvitationServiceImpl implements InvitationService {
     if (optionalInvitation.isPresent()) {
       throw new BadRequestException();
     }
+
     InvitationInGroup invitation = new InvitationInGroup();
     invitation.setNameGroup(optionalGroup.get().getGroupName());
     invitation.setUsername(optionalUser.get().getUsername());
@@ -216,5 +218,40 @@ public class InvitationServiceImpl implements InvitationService {
     return InvitationMapperImpl.toFriendDtoList(optionalUser.get().getInvitationFriendList());
   }
 
-
+  @Override
+  public void createInvitationFriendByGroup(Long userIdCreator, Long groupId, Long userId) {
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (optionalGroup.isEmpty())
+      throw new NotFoundException();
+    int size = optionalGroup.get().getUserGroupList().size();
+    long id;
+    User userCreator  =null;
+    User user = null;
+    for(int i=0; i<size; i++){
+      id  =  optionalGroup.get().getUserGroupList().get(i).getUser().getId();
+      if (id == userIdCreator){
+        userCreator = optionalGroup.get().getUserGroupList().get(i).getUser();
+      }
+      if (id == userId){
+        user = optionalGroup.get().getUserGroupList().get(i).getUser();
+      }
+    }
+    if(user == null || userCreator == null){
+      throw new BadRequestException();
+    }
+    Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByUserIdAndUser(
+        userIdCreator, user);
+    if (optionalInvitation.isPresent()) {
+      throw new BadRequestException();
+    }
+    if (userCreator.getFriends().contains(user)) {
+      throw new BadRequestException();
+    }
+    InvitationFriend invitation = new InvitationFriend();
+    invitation.setUsername(userCreator.getUsername());
+    invitation.setUserId(userCreator.getId());
+    invitation.setUser(user);
+    user.getInvitationFriendList().add(invitation);
+    userRepository.save(user);
+  }
 }
