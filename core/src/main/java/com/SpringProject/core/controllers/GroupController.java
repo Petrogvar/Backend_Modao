@@ -4,6 +4,7 @@ package com.SpringProject.core.controllers;
 import com.SpringProject.core.Services.Auth.AuthService;
 import com.SpringProject.core.Services.GroupService;
 import com.SpringProject.core.Services.h.CommonService;
+import com.SpringProject.core.controllers.Error.NotRightException;
 import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
@@ -72,5 +73,14 @@ public class GroupController {
   void addUserInGroup(@PathVariable String uuid) {
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
     groupService.addUserInGroupByUuid(userId, uuid);
+  }
+
+  @PutMapping("/getNewUuid/{groupId}")
+  GroupDto getNewUuid(@PathVariable Long groupId) {
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId)){
+      throw new NotRightException();
+    }
+    return groupService.getNewUuid(groupId);
   }
 }

@@ -2,7 +2,6 @@ package com.SpringProject.core.Services;
 
 import com.SpringProject.core.Entity.Debt;
 import com.SpringProject.core.Entity.Group;
-import com.SpringProject.core.Entity.InvitationInGroup;
 import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Repository.DebtRepository;
@@ -43,11 +42,10 @@ public class GroupServiceImpl implements GroupService {
     if (optionalGroup.isEmpty()) {
       throw new NotFoundException();
     }
-    GroupDto groupDto = GroupMapperImpl.toGroupDto(optionalGroup.get());
     if (role == 1) {
-      groupDto.setUuid(optionalGroup.get().getUuid());
+      return GroupMapperImpl.toGroupDto(optionalGroup.get());
     }
-    return groupDto;
+    return GroupMapperImpl.toGroupDtoWithoutUuid(optionalGroup.get());
   }
 
 
@@ -170,6 +168,18 @@ public class GroupServiceImpl implements GroupService {
       }
     }
     return userDtoList;
+  }
+
+  @Override
+  public GroupDto getNewUuid(Long groupId) {
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (optionalGroup.isEmpty())
+      throw new NotFoundException();
+    UUID u = UUID.randomUUID();
+    optionalGroup.get().setUuid(Uid.toIDString(
+        u.getMostSignificantBits()));
+    groupRepository.save(optionalGroup.get());
+    return GroupMapperImpl.toGroupDto(optionalGroup.get());
   }
 
 

@@ -1,6 +1,5 @@
 package com.SpringProject.core.Services;
 
-import com.SpringProject.core.Entity.InvitationFriend;
 import com.SpringProject.core.Mapper.GroupMapperImpl;
 import com.SpringProject.core.Repository.InvitationFriendRepository;
 import com.SpringProject.core.Repository.InvitationInGroupRepository;
@@ -37,6 +36,17 @@ public class UserServiceImpl implements UserService {
     }
     User user = optionalUser.get();
     return UserMapperImpl.toUserDtoMyInfo(user);
+  }
+
+  @Override
+  public UserDto getNewUuid(Long userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    if (optionalUser.isEmpty())
+      throw new NotFoundException();
+    UUID u = UUID.randomUUID();
+    optionalUser.get().setUuid(Uid.toIDString(u.getMostSignificantBits()));
+    userRepository.save(optionalUser.get());
+    return UserMapperImpl.toUserDtoMyInfo(optionalUser.get());
   }
 
   @Override
@@ -95,7 +105,7 @@ public class UserServiceImpl implements UserService {
     int size = optionalUser.get().getUserGroupsList().size();
     for (int i = 0; i < size; i++) {
       groupDtoList.add(
-          GroupMapperImpl.toGroupDto(optionalUser.get().getUserGroupsList().get(i).getGroup()));
+          GroupMapperImpl.toGroupDtoWithoutUuid(optionalUser.get().getUserGroupsList().get(i).getGroup()));
     }
     return groupDtoList;
   }

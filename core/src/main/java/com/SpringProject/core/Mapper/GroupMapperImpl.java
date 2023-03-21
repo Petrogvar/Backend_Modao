@@ -5,12 +5,22 @@ import com.SpringProject.core.dto.GroupDto;
 
 public class GroupMapperImpl {
 
+  public static GroupDto toGroupDtoWithoutUuid(Group group) {
+    GroupDto groupDto = new GroupDto();
+    groupDto.setId(group.getId());
+    groupDto.setGroupName(group.getGroupName());
+    groupDto.setTypeGroup(group.getTypeGroup());
+    groupDto.setDescription(group.getDescription());
+    return groupDto;
+  }
+
   public static GroupDto toGroupDto(Group group) {
     GroupDto groupDto = new GroupDto();
     groupDto.setId(group.getId());
     groupDto.setGroupName(group.getGroupName());
     groupDto.setTypeGroup(group.getTypeGroup());
     groupDto.setDescription(group.getDescription());
+    groupDto.setUuid(group.getUuid());
     return groupDto;
   }
 

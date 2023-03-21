@@ -20,5 +20,7 @@ public interface UserService {
 
   UserDto getUserMyInfo(Long userIdCreator);
 
+  UserDto getNewUuid(Long userId);
+
   //Long authorizationUser(UserDto userDto);
 }

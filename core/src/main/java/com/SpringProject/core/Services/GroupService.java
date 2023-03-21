@@ -18,4 +18,6 @@ public interface GroupService {
   void addUserInGroupByUuid(Long user, String uuid);
 
   List<UserDto> getOrganizersInGroup(Long groupId, Long userIdCreator);
+
+  GroupDto getNewUuid(Long groupId);
 }
