@@ -13,6 +13,7 @@ import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.controllers.Error.BadRequestException;
 import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.controllers.Error.UserNotGroupException;
+import com.SpringProject.core.dto.DescriptionDto;
 import com.SpringProject.core.dto.EventDto;
 import com.SpringProject.core.dto.ExpenseDto;
 import com.SpringProject.core.Mapper.EventMapperImpl;
@@ -113,6 +114,8 @@ public class EventServiceImpl implements EventService {
     if (optionalUser.isEmpty() || optionalEvent.isEmpty()) {
       throw new NotFoundException();
     }
+    if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
+      throw new BadRequestException();
     if (optionalEvent.get().getStatus() != 0) {
       throw new BadRequestException();
     }
@@ -141,6 +144,7 @@ public class EventServiceImpl implements EventService {
     List<Integer> statusList = new ArrayList<>();
     statusList.add(1);
     statusList.add(-1);
+    statusList.add(-2);
     List<Integer> typeList = new ArrayList<>();
     switch (type) {
       case 0 -> typeList.add(0);
@@ -162,6 +166,8 @@ public class EventServiceImpl implements EventService {
     if (optionalEvent.isEmpty()) {
       throw new NotFoundException();
     }
+    if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
+      throw new BadRequestException();
     EventDto eventDto = EventMapperImpl.toEventDto(optionalEvent.get());
     eventDto.setExpenseDtoList(new ArrayList<>());
     for (int i = 0; i < optionalEvent.get().getUserEventList().size(); i++) {
@@ -211,10 +217,84 @@ public class EventServiceImpl implements EventService {
     if (optionalUser.isEmpty() || optionalEvent.isEmpty()) {
       throw new NotFoundException();
     }
+    if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
+      throw new BadRequestException();
     if (optionalEvent.get().getStatus() != 0) {
       throw new BadRequestException();
     }
     eventRepository.delete(optionalEvent.get());
+  }
+
+  @Override
+  public Long deleteEvent(DescriptionDto descriptionDto,
+      Long userIdCreator, Long groupId, Long eventId) {
+    Optional<Event> optionalEvent = eventRepository.findById(eventId);
+    Optional<User> optionalUserCreator = userRepository.findById(userIdCreator);
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (optionalEvent.isEmpty() || optionalUserCreator.isEmpty() || optionalGroup.isEmpty())
+      throw new NotFoundException();
+    if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
+      throw new BadRequestException();
+    if (optionalEvent.get().getStatus() != 1)
+      throw new BadRequestException();
+
+    Event eventNew = new Event();
+    eventNew.setEventName(descriptionDto.getNane());
+    eventNew.setDescription(descriptionDto.getDescription());
+    eventNew.setUserCreatorId(userIdCreator);
+    eventNew.setUsernameCreator(optionalUserCreator.get().getUsername());
+    eventNew.setStatus(-2);
+    eventNew.setType(optionalEvent.get().getType());
+    eventNew.setPrice(optionalEvent.get().getPrice());
+    eventNew.setGroup(optionalEvent.get().getGroup());
+    eventNew.setUsernamePaying(optionalEvent.get().getUsernamePaying());
+    eventNew.setUserPayingId(optionalEvent.get().getUserPayingId());
+    eventNew.setExpenseList(new ArrayList<>());
+
+    optionalEvent.get().setStatus(-1);
+
+    int size = optionalEvent.get().getExpenseList().size();
+    Expense expense;
+    Expense expenseOld;
+
+    int sizeEvent = optionalEvent.get().getUserEventList().size();
+    for (int i = 0; i < size; i++){
+      expense = new Expense();
+      expenseOld = optionalEvent.get().getExpenseList().get(i);
+      expense.setTransferAmount(expenseOld.getTransferAmount());
+      expense.setEvent(eventNew);
+      expense.setUserFrom(expenseOld.getUserTo());
+      expense.setUserTo(expenseOld.getUserFrom());
+      eventNew.getExpenseList().add(expense);
+
+    }
+
+    UserEvent userEvent;
+    UserEvent userEventOld;
+    for (int j=0; j<sizeEvent; j++){
+        userEvent = new UserEvent();
+        userEventOld = optionalEvent.get().getUserEventList().get(j);
+        userEvent.setCoefficient(userEventOld.getCoefficient());
+        userEvent.setUser(userEventOld.getUser());
+        userEvent.setEvent(eventNew);
+        userEventOld.getUser().getUserEventList().add(userEvent);
+//          expenseOld.getUserFrom().getUserEventList().
+//              add(optionalEvent.get().getUserEventList().get(j));
+    }
+
+    for (int i = 0; i < eventNew.getExpenseList().size(); i++) {
+      expense = eventNew.getExpenseList().get(i);
+      Debt debt = debtRepository.findByGroupAndUserFromAndUserTo
+          (expense.getEvent().getGroup(), expense.getUserFrom(), expense.getUserTo());
+      debt.setDebt(debt.getDebt() - expense.getTransferAmount());
+     // debtRepository.save(debt);
+      debt = debtRepository.findByGroupAndUserFromAndUserTo
+          (expense.getEvent().getGroup(), expense.getUserTo(), expense.getUserFrom());
+      debt.setDebt(debt.getDebt() + expense.getTransferAmount());
+     // debtRepository.save(debt);
+    }
+    return eventRepository.save(eventNew).getId();
+
   }
 
 

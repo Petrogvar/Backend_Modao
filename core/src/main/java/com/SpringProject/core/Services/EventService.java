@@ -1,5 +1,6 @@
 package com.SpringProject.core.Services;
 
+import com.SpringProject.core.dto.DescriptionDto;
 import com.SpringProject.core.dto.EventDto;
 import java.util.List;
 
@@ -12,5 +13,7 @@ public interface EventService {
   List<EventDto> getUnconfirmedEventList(Long groupId);
 
   void unconfirmationEvent(Long userId, Long groupId,  Long eventId);
+
+  Long deleteEvent(DescriptionDto descriptionDto, Long userIdCreator, Long groupId, Long eventId);
 }
 

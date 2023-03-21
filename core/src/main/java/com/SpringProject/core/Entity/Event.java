@@ -46,7 +46,7 @@ public class Event {
   private String usernamePaying; //del
   private Long userCreatorId; // ->user
   private String usernameCreator; //del
-
+  private String description;
   private Integer type;
   private Double price;
   private String eventName;

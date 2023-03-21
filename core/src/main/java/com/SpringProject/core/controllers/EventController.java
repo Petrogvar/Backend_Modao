@@ -3,6 +3,7 @@ package com.SpringProject.core.controllers;
 import com.SpringProject.core.Services.h.CommonService;
 import com.SpringProject.core.Services.EventService;
 import com.SpringProject.core.controllers.Error.NotRightException;
+import com.SpringProject.core.dto.DescriptionDto;
 import com.SpringProject.core.dto.EventDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
 import java.util.List;
@@ -34,6 +35,15 @@ public class EventController {
     if (role == 1)
       eventService.confirmationEvent(userIdCreator, eventDto.getGroupId(), eventId);
     return eventId;
+  }
+
+  @PutMapping ("/delete/{groupId}/{eventId}")//+++ time
+  public Long deleteEvent(@RequestBody DescriptionDto descriptionDto,
+      @PathVariable Long groupId, @PathVariable Long eventId) {
+    Long userIdCreator = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+   if (!commonService.userIsOrganizerByUserIdAndGroupId(userIdCreator, groupId))
+     throw new NotRightException();
+    return eventService.deleteEvent(descriptionDto, userIdCreator, groupId, eventId);
   }
 
   // time who

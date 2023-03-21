@@ -20,6 +20,7 @@ public class EventDto {
   private CustomPairIdCoefficient customPairIdCoefficientPaying;
   private List<CustomPairIdCoefficient> customPairIdCoefficientList;
   private String usernameCreator;
+  private String description;
   private Long userCreatorId;
   private Instant time;
   private List<ExpenseDto> expenseDtoList;
