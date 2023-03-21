@@ -18,6 +18,7 @@ import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.dto.InvitationFriendDto;
 import com.SpringProject.core.dto.InvitationInGroupDto;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,23 @@ public class InvitationServiceImpl implements InvitationService {
     if (optionalUserFriends.isEmpty() || optionalUser.isEmpty() || optionalGroup.isEmpty()) {
       throw new NotFoundException();
     }
+//    System.out.println(2);
+//    System.out.println(optionalUser.get().getFriends().size());
+//    System.out.println(optionalUser.get().getFriends().get(0));
+//    System.out.println(optionalUser.get().getFriends().contains(optionalUserFriends.get()));
+//    int size = optionalUser.get().getFriends().size();
+//    boolean userIsFriend = false;
+//    System.out.println(optionalUser.get().getFriends().get(0).getId());
+//    System.out.println(optionalUserFriends.get().getId());
+//    for (int i=0; i<size; i++){
+//      if (Objects.equals(optionalUser.get().getFriends().get(i).getId(),
+//          optionalUserFriends.get().getId())){
+//        userIsFriend =true;
+//        break;
+//      }
+//    }
+//    if (!userIsFriend)
+//      throw new NotFoundException();
     if (!optionalUser.get().getFriends().contains(optionalUserFriends.get())) {
       throw new NotFoundException();
     }
