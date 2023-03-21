@@ -54,12 +54,10 @@ public class UserController {
     return userService.getUser(userId);
   }
 
-  @GetMapping("/listGroups/{userId}")
-  public List<GroupDto> getGroups(@PathVariable Long userId) {
+  @GetMapping("/listGroups")
+  public List<GroupDto> getGroups() {
     Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
-    if (!Objects.equals(userIdCreator, userId))
-      throw new NotRightException();
-    return userService.getGroups(userId);
+    return userService.getGroups(userIdCreator);
   }
 
 //  @PostMapping("/in")

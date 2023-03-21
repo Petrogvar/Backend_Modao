@@ -68,10 +68,6 @@ public class InvitationServiceImpl implements InvitationService {
     if (optionalUserFriends.isEmpty() || optionalUser.isEmpty() || optionalGroup.isEmpty()) {
       throw new NotFoundException();
     }
-//    System.out.println(2);
-//    System.out.println(optionalUser.get().getFriends().size());
-//    System.out.println(optionalUser.get().getFriends().get(0));
-//    System.out.println(optionalUser.get().getFriends().contains(optionalUserFriends.get()));
 //    int size = optionalUser.get().getFriends().size();
 //    boolean userIsFriend = false;
 //    System.out.println(optionalUser.get().getFriends().get(0).getId());
