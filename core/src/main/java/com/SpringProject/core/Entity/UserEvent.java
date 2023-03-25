@@ -31,5 +31,7 @@ public class UserEvent {
   @JoinColumn(name = "event_id")
   Event event;
 
+  Long groupId;
+
   Double coefficient;
 }

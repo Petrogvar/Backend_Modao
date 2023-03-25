@@ -52,9 +52,14 @@ public class GroupServiceImpl implements GroupService {
   @Override
   public Long createGroup(GroupDto groupDto, Long userIdCreator) {
     Group group = GroupMapperImpl.toGroup(groupDto);
-    UUID u = UUID.randomUUID();
-    group.setUuid(Uid.toIDString(
-        u.getMostSignificantBits())/* + "   "+ Uid.toIDString(u.getLeastSignificantBits())*/);
+    //UUID u = UUID.randomUUID();
+    String uuid = Uid.getUuid();
+    Optional<Group> optionalGroup = groupRepository.getByUuid(uuid);
+    while(optionalGroup.isPresent()){
+       uuid = Uid.getUuid();
+       optionalGroup = groupRepository.getByUuid(uuid);
+    }
+    group.setUuid(uuid);
     Optional<User> optionalUser = usersRepository.findById(userIdCreator);
     if (optionalUser.isEmpty()) {
       throw new NotFoundException();
@@ -175,10 +180,13 @@ public class GroupServiceImpl implements GroupService {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty())
       throw new NotFoundException();
-    UUID u = UUID.randomUUID();
-    optionalGroup.get().setUuid(Uid.toIDString(
-        u.getMostSignificantBits()));
-    groupRepository.save(optionalGroup.get());
+    String uuid = Uid.getUuid();
+    Optional<Group> optionalGroupTemp = groupRepository.getByUuid(uuid);
+    while(optionalGroupTemp.isPresent()){
+      uuid = Uid.getUuid();
+      optionalGroupTemp = groupRepository.getByUuid(uuid);
+    }
+    optionalGroup.get().setUuid(uuid);
     return GroupMapperImpl.toGroupDto(optionalGroup.get());
   }
 

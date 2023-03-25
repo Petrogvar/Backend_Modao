@@ -43,8 +43,13 @@ public class UserServiceImpl implements UserService {
     Optional<User> optionalUser = userRepository.findById(userId);
     if (optionalUser.isEmpty())
       throw new NotFoundException();
-    UUID u = UUID.randomUUID();
-    optionalUser.get().setUuid(Uid.toIDString(u.getMostSignificantBits()));
+    String uuid = Uid.getUuid();
+    Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
+    while(optionalUserTemp.isPresent()){
+      uuid = Uid.getUuid();
+      optionalUserTemp = userRepository.getByUuid(uuid);
+    }
+    optionalUser.get().setUuid(uuid);
     userRepository.save(optionalUser.get());
     return UserMapperImpl.toUserDtoMyInfo(optionalUser.get());
   }
@@ -75,9 +80,6 @@ public class UserServiceImpl implements UserService {
     SecureRandom random = new SecureRandom();
     String salt = BCrypt.gensalt(4, random);
     user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
-    UUID u = UUID.randomUUID();
-    user.setUuid(Uid.toIDString(u.getMostSignificantBits())/* + "   "+ Uid.toIDString(u.getLeastSignificantBits())*/);
-
     if (userRepository.findByLogin(user.getLogin()) != null) {
       throw new LoginException();
     }
@@ -90,6 +92,13 @@ public class UserServiceImpl implements UserService {
     if (user.getIdPicture() == null) {
       user.setIdPicture(-1);
     }
+    String uuid = Uid.getUuid();
+    Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
+    while(optionalUserTemp.isPresent()){
+      uuid = Uid.getUuid();
+      optionalUserTemp = userRepository.getByUuid(uuid);
+    }
+    user.setUuid(uuid);
     return userRepository.save(user).getId();
   }
 

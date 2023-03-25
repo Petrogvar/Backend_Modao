@@ -63,12 +63,20 @@ public class EventController {
       throw new NotRightException();
     eventService.unconfirmationEvent(userId, groupId, eventId);
   }
-  @GetMapping("/listEventsConfirmed/{groupId}/{mode}/{type}") // time
-  public List<EventDto> getСonfirmedEventList(@PathVariable Long groupId, @PathVariable int mode, @PathVariable int type){
+  @GetMapping("/listEventsConfirmed/0/{groupId}/{type}") // time
+  public List<EventDto> getСonfirmedEventMod0List(@PathVariable Long groupId, @PathVariable int type){
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
     if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId))
       throw new NotRightException();
-    return eventService.getСonfirmedEventList(groupId, mode, type);
+    return eventService.getСonfirmedEventMod0List(groupId, type);
+  }
+
+  @GetMapping("/listEventsConfirmed/1/{groupId}/{type}") // time
+  public List<EventDto> getСonfirmedEventMod1List(@PathVariable Long groupId, @PathVariable int type){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId))
+      throw new NotRightException();
+    return eventService.getСonfirmedEventMod1List(groupId, userId, type);
   }
 
   @GetMapping("/listEventsUnconfirmed/{groupId}") // time

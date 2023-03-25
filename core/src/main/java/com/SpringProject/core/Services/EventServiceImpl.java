@@ -94,12 +94,14 @@ public class EventServiceImpl implements EventService {
       userEvent.setCoefficient(eventDto.getCustomPairIdCoefficientList().get(i).getCoefficient());
       userEvent.setUser(participant);
       userEvent.setEvent(event);
+      userEvent.setGroupId(eventDto.getGroupId());
       participant.getUserEventList().add(userEvent);
     }
     UserEvent userEvent = new UserEvent();
     userEvent.setCoefficient(eventDto.getCustomPairIdCoefficientList().get(0).getCoefficient());
     userEvent.setUser(paying);
     userEvent.setEvent(event);
+    userEvent.setGroupId(eventDto.getGroupId());
     paying.getUserEventList().add(userEvent);
     group.getEventList().add(event);
 
@@ -135,7 +137,7 @@ public class EventServiceImpl implements EventService {
 
 
   @Override
-  public List<EventDto> getСonfirmedEventList(Long groupId, int mode, int type) {
+  public List<EventDto> getСonfirmedEventMod0List(Long groupId, int type) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty()) {
       throw new NotFoundException();
@@ -168,6 +170,8 @@ public class EventServiceImpl implements EventService {
     }
     if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
       throw new BadRequestException();
+
+
     EventDto eventDto = EventMapperImpl.toEventDto(optionalEvent.get());
     eventDto.setExpenseDtoList(new ArrayList<>());
     for (int i = 0; i < optionalEvent.get().getUserEventList().size(); i++) {
@@ -259,6 +263,7 @@ public class EventServiceImpl implements EventService {
 
     int sizeEvent = optionalEvent.get().getUserEventList().size();
     for (int i = 0; i < size; i++){
+
       expense = new Expense();
       expenseOld = optionalEvent.get().getExpenseList().get(i);
       expense.setTransferAmount(expenseOld.getTransferAmount());
@@ -266,7 +271,6 @@ public class EventServiceImpl implements EventService {
       expense.setUserFrom(expenseOld.getUserTo());
       expense.setUserTo(expenseOld.getUserFrom());
       eventNew.getExpenseList().add(expense);
-
     }
 
     UserEvent userEvent;
@@ -277,6 +281,7 @@ public class EventServiceImpl implements EventService {
         userEvent.setCoefficient(userEventOld.getCoefficient());
         userEvent.setUser(userEventOld.getUser());
         userEvent.setEvent(eventNew);
+        userEvent.setGroupId(userEventOld.getGroupId());
         userEventOld.getUser().getUserEventList().add(userEvent);
 //          expenseOld.getUserFrom().getUserEventList().
 //              add(optionalEvent.get().getUserEventList().get(j));
@@ -295,6 +300,40 @@ public class EventServiceImpl implements EventService {
     }
     return eventRepository.save(eventNew).getId();
 
+  }
+
+  @Override
+  public List<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    if (optionalUser.isEmpty())
+      throw new NotFoundException();
+    List<UserEvent> userEventList = optionalUser.get().getUserEventList();
+    List<Integer> statusList = new ArrayList<>();
+    statusList.add(1);
+    statusList.add(-1);
+    statusList.add(-2);
+    List<Integer> typeList = new ArrayList<>();
+    switch (type) {
+      case 0 -> typeList.add(0);
+      case 1 -> typeList.add(1);
+      case 2 -> {
+        typeList.add(0);
+        typeList.add(1);
+      }
+      default -> throw new BadRequestException();
+    }
+    List <EventDto> eventDtoList = new ArrayList<>();
+    Event event;
+    int size = userEventList.size();
+    for(int i=0; i<size; i++){
+      if (Objects.equals(userEventList.get(i).getGroupId(), groupId)){
+        event = userEventList.get(i).getEvent();
+        if (typeList.contains(event.getType()) && statusList.contains(event.getStatus())){
+          eventDtoList.add(EventMapperImpl.toEventDto(event));
+        }
+      }
+    }
+    return eventDtoList;
   }
 
 
