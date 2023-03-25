@@ -160,10 +160,6 @@ public class GroupServiceImpl implements GroupService {
     if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty()) {
       throw new NotFoundException();
     }
-    if (!commonService.userInGroup(optionalUserCreator.get(), optionalGroup.get())
-        || !commonService.userIsOrganizer(optionalUserCreator.get(), optionalGroup.get())) {
-      throw new NotRightException();
-    }
     List<UserDto> userDtoList = new ArrayList<>();
     int groupSize = optionalGroup.get().getUserGroupList().size();
     for (int i = 0; i < groupSize; i++) {

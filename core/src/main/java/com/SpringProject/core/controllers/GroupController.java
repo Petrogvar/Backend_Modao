@@ -65,6 +65,8 @@ public class GroupController {
   @GetMapping("/listOrganizers/{groupId}")
   List<UserDto> getOrganizersInGroup(@PathVariable Long groupId){
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if(!commonService.userInGroupByUserIdAndGroupId(userId, groupId))
+      throw new NotRightException();
     return groupService.getOrganizersInGroup(groupId, userId);
   }
 
