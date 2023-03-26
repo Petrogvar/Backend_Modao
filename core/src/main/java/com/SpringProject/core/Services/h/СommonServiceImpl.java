@@ -85,7 +85,7 @@ public class СommonServiceImpl implements CommonService {
 
   @Override
   public Boolean userHaveRightGetDebt(Long userId, Long groupId, Long userIdCreator) {
-    return (Objects.equals(userIdCreator, userId)) || userIsOrganizerByUserIdAndGroupId(userId, groupId);
+    return (Objects.equals(userIdCreator, userId)) || userIsOrganizerByUserIdAndGroupId(userIdCreator, groupId);
   }
 
 }
