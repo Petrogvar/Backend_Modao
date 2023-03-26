@@ -184,14 +184,14 @@ public class EventServiceImpl implements EventService {
         if (Objects.equals(optionalEvent.get().getExpenseList().get(j).getUserTo().getId(),
             expenseDto.getUserId())) {
           DecimalFormat df = new DecimalFormat("#.##");
-          expenseDto.setTransferAmount(Double.valueOf(df.format(
+          expenseDto.setTransferAmount((df.format(
               optionalEvent.get().getExpenseList().get(j).getTransferAmount())));
           bool = false;
           break;
         }
       }
       if (bool) {
-        expenseDto.setTransferAmount(0D);
+        expenseDto.setTransferAmount("0");
       }
       eventDto.getExpenseDtoList().add(expenseDto);
     }

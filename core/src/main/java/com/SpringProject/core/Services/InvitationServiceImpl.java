@@ -178,7 +178,7 @@ public class InvitationServiceImpl implements InvitationService {
       Debt debt = new Debt();
       Debt debtBack = new Debt();
       debtBack.setDebt(0D);
-      debt.setDebt(0D);
+      debt.setDebt(0D); 
       debtBack.setGroup(optionalGroup.get());
       debt.setGroup(optionalGroup.get());
       debtBack.setUserFrom(optionalUserFriend.get());

@@ -11,7 +11,8 @@ public class DebtMapperImpl {
 public static DebtDto toDebtDto(Debt debt){
   DebtDto debtDto = new DebtDto();
   DecimalFormat df = new DecimalFormat("#.##");
-  debtDto.setDebt(Double.valueOf(df.format(debt.getDebt())));
+  //System.out.println(df.format(debt.getDebt()));
+  debtDto.setDebt(df.format(debt.getDebt()));
   debtDto.setUserId(debt.getUserTo().getId());
   debtDto.setUsername(debt.getUserTo().getUsername());
   return debtDto;

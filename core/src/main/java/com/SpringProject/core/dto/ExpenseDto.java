@@ -9,5 +9,5 @@ public class ExpenseDto {
   private Long userId;
   private String username;
   private Double coefficient;
-  private Double transferAmount;
+  private String transferAmount;
 }

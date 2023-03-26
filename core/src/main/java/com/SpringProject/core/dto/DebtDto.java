@@ -8,5 +8,5 @@ import lombok.Setter;
 public class DebtDto {
   String username;
   Long userId;
-  Double debt;
+  String debt;
 }
