@@ -13,7 +13,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ControllerError extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(ThereIsNoSuchUserException.class)
+  @ExceptionHandler(NotFoundException.class)
   protected ResponseEntity<AwesomeException> handleThereIsNoSuchUserException() {
     return new ResponseEntity<>(new AwesomeException("not found"), HttpStatus.NOT_FOUND);
   }
@@ -24,6 +24,29 @@ public class ControllerError extends ResponseEntityExceptionHandler {
         HttpStatus.BAD_REQUEST);
   }
 
+  @ExceptionHandler(UserNotGroupException.class)
+  protected ResponseEntity<AwesomeException> UserNotGroupException() {
+    return new ResponseEntity<>(new AwesomeException("the user is not in the group"),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(NotRightException.class)
+  protected ResponseEntity<AwesomeException> NotRightException() {
+    return new ResponseEntity<>(new AwesomeException("not right"),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(BadRequestException.class)
+  protected ResponseEntity<AwesomeException> BadRequestException() {
+    return new ResponseEntity<>(new AwesomeException("BAD_REQUEST"),
+        HttpStatus.BAD_REQUEST);
+  }
+
+  @ExceptionHandler(AuthException.class)
+  protected ResponseEntity<AwesomeException> AuthException() {
+    return new ResponseEntity<>(new AwesomeException("the password or login is not correct"),
+        HttpStatus.BAD_REQUEST);
+  }
   @Data
   @AllArgsConstructor
   private static class AwesomeException {

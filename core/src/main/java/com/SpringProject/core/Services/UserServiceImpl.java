@@ -1,77 +1,138 @@
 package com.SpringProject.core.Services;
 
+import com.SpringProject.core.Mapper.GroupMapperImpl;
+import com.SpringProject.core.Repository.InvitationFriendRepository;
+import com.SpringProject.core.Repository.InvitationInGroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Entity.User;
-import com.SpringProject.core.controllers.Error.ThereIsNoSuchUserException;
+import com.SpringProject.core.Services.h.Uid;
+import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.controllers.Error.LoginException;
+import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
-import com.SpringProject.core.mapper.UserMapperImpl;
+import com.SpringProject.core.Mapper.UserMapperImpl;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-  private final UserRepository usersRepository;
+  private final UserRepository userRepository;
+  private final InvitationInGroupRepository invitationRepository;
+  private final InvitationFriendRepository invitationFriendRepository;
 
   @Override
-  public UserDto getUser(Long id) {
-    Optional<User> optionalUser = usersRepository.findById(id);
+  public UserDto getUserMyInfo(Long userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
     if (optionalUser.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
-    } else {
-      User user = optionalUser.get();
-      return UserMapperImpl.toUserDto(user);
+      throw new NotFoundException();
     }
+    User user = optionalUser.get();
+    return UserMapperImpl.toUserDtoMyInfo(user);
+  }
+
+  @Override
+  public UserDto getNewUuid(Long userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    if (optionalUser.isEmpty())
+      throw new NotFoundException();
+    String uuid = Uid.getUuid();
+    Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
+    while(optionalUserTemp.isPresent()){
+      uuid = Uid.getUuid();
+      optionalUserTemp = userRepository.getByUuid(uuid);
+    }
+    optionalUser.get().setUuid(uuid);
+    userRepository.save(optionalUser.get());
+    return UserMapperImpl.toUserDtoMyInfo(optionalUser.get());
+  }
+
+  @Override
+  public List<UserDto> getListFriends(Long userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    List<UserDto> userDtoList = new ArrayList<>();
+    int size = optionalUser.get().getFriends().size();
+    for (int i=0; i<size; i++){
+      userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(
+          optionalUser.get().getFriends().get(i)));
+    }
+    return userDtoList;
+  }
+
+  @Override
+  public UserDto getUser(Long userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    if (optionalUser.isEmpty()) {
+      throw new NotFoundException();
+    }
+    return UserMapperImpl.toUserDtoWithoutUuid(optionalUser.get());
   }
 
   public Long createUser(UserDto userDto) {
     User user = UserMapperImpl.toUser(userDto);
-    if (usersRepository.findByLogin(user.getLogin()) != null) {
+    SecureRandom random = new SecureRandom();
+    String salt = BCrypt.gensalt(4, random);
+    user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
+    if (userRepository.findByLogin(user.getLogin()) != null) {
       throw new LoginException();
-    } else {
-      if (user.getBank() == null) {
-        user.setBank("-");
-      }
-      if (user.getPhone_number() == null) {
-        user.setPhone_number("-");
-      }
-      if (user.getIdPicture() == null) {
-        user.setIdPicture(-1);
-      }
-      return usersRepository.save(user).getId();
     }
+    if (user.getBank() == null) {
+      user.setBank("-");
+    }
+    if (user.getPhoneNumber() == null) {
+      user.setPhoneNumber("-");
+    }
+    if (user.getIdPicture() == null) {
+      user.setIdPicture(-1);
+    }
+    String uuid = Uid.getUuid();
+    Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
+    while(optionalUserTemp.isPresent()){
+      uuid = Uid.getUuid();
+      optionalUserTemp = userRepository.getByUuid(uuid);
+    }
+    user.setUuid(uuid);
+    return userRepository.save(user).getId();
   }
 
-
   @Override
-  public void updateUser(Long id, UserDto userDto) {
-    Optional<User> optionalUser = usersRepository.findById(id);
+  public void updateUser(Long userId, UserDto userDto) {
+    Optional<User> optionalUser = userRepository.findById(userId);
     if (optionalUser.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
-    } else {
-      User user = optionalUser.get();
-      user.setBank(userDto.getBank());
-      user.setPhone_number(userDto.getPhone_number());
-      user.setUsername(userDto.getUsername());
-      user.setIdPicture(userDto.getIdPicture());
-      usersRepository.save(user);
+      throw new NotFoundException();
     }
+    User user = optionalUser.get();
+    user.setBank(userDto.getBank());
+    user.setPhoneNumber(userDto.getPhoneNumber());
+    user.setUsername(userDto.getUsername());
+    user.setIdPicture(userDto.getIdPicture());
+    userRepository.save(user);
   }
 
   @Override
-  public void deleteUser(Long id) {
-    usersRepository.deleteById(id);
+  public List<GroupDto> getGroups(Long userId) {
+    Optional<User> optionalUser = userRepository.findById(userId);
+    if (optionalUser.isEmpty()) {
+      throw new NotFoundException();
+    }
+    List<GroupDto> groupDtoList = new ArrayList<>();
+    int size = optionalUser.get().getUserGroupsList().size();
+    for (int i = 0; i < size; i++) {
+      groupDtoList.add(
+          GroupMapperImpl.toGroupDtoWithoutUuid(optionalUser.get().getUserGroupsList().get(i).getGroup()));
+    }
+    return groupDtoList;
   }
   @Override
-  public Long authorizationUser(UserDto userDto) {
-    User user = usersRepository.findByLoginAndPassword(userDto.getLogin(), userDto.getPassword());
-    if (user == null) {
-      throw new ThereIsNoSuchUserException();
-    } else {
-      return user.getId();
-    }
+  public void deleteUser(Long userId) {
+    userRepository.deleteById(userId);
   }
+
 }

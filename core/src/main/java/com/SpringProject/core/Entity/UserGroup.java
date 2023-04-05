@@ -21,6 +21,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UserGroup {
 
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;

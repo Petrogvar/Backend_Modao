@@ -2,6 +2,7 @@ package com.SpringProject.core.Entity;
 
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -26,10 +27,15 @@ public class Group {
   private Long id;
   private String groupName;
   private Integer typeGroup;
+  @Column(unique=true)
+  private String uuid;
   private String description;
 
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<UserGroup> user;
+  private List<UserGroup> userGroupList;
+
+  @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<Event> eventList;
 
 }
 

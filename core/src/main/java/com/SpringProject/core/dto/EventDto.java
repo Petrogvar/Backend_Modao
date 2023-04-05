@@ -1,5 +1,7 @@
 package com.SpringProject.core.dto;
 
+import com.SpringProject.core.dto.my.CustomPairIdCoefficient;
+import java.time.Instant;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,9 +10,18 @@ import lombok.Setter;
 @Setter
 public class EventDto {
 
+  private Long id;
   private String name;
+  private Long groupId;
+  private Double price;
+  private Long userPayingId;
+  private String usernamePaying;
   private Integer type;
-  private Long group_id;
-  private List<Long> participants_id;
-  private List<Double> participants_k;
+  private CustomPairIdCoefficient customPairIdCoefficientPaying;
+  private List<CustomPairIdCoefficient> customPairIdCoefficientList;
+  private String usernameCreator;
+  private String description;
+  private Long userCreatorId;
+  private Instant time;
+  private List<ExpenseDto> expenseDtoList;
 }

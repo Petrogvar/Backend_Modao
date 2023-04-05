@@ -1,16 +1,26 @@
 package com.SpringProject.core.Services;
 
+import com.SpringProject.core.Entity.Debt;
 import com.SpringProject.core.Entity.Group;
 import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Entity.User;
+import com.SpringProject.core.Repository.DebtRepository;
 import com.SpringProject.core.Repository.GroupRepository;
+import com.SpringProject.core.Repository.InvitationInGroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
-import com.SpringProject.core.controllers.Error.ThereIsNoSuchUserException;
+import com.SpringProject.core.Services.h.CommonService;
+import com.SpringProject.core.Services.h.Uid;
+import com.SpringProject.core.controllers.Error.BadRequestException;
+import com.SpringProject.core.controllers.Error.NotFoundException;
+import com.SpringProject.core.controllers.Error.NotRightException;
 import com.SpringProject.core.dto.GroupDto;
-import com.SpringProject.core.mapper.GroupMapperImpl;
+import com.SpringProject.core.dto.UserDto;
+import com.SpringProject.core.Mapper.GroupMapperImpl;
+import com.SpringProject.core.Mapper.UserMapperImpl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,43 +30,57 @@ public class GroupServiceImpl implements GroupService {
 
   private final GroupRepository groupRepository;
   private final UserRepository usersRepository;
+  private final DebtRepository debtRepository;
+
+  private final CommonService commonService;
+
+  private final InvitationInGroupRepository invitationRepository;
 
   @Override
-  public GroupDto getGroup(Long id) {
-    Optional<Group> optionalGroup = groupRepository.findById(id);
+  public GroupDto getGroup(Long groupId, int role) {
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
-    } else {
+      throw new NotFoundException();
+    }
+    if (role == 1) {
       return GroupMapperImpl.toGroupDto(optionalGroup.get());
     }
+    return GroupMapperImpl.toGroupDtoWithoutUuid(optionalGroup.get());
   }
 
 
   @Override
-  public Long createGroup(GroupDto groupDto, Long id) {
+  public Long createGroup(GroupDto groupDto, Long userIdCreator) {
     Group group = GroupMapperImpl.toGroup(groupDto);
-    Optional<User> optionalUser = usersRepository.findById(id);
-    if (optionalUser.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
-    } else {
-      User user = optionalUser.get();
-      UserGroup userGroup = new UserGroup();
-      userGroup.setUser(user);
-      userGroup.setGroup(group);
-      userGroup.setRole(0);
-      user.getGroup().add(userGroup);
-      List listU = new ArrayList();
-      group.setUser(listU);
-      group.getUser().add(userGroup);
-      return groupRepository.save(group).getId();
+    //UUID u = UUID.randomUUID();
+    String uuid = Uid.getUuid();
+    Optional<Group> optionalGroup = groupRepository.getByUuid(uuid);
+    while(optionalGroup.isPresent()){
+       uuid = Uid.getUuid();
+       optionalGroup = groupRepository.getByUuid(uuid);
     }
+    group.setUuid(uuid);
+    Optional<User> optionalUser = usersRepository.findById(userIdCreator);
+    if (optionalUser.isEmpty()) {
+      throw new NotFoundException();
+    }
+    User user = optionalUser.get();
+    UserGroup userGroup = new UserGroup();
+    userGroup.setUser(user);
+    userGroup.setGroup(group);
+    userGroup.setRole(1);
+    user.getUserGroupsList().add(userGroup);
+    List listU = new ArrayList();
+    group.setUserGroupList(listU);
+    group.getUserGroupList().add(userGroup);
+    return groupRepository.save(group).getId();
   }
 
   @Override
-  public void updateGroup(Long id, GroupDto groupDto) {
-    Optional<Group> optionalGroup = groupRepository.findById(id);
+  public void updateGroup(Long groupId, GroupDto groupDto) {
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty()) {
-      throw new ThereIsNoSuchUserException();
+      throw new NotFoundException();
     } else {
       Group group = optionalGroup.get();
       group.setDescription(groupDto.getDescription());
@@ -69,4 +93,99 @@ public class GroupServiceImpl implements GroupService {
   public void deleteGroup(Long id) {
     groupRepository.deleteById(id);
   }
+
+  @Override
+  public List<UserDto> getUsersInGroup(Long groupId, Long userIdCreator) {
+    Optional<User> optionalUserCreator = usersRepository.findById(userIdCreator);
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty()) {
+      throw new NotFoundException();
+    }
+    if (!commonService.userInGroup(optionalUserCreator.get(), optionalGroup.get())) {
+      throw new NotRightException();
+    }
+    List<UserDto> userDtoList = new ArrayList<>();
+    int groupSize = optionalGroup.get().getUserGroupList().size();
+    for (int i = 0; i < groupSize; i++) {
+      userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(
+          optionalGroup.get().getUserGroupList().get(i).getUser()));
+    }
+    return userDtoList;
+  }
+
+  @Override
+  public void addUserInGroupByUuid(Long userId, String uuid) {
+    Optional<Group> optionalGroup = groupRepository.getByUuid(uuid);
+    if (optionalGroup.isEmpty()) {
+      throw new NotFoundException();
+    }
+    Optional<User> optionalUser = usersRepository.findById(userId);
+    if (optionalUser.isEmpty()) {
+      throw new NotFoundException();
+    }
+    if (commonService.userInGroup(optionalUser.get(), optionalGroup.get())) {
+      throw new BadRequestException();
+    }
+    invitationRepository.deleteAllByUserAndGroupId(optionalUser.get(), optionalGroup.get().getId());
+    for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
+      Debt debt = new Debt();
+      Debt debtBack = new Debt();
+      debtBack.setDebt(0D);
+      debt.setDebt(0D);
+      debtBack.setGroup(optionalGroup.get());
+      debt.setGroup(optionalGroup.get());
+      debtBack.setUserFrom(optionalUser.get());
+      debtBack.setUserTo(optionalGroup.get().getUserGroupList().get(i).getUser());
+      debt.setUserFrom(optionalGroup.get().getUserGroupList().get(i).getUser());
+      debt.setUserTo(optionalUser.get());
+      debtRepository.save(debt);
+      debtRepository.save(debtBack);
+    }
+    UserGroup userGroup = new UserGroup();
+    if (optionalGroup.get().getTypeGroup() == 1) {
+      userGroup.setRole(1);
+    } else {
+      userGroup.setRole(0);
+    }
+    userGroup.setUser(optionalUser.get());
+    userGroup.setGroup(optionalGroup.get());
+    optionalUser.get().getUserGroupsList().add(userGroup);
+    usersRepository.save(optionalUser.get());
+  }
+
+  @Override
+  public List<UserDto> getOrganizersInGroup(Long groupId, Long userIdCreator) {
+    Optional<User> optionalUserCreator = usersRepository.findById(userIdCreator);
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty()) {
+      throw new NotFoundException();
+    }
+    List<UserDto> userDtoList = new ArrayList<>();
+    int groupSize = optionalGroup.get().getUserGroupList().size();
+    for (int i = 0; i < groupSize; i++) {
+      if (optionalGroup.get().getUserGroupList().get(i).getRole() == 1) {
+        userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(
+            optionalGroup.get().getUserGroupList().get(i).getUser()));
+      }
+    }
+    return userDtoList;
+  }
+
+  @Override
+  public GroupDto getNewUuid(Long groupId) {
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (optionalGroup.isEmpty())
+      throw new NotFoundException();
+    String uuid = Uid.getUuid();
+    Optional<Group> optionalGroupTemp = groupRepository.getByUuid(uuid);
+    while(optionalGroupTemp.isPresent()){
+      uuid = Uid.getUuid();
+      optionalGroupTemp = groupRepository.getByUuid(uuid);
+    }
+    optionalGroup.get().setUuid(uuid);
+    return GroupMapperImpl.toGroupDto(optionalGroup.get());
+  }
+
+
 }
+
