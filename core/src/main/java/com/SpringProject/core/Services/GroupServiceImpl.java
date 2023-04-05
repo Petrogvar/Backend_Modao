@@ -9,6 +9,7 @@ import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.InvitationInGroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Services.h.CommonService;
+import com.SpringProject.core.Services.h.DataVerification;
 import com.SpringProject.core.Services.h.Uid;
 import com.SpringProject.core.controllers.Error.BadRequestException;
 import com.SpringProject.core.controllers.Error.NotFoundException;
@@ -34,6 +35,7 @@ public class GroupServiceImpl implements GroupService {
 
   private final CommonService commonService;
 
+  private final DataVerification dataVerification;
   private final InvitationInGroupRepository invitationRepository;
 
   @Override
@@ -51,28 +53,33 @@ public class GroupServiceImpl implements GroupService {
 
   @Override
   public Long createGroup(GroupDto groupDto, Long userIdCreator) {
+
+    dataVerification.group(groupDto);
+
     Group group = GroupMapperImpl.toGroup(groupDto);
-    //UUID u = UUID.randomUUID();
+
     String uuid = Uid.getUuid();
     Optional<Group> optionalGroup = groupRepository.getByUuid(uuid);
-    while(optionalGroup.isPresent()){
-       uuid = Uid.getUuid();
-       optionalGroup = groupRepository.getByUuid(uuid);
+    while (optionalGroup.isPresent()) {
+      uuid = Uid.getUuid();
+      optionalGroup = groupRepository.getByUuid(uuid);
     }
     group.setUuid(uuid);
+
     Optional<User> optionalUser = usersRepository.findById(userIdCreator);
     if (optionalUser.isEmpty()) {
       throw new NotFoundException();
     }
+
     User user = optionalUser.get();
     UserGroup userGroup = new UserGroup();
     userGroup.setUser(user);
     userGroup.setGroup(group);
     userGroup.setRole(1);
     user.getUserGroupsList().add(userGroup);
-    List listU = new ArrayList();
-    group.setUserGroupList(listU);
+    group.setUserGroupList(new ArrayList<>());
     group.getUserGroupList().add(userGroup);
+
     return groupRepository.save(group).getId();
   }
 
@@ -81,12 +88,15 @@ public class GroupServiceImpl implements GroupService {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (optionalGroup.isEmpty()) {
       throw new NotFoundException();
-    } else {
-      Group group = optionalGroup.get();
-      group.setDescription(groupDto.getDescription());
-      group.setGroupName(groupDto.getGroupName());
-      groupRepository.save(group);
     }
+
+    dataVerification.group(groupDto);
+
+    Group group = optionalGroup.get();
+    group.setDescription(groupDto.getDescription());
+    group.setGroupName(groupDto.getGroupName());
+    groupRepository.save(group);
+
   }
 
   @Override
@@ -124,7 +134,7 @@ public class GroupServiceImpl implements GroupService {
       throw new NotFoundException();
     }
     if (commonService.userInGroup(optionalUser.get(), optionalGroup.get())) {
-      throw new BadRequestException();
+      throw new BadRequestException("пользователь уже в группе");
     }
     invitationRepository.deleteAllByUserAndGroupId(optionalUser.get(), optionalGroup.get().getId());
     for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
@@ -174,11 +184,12 @@ public class GroupServiceImpl implements GroupService {
   @Override
   public GroupDto getNewUuid(Long groupId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty())
+    if (optionalGroup.isEmpty()) {
       throw new NotFoundException();
+    }
     String uuid = Uid.getUuid();
     Optional<Group> optionalGroupTemp = groupRepository.getByUuid(uuid);
-    while(optionalGroupTemp.isPresent()){
+    while (optionalGroupTemp.isPresent()) {
       uuid = Uid.getUuid();
       optionalGroupTemp = groupRepository.getByUuid(uuid);
     }

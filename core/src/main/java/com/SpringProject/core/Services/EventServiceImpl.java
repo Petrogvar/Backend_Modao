@@ -10,6 +10,7 @@ import com.SpringProject.core.Repository.DebtRepository;
 import com.SpringProject.core.Repository.EventRepository;
 import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
+import com.SpringProject.core.Services.h.DataVerification;
 import com.SpringProject.core.controllers.Error.BadRequestException;
 import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.controllers.Error.UserNotGroupException;
@@ -33,41 +34,51 @@ public class EventServiceImpl implements EventService {
   private final DebtRepository debtRepository;
   private final GroupRepository groupRepository;
   private final UserRepository userRepository;
+  private final DataVerification dataVerification;
 
   @Override
   public Long createEvent(EventDto eventDto, Long userIdCreator) {
     Optional<User> optionalUserCreator = userRepository.findById(userIdCreator);
+    dataVerification.event(eventDto);
     Optional<User> optionalUserPaying = userRepository.findById(
         eventDto.getCustomPairIdCoefficientPaying().getId());
     Optional<Group> optionalGroup = groupRepository.findById(eventDto.getGroupId());
     if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty() || optionalUserPaying.isEmpty()) {
       throw new NotFoundException();
     }
+
     Double sum = eventDto.getCustomPairIdCoefficientPaying().getCoefficient();
     Group group = optionalGroup.get();
     List<Optional<User>> optionalUserList = new ArrayList<>();
-    List<Long> userIdList = new ArrayList<>();
     int size = eventDto.getCustomPairIdCoefficientList().size();
     for (int i = 0; i < size; i++) {
       optionalUserList.add(
           userRepository.findById(eventDto.getCustomPairIdCoefficientList().get(i).getId()));
       if (optionalUserList.get(i).isEmpty()) {
-        throw new NotFoundException();  //kkk
+        throw new NotFoundException();
       }
       sum += eventDto.getCustomPairIdCoefficientList().get(i).getCoefficient();
     }
+    if (sum == 0) {
+      throw new BadRequestException("сумма коэффициентов = 0");
+    }
+
+    List<Long> userIdList = new ArrayList<>();
     int countUserInGroup = group.getUserGroupList().size();
     for (int i = 0; i < countUserInGroup; i++) {
       userIdList.add(group.getUserGroupList().get(i).getUser().getId());
     }
     for (int i = 0; i < size; i++) {
       if (!userIdList.contains(eventDto.getCustomPairIdCoefficientList().get(i).getId())) {
-        throw new UserNotGroupException(); //kkk
+        throw new UserNotGroupException();
       }
     }
-
+    if (!userIdList.contains(eventDto.getUserPayingId())) {
+      throw new UserNotGroupException();
+    }
 
     Event event = new Event();
+
     event.setEventName(eventDto.getName());
     event.setStatus(0);
     event.setPrice(eventDto.getPrice());
@@ -79,7 +90,9 @@ public class EventServiceImpl implements EventService {
     event.setUsernamePaying(paying.getUsername());
     event.setUserCreatorId(optionalUserCreator.get().getId());
     event.setUsernameCreator(optionalUserCreator.get().getUsername());
+
     for (int i = 0; i < size; i++) {
+
       User participant = optionalUserList.get(i).get();
       Expense expense = new Expense();
       expense.setEvent(event);
@@ -96,13 +109,16 @@ public class EventServiceImpl implements EventService {
       userEvent.setEvent(event);
       userEvent.setGroupId(eventDto.getGroupId());
       participant.getUserEventList().add(userEvent);
+
     }
+
     UserEvent userEvent = new UserEvent();
     userEvent.setCoefficient(eventDto.getCustomPairIdCoefficientList().get(0).getCoefficient());
     userEvent.setUser(paying);
     userEvent.setEvent(event);
     userEvent.setGroupId(eventDto.getGroupId());
     paying.getUserEventList().add(userEvent);
+
     group.getEventList().add(event);
 
     return eventRepository.save(event).getId();
@@ -116,10 +132,11 @@ public class EventServiceImpl implements EventService {
     if (optionalUser.isEmpty() || optionalEvent.isEmpty()) {
       throw new NotFoundException();
     }
-    if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
-      throw new BadRequestException();
+    if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
+      throw new BadRequestException("событие не в группе");
+    }
     if (optionalEvent.get().getStatus() != 0) {
-      throw new BadRequestException();
+      throw new BadRequestException("status != 0");
     }
     optionalEvent.get().setStatus(1);
     for (int i = 0; i < optionalEvent.get().getExpenseList().size(); i++) {
@@ -155,7 +172,7 @@ public class EventServiceImpl implements EventService {
         typeList.add(0);
         typeList.add(1);
       }
-      default -> throw new BadRequestException();
+      default -> throw new BadRequestException("invalid type");
     }
     return EventMapperImpl.toEventDtoList(
         eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
@@ -168,9 +185,9 @@ public class EventServiceImpl implements EventService {
     if (optionalEvent.isEmpty()) {
       throw new NotFoundException();
     }
-    if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
-      throw new BadRequestException();
-
+    if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
+      throw new BadRequestException("событие не в группе");
+    }
 
     EventDto eventDto = EventMapperImpl.toEventDto(optionalEvent.get());
     eventDto.setExpenseDtoList(new ArrayList<>());
@@ -211,7 +228,8 @@ public class EventServiceImpl implements EventService {
     typeList.add(0);
     typeList.add(1);
     return EventMapperImpl.toEventDtoList(
-        eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList, typeList));
+        eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
+            typeList));
   }
 
   @Override
@@ -221,10 +239,11 @@ public class EventServiceImpl implements EventService {
     if (optionalUser.isEmpty() || optionalEvent.isEmpty()) {
       throw new NotFoundException();
     }
-    if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
-      throw new BadRequestException();
+    if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
+      throw new BadRequestException("событие не в группе");
+    }
     if (optionalEvent.get().getStatus() != 0) {
-      throw new BadRequestException();
+      throw new BadRequestException("status != 0");
     }
     eventRepository.delete(optionalEvent.get());
   }
@@ -235,12 +254,15 @@ public class EventServiceImpl implements EventService {
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
     Optional<User> optionalUserCreator = userRepository.findById(userIdCreator);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalEvent.isEmpty() || optionalUserCreator.isEmpty() || optionalGroup.isEmpty())
+    if (optionalEvent.isEmpty() || optionalUserCreator.isEmpty() || optionalGroup.isEmpty()) {
       throw new NotFoundException();
-    if(!Objects.equals(optionalEvent.get().getGroup().getId(), groupId))
-      throw new BadRequestException();
-    if (optionalEvent.get().getStatus() != 1)
-      throw new BadRequestException();
+    }
+    if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
+      throw new BadRequestException("событие не в группе");
+    }
+    if (optionalEvent.get().getStatus() != 1) {
+      throw new BadRequestException("status != 1");
+    }
 
     Event eventNew = new Event();
     eventNew.setEventName(descriptionDto.getNane());
@@ -262,7 +284,7 @@ public class EventServiceImpl implements EventService {
     Expense expenseOld;
 
     int sizeEvent = optionalEvent.get().getUserEventList().size();
-    for (int i = 0; i < size; i++){
+    for (int i = 0; i < size; i++) {
 
       expense = new Expense();
       expenseOld = optionalEvent.get().getExpenseList().get(i);
@@ -275,14 +297,14 @@ public class EventServiceImpl implements EventService {
 
     UserEvent userEvent;
     UserEvent userEventOld;
-    for (int j=0; j<sizeEvent; j++){
-        userEvent = new UserEvent();
-        userEventOld = optionalEvent.get().getUserEventList().get(j);
-        userEvent.setCoefficient(userEventOld.getCoefficient());
-        userEvent.setUser(userEventOld.getUser());
-        userEvent.setEvent(eventNew);
-        userEvent.setGroupId(userEventOld.getGroupId());
-        userEventOld.getUser().getUserEventList().add(userEvent);
+    for (int j = 0; j < sizeEvent; j++) {
+      userEvent = new UserEvent();
+      userEventOld = optionalEvent.get().getUserEventList().get(j);
+      userEvent.setCoefficient(userEventOld.getCoefficient());
+      userEvent.setUser(userEventOld.getUser());
+      userEvent.setEvent(eventNew);
+      userEvent.setGroupId(userEventOld.getGroupId());
+      userEventOld.getUser().getUserEventList().add(userEvent);
 //          expenseOld.getUserFrom().getUserEventList().
 //              add(optionalEvent.get().getUserEventList().get(j));
     }
@@ -292,11 +314,11 @@ public class EventServiceImpl implements EventService {
       Debt debt = debtRepository.findByGroupAndUserFromAndUserTo
           (expense.getEvent().getGroup(), expense.getUserFrom(), expense.getUserTo());
       debt.setDebt(debt.getDebt() - expense.getTransferAmount());
-     // debtRepository.save(debt);
+      // debtRepository.save(debt);
       debt = debtRepository.findByGroupAndUserFromAndUserTo
           (expense.getEvent().getGroup(), expense.getUserTo(), expense.getUserFrom());
       debt.setDebt(debt.getDebt() + expense.getTransferAmount());
-     // debtRepository.save(debt);
+      // debtRepository.save(debt);
     }
     return eventRepository.save(eventNew).getId();
 
@@ -305,8 +327,9 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty())
+    if (optionalUser.isEmpty()) {
       throw new NotFoundException();
+    }
     List<UserEvent> userEventList = optionalUser.get().getUserEventList();
     List<Integer> statusList = new ArrayList<>();
     statusList.add(1);
@@ -320,15 +343,15 @@ public class EventServiceImpl implements EventService {
         typeList.add(0);
         typeList.add(1);
       }
-      default -> throw new BadRequestException();
+      default -> throw new BadRequestException("invalid type");
     }
-    List <EventDto> eventDtoList = new ArrayList<>();
+    List<EventDto> eventDtoList = new ArrayList<>();
     Event event;
     int size = userEventList.size();
-    for(int i=0; i<size; i++){
-      if (Objects.equals(userEventList.get(i).getGroupId(), groupId)){
+    for (int i = 0; i < size; i++) {
+      if (Objects.equals(userEventList.get(i).getGroupId(), groupId)) {
         event = userEventList.get(i).getEvent();
-        if (typeList.contains(event.getType()) && statusList.contains(event.getStatus())){
+        if (typeList.contains(event.getType()) && statusList.contains(event.getStatus())) {
           eventDtoList.add(EventMapperImpl.toEventDto(event));
         }
       }

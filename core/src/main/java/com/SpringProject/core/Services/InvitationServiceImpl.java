@@ -45,10 +45,10 @@ public class InvitationServiceImpl implements InvitationService {
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByUserIdAndUser(
         optionalUser.get().getId(), optionalUserFriends.get());
     if (optionalInvitation.isPresent()) {
-      throw new BadRequestException();
+      throw new BadRequestException("приглашение уже отправлено");
     }
     if (optionalUser.get().getFriends().contains(optionalUserFriends.get())) {
-      throw new BadRequestException();
+      throw new BadRequestException("пользователь уже в списке друзей");
     }
 
     InvitationFriend invitation = new InvitationFriend();
@@ -84,12 +84,12 @@ public class InvitationServiceImpl implements InvitationService {
       throw new NotFoundException();
     }
     if (commonService.userInGroup(optionalUserFriends.get(), optionalGroup.get())) {
-      throw new BadRequestException();
+      throw new BadRequestException("пользователь уже в группе");
     }
     Optional<InvitationInGroup> optionalInvitation = invitationInGroupRepository.getByUserIdAndUserAndGroupId(
         userId, optionalUserFriends.get(), groupId);
     if (optionalInvitation.isPresent()) {
-      throw new BadRequestException();
+      throw new BadRequestException("приглашение уже отправлено");
     }
 
     InvitationInGroup invitation = new InvitationInGroup();
@@ -146,7 +146,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
     Optional<User> optionalUser = userRepository.findById(optionalInvitation.get().getUserId());
     if (optionalUser.isEmpty())
-      throw new BadRequestException();
+      throw new BadRequestException("123");
 
     Optional<InvitationFriend> optionalInvitationOld =  invitationFriendRepository.getByUserIdAndUser_Id(optionalUserFriend.get().getId(),
         optionalInvitation.get().getUserId());
@@ -171,7 +171,7 @@ public class InvitationServiceImpl implements InvitationService {
     }
     Optional<Group> optionalGroup = groupRepository.findById(optionalInvitation.get().getGroupId());
     if (optionalGroup.isEmpty())
-      throw new BadRequestException();
+      throw new BadRequestException("123");
     invitationInGroupRepository.delete(optionalInvitation.get());
     invitationInGroupRepository.deleteAllByUserAndGroupId(optionalUserFriend.get(), optionalGroup.get().getId());
     for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
@@ -235,15 +235,15 @@ public class InvitationServiceImpl implements InvitationService {
       }
     }
     if(user == null || userCreator == null){
-      throw new BadRequestException();
+      throw new BadRequestException("123");
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByUserIdAndUser(
         userIdCreator, user);
     if (optionalInvitation.isPresent()) {
-      throw new BadRequestException();
+      throw new BadRequestException("приглашение уже отправлено");
     }
     if (userCreator.getFriends().contains(user)) {
-      throw new BadRequestException();
+      throw new BadRequestException("пользователь уже в списке друзей");
     }
     InvitationFriend invitation = new InvitationFriend();
     invitation.setUsername(userCreator.getUsername());

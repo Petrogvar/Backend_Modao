@@ -5,6 +5,7 @@ import com.SpringProject.core.Repository.InvitationFriendRepository;
 import com.SpringProject.core.Repository.InvitationInGroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Entity.User;
+import com.SpringProject.core.Services.h.DataVerification;
 import com.SpringProject.core.Services.h.Uid;
 import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.controllers.Error.LoginException;
@@ -27,6 +28,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final InvitationInGroupRepository invitationRepository;
   private final InvitationFriendRepository invitationFriendRepository;
+  private  final DataVerification dataVerification;
 
   @Override
   public UserDto getUserMyInfo(Long userId) {
@@ -77,21 +79,23 @@ public class UserServiceImpl implements UserService {
 
   public Long createUser(UserDto userDto) {
     User user = UserMapperImpl.toUser(userDto);
-    SecureRandom random = new SecureRandom();
-    String salt = BCrypt.gensalt(4, random);
-    user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
+
+    dataVerification.login(user.getLogin());
     if (userRepository.findByLogin(user.getLogin()) != null) {
       throw new LoginException();
     }
-    if (user.getBank() == null) {
-      user.setBank("-");
-    }
-    if (user.getPhoneNumber() == null) {
-      user.setPhoneNumber("-");
-    }
-    if (user.getIdPicture() == null) {
-      user.setIdPicture(-1);
-    }
+    dataVerification.password(user.getPassword());
+    dataVerification.isValidUsername(user.getUsername());
+    SecureRandom random = new SecureRandom();
+    String salt = BCrypt.gensalt(4, random);
+    user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
+
+
+    user.setIdPicture(-1);
+    user.setBank("-");
+    user.setPhoneNumber("-");
+
+
     String uuid = Uid.getUuid();
     Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
     while(optionalUserTemp.isPresent()){
@@ -99,9 +103,11 @@ public class UserServiceImpl implements UserService {
       optionalUserTemp = userRepository.getByUuid(uuid);
     }
     user.setUuid(uuid);
+
     return userRepository.save(user).getId();
   }
 
+  //хз
   @Override
   public void updateUser(Long userId, UserDto userDto) {
     Optional<User> optionalUser = userRepository.findById(userId);
@@ -130,6 +136,8 @@ public class UserServiceImpl implements UserService {
     }
     return groupDtoList;
   }
+
+  //хз
 
   @Override
   public void deleteUser(Long userId) {

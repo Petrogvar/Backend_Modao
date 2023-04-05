@@ -42,7 +42,6 @@ public class GroupController {
   @PostMapping("/create")
   public Long createGroup(@RequestBody GroupDto groupDto) {
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
-   // System.out.println(((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId());
     return groupService.createGroup(groupDto, userId);
   }
 
@@ -51,10 +50,13 @@ public class GroupController {
 //    groupService.deleteGroup(groupId);
 //  }
 //
-//  @PutMapping("/{groupId}") /// ++++
-//  void updateGroup(@PathVariable Long groupId, @RequestBody GroupDto groupDto) {
-//    groupService.updateGroup(groupId, groupDto);
-//  }
+  @PutMapping("/{groupId}") /// ++++
+  void updateGroup(@PathVariable Long groupId, @RequestBody GroupDto groupDto) {
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupDto.getId()))
+      throw new NotRightException();
+    groupService.updateGroup(groupId, groupDto);
+  }
 
   @GetMapping("/listUsers/{groupId}")
   List<UserDto> getUsersInGroup(@PathVariable Long groupId){

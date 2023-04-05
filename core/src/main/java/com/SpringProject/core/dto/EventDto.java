@@ -11,16 +11,19 @@ import lombok.Setter;
 public class EventDto {
 
   private Long id;
+
   private String name;
   private Long groupId;
   private Double price;
-  private Long userPayingId;
-  private String usernamePaying;
   private Integer type;
+  private String description;
+
   private CustomPairIdCoefficient customPairIdCoefficientPaying;
   private List<CustomPairIdCoefficient> customPairIdCoefficientList;
+
+  private Long userPayingId;
+  private String usernamePaying;
   private String usernameCreator;
-  private String description;
   private Long userCreatorId;
   private Instant time;
   private List<ExpenseDto> expenseDtoList;
