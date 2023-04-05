@@ -136,9 +136,6 @@ public class UserServiceImpl implements UserService {
     }
     return groupDtoList;
   }
-
-  //хз
-
   @Override
   public void deleteUser(Long userId) {
     userRepository.deleteById(userId);
