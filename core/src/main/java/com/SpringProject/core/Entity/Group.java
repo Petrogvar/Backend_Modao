@@ -1,5 +1,6 @@
 package com.SpringProject.core.Entity;
 
+import java.sql.Timestamp;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -30,7 +31,8 @@ public class Group {
   @Column(unique=true)
   private String uuid;
   private String description;
-
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private Timestamp createdAt;
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserGroup> userGroupList;
 

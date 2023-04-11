@@ -18,6 +18,7 @@ import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.Mapper.GroupMapperImpl;
 import com.SpringProject.core.Mapper.UserMapperImpl;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class GroupServiceImpl implements GroupService {
       optionalGroup = groupRepository.getByUuid(uuid);
     }
     group.setUuid(uuid);
-
+    group.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     Optional<User> optionalUser = usersRepository.findById(userIdCreator);
     if (optionalUser.isEmpty()) {
       throw new NotFoundException();
@@ -115,10 +116,8 @@ public class GroupServiceImpl implements GroupService {
       throw new NotRightException();
     }
     List<UserDto> userDtoList = new ArrayList<>();
-    int groupSize = optionalGroup.get().getUserGroupList().size();
-    for (int i = 0; i < groupSize; i++) {
-      userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(
-          optionalGroup.get().getUserGroupList().get(i).getUser()));
+    for (UserGroup userGroup:optionalGroup.get().getUserGroupList()) {
+      userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(userGroup.getUser()));
     }
     return userDtoList;
   }
@@ -137,7 +136,7 @@ public class GroupServiceImpl implements GroupService {
       throw new BadRequestException("пользователь уже в группе");
     }
     invitationRepository.deleteAllByUserAndGroupId(optionalUser.get(), optionalGroup.get().getId());
-    for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
+    for (UserGroup userGroup: optionalGroup.get().getUserGroupList()) {
       Debt debt = new Debt();
       Debt debtBack = new Debt();
       debtBack.setDebt(0D);
@@ -145,8 +144,8 @@ public class GroupServiceImpl implements GroupService {
       debtBack.setGroup(optionalGroup.get());
       debt.setGroup(optionalGroup.get());
       debtBack.setUserFrom(optionalUser.get());
-      debtBack.setUserTo(optionalGroup.get().getUserGroupList().get(i).getUser());
-      debt.setUserFrom(optionalGroup.get().getUserGroupList().get(i).getUser());
+      debtBack.setUserTo(userGroup.getUser());
+      debt.setUserFrom(userGroup.getUser());
       debt.setUserTo(optionalUser.get());
       debtRepository.save(debt);
       debtRepository.save(debtBack);
@@ -171,11 +170,9 @@ public class GroupServiceImpl implements GroupService {
       throw new NotFoundException();
     }
     List<UserDto> userDtoList = new ArrayList<>();
-    int groupSize = optionalGroup.get().getUserGroupList().size();
-    for (int i = 0; i < groupSize; i++) {
-      if (optionalGroup.get().getUserGroupList().get(i).getRole() == 1) {
-        userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(
-            optionalGroup.get().getUserGroupList().get(i).getUser()));
+    for (UserGroup userGroup:optionalGroup.get().getUserGroupList()) {
+      if (userGroup.getRole() == 1) {
+        userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(userGroup.getUser()));
       }
     }
     return userDtoList;

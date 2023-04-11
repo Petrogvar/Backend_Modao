@@ -1,5 +1,7 @@
 package com.SpringProject.core.Entity;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -34,6 +36,8 @@ public class User {
   private String phoneNumber;
   private String bank;
   private Integer idPicture;
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private Timestamp createdAt;
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<UserGroup> userGroupsList;
 
@@ -45,7 +49,6 @@ public class User {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
   private List<InvitationFriend> invitationFriendList;
-
   @ManyToMany
   private List<User> friends;
 

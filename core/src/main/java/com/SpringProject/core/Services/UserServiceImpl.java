@@ -1,5 +1,8 @@
 package com.SpringProject.core.Services;
 
+import static java.lang.System.currentTimeMillis;
+
+import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Mapper.GroupMapperImpl;
 import com.SpringProject.core.Repository.InvitationFriendRepository;
 import com.SpringProject.core.Repository.InvitationInGroupRepository;
@@ -13,7 +16,9 @@ import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.Mapper.UserMapperImpl;
 import java.security.SecureRandom;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,11 +64,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<UserDto> getListFriends(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
+    if(optionalUser.isEmpty())
+      throw new NotFoundException();
     List<UserDto> userDtoList = new ArrayList<>();
-    int size = optionalUser.get().getFriends().size();
-    for (int i=0; i<size; i++){
-      userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(
-          optionalUser.get().getFriends().get(i)));
+    for (User friend : optionalUser.get().getFriends()){
+      userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(friend));
     }
     return userDtoList;
   }
@@ -94,8 +99,7 @@ public class UserServiceImpl implements UserService {
     user.setIdPicture(-1);
     user.setBank("-");
     user.setPhoneNumber("-");
-
-
+    user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     String uuid = Uid.getUuid();
     Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
     while(optionalUserTemp.isPresent()){
@@ -129,10 +133,9 @@ public class UserServiceImpl implements UserService {
       throw new NotFoundException();
     }
     List<GroupDto> groupDtoList = new ArrayList<>();
-    int size = optionalUser.get().getUserGroupsList().size();
-    for (int i = 0; i < size; i++) {
+    for (UserGroup userGroup:optionalUser.get().getUserGroupsList()) {
       groupDtoList.add(
-          GroupMapperImpl.toGroupDtoWithoutUuid(optionalUser.get().getUserGroupsList().get(i).getGroup()));
+          GroupMapperImpl.toGroupDtoWithoutUuid(userGroup.getGroup()));
     }
     return groupDtoList;
   }

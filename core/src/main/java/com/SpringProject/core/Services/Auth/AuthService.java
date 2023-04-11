@@ -3,6 +3,7 @@ package com.SpringProject.core.Services.Auth;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.controllers.Error.AuthException;
+import com.SpringProject.core.controllers.Error.BadRequestException;
 import com.SpringProject.core.controllers.Error.LoginException;
 import com.SpringProject.core.controllers.Error.NotFoundException;
 import com.SpringProject.core.dto.UserDto;
@@ -32,6 +33,9 @@ public class AuthService  {
     Optional<User> optionalUser = userRepository.getByLogin(authRequest.getLogin());
     if (optionalUser.isEmpty())
       throw new AuthException();
+    if(authRequest.getLogin() == null || authRequest.getPassword()==null){
+      throw new LoginException();
+    }
     UserDto userDto = UserMapperImpl.toUserDto(optionalUser.get());
     if (BCrypt.checkpw(authRequest.getPassword(), optionalUser.get().getPassword())) {
       final String accessToken = jwtProvider.generateAccessToken(userDto);

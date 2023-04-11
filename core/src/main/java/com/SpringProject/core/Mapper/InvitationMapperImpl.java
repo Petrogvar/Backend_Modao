@@ -19,10 +19,9 @@ public class InvitationMapperImpl {
   }
 
   public static List<InvitationInGroupDto> toGroupDtoList(List<InvitationInGroup> invitationInGroupList){
-    int size = invitationInGroupList.size();
     List<InvitationInGroupDto> invitationInGroupDtoList = new ArrayList<>();
-    for(int i = 0; i<size; i++){
-      invitationInGroupDtoList.add(toGroupDto(invitationInGroupList.get(i)));
+    for (InvitationInGroup invitationInGroup : invitationInGroupList) {
+      invitationInGroupDtoList.add(toGroupDto(invitationInGroup));
     }
     return invitationInGroupDtoList;
   }
@@ -35,10 +34,9 @@ public class InvitationMapperImpl {
   }
 
   public static List<InvitationFriendDto> toFriendDtoList(List<InvitationFriend> invitationFriendList){
-    int size = invitationFriendList.size();
     List<InvitationFriendDto> invitationFriendDtoList = new ArrayList<>();
-    for(int i = 0; i<size; i++){
-      invitationFriendDtoList.add(toFriendDto(invitationFriendList.get(i)));
+    for (InvitationFriend invitationFriend : invitationFriendList) {
+      invitationFriendDtoList.add(toFriendDto(invitationFriend));
     }
     return invitationFriendDtoList;
   }

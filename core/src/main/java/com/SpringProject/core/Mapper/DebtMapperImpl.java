@@ -11,7 +11,6 @@ public class DebtMapperImpl {
 public static DebtDto toDebtDto(Debt debt){
   DebtDto debtDto = new DebtDto();
   DecimalFormat df = new DecimalFormat("#.##");
-  //System.out.println(df.format(debt.getDebt()));
   debtDto.setDebt(df.format(debt.getDebt()));
   debtDto.setUserId(debt.getUserTo().getId());
   debtDto.setUsername(debt.getUserTo().getUsername());
@@ -20,8 +19,8 @@ public static DebtDto toDebtDto(Debt debt){
 
   public static List<DebtDto> toDebtDtoList(List<Debt> debtList){
     List<DebtDto> debtDtoList = new ArrayList<>();
-    for (int i=0; i<debtList.size(); i++){
-      debtDtoList.add(toDebtDto(debtList.get(i)));
+    for (Debt debt : debtList) {
+      debtDtoList.add(toDebtDto(debt));
     }
     return debtDtoList;
   }

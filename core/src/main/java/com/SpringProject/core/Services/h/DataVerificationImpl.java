@@ -18,10 +18,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DataVerificationImpl implements DataVerification{
+public class DataVerificationImpl implements DataVerification {
 
   @Override
   public void password(String password) {
+    if (password == null){
+      throw new InvalidPasswordException("password is null");
+    }
+
 // Проверяем, что пароль имеет длину не менее 8 символов
     if (password.length() < 8) {
       throw new InvalidPasswordException("Пароль слишком короткий");
@@ -34,37 +38,48 @@ public class DataVerificationImpl implements DataVerification{
 
     // Проверяем, что пароль содержит как минимум одну букву в верхнем регистре
     if (!password.matches(".*[A-Z].*")) {
-      throw new InvalidPasswordException("Пароль должен содержать как минимум одну букву в верхнем регистре");
+      throw new InvalidPasswordException(
+          "Пароль должен содержать как минимум одну букву в верхнем регистре");
     }
 
     // Проверяем, что пароль содержит как минимум одну букву в нижнем регистре
     if (!password.matches(".*[a-z].*")) {
-      throw new InvalidPasswordException("Пароль должен содержать как минимум одну букву в нижнем регистре");
+      throw new InvalidPasswordException(
+          "Пароль должен содержать как минимум одну букву в нижнем регистре");
     }
   }
 
   @Override
   public void login(String login) {
-      // Проверяем длину логина
-      if (login.length() < 6 || login.length() > 20) {
-        throw new InvalidLoginException("Логин должен быть от 6 до 20 символов");
-      }
+    if(login == null){
+      throw new InvalidLoginException("login is null");
+    }
 
-      // Проверяем наличие только букв и цифр
-      if (!login.matches("^[a-zA-Z0-9]*$")) {
-        throw new InvalidLoginException("Логин должен содержать только буквы и цифры");
-      }
+    // Проверяем длину логина
+    if (login.length() < 6 || login.length() > 20) {
+      throw new InvalidLoginException("Логин должен быть от 6 до 20 символов");
+    }
 
-      // Проверяем, что логин не начинается с цифры
-      if (Character.isDigit(login.charAt(0))) {
-        throw new InvalidLoginException("Логин не может начинаться с цифры");
-      }
+    // Проверяем наличие только букв и цифр
+    if (!login.matches("^[a-zA-Z0-9]*$")) {
+      throw new InvalidLoginException("Логин должен содержать только буквы и цифры");
+    }
+
+    // Проверяем, что логин не начинается с цифры
+    if (Character.isDigit(login.charAt(0))) {
+      throw new InvalidLoginException("Логин не может начинаться с цифры");
+    }
   }
 
   @Override
   public void group(GroupDto groupDto) {
     if (groupDto == null) {
       throw new InvalidGroupException("Group cannot be null", HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+
+    if (groupDto.getGroupName() == null || groupDto.getDescription() == null
+        || groupDto.getTypeGroup() == null) {
+      throw new InvalidGroupException("null in group", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     if (!isValidName(groupDto.getGroupName())) {
@@ -88,7 +103,6 @@ public class DataVerificationImpl implements DataVerification{
 
     String regex = "^[a-zA-Z0-9_.а-яА-ЯёЁ ]{1,20}$";
 
-
     return name.matches(regex);
   }
 
@@ -102,16 +116,18 @@ public class DataVerificationImpl implements DataVerification{
   }
 
 
-
   @Override
   public void isValidUsername(String username) {
     // Используем регулярное выражение для проверки имени пользователя
     // В данном случае мы разрешаем только буквы (в любом регистре), цифры, символы '_', '-', '.', а также русские буквы
     // Имя пользователя также должно быть длиной от 1 до 20 символов
+    if (username == null) {
+      throw new InvalidNameException("Username null");
+    }
     String regex = "^[a-zA-Z0-9_.а-яА-ЯёЁ ]{1,20}$";
     Pattern pattern = Pattern.compile(regex);
     Matcher matcher = pattern.matcher(username);
-    if (!matcher.matches()){
+    if (!matcher.matches()) {
       throw new InvalidNameException("InvalidUsername");
     }
   }
@@ -121,7 +137,14 @@ public class DataVerificationImpl implements DataVerification{
     if (eventDto == null) {
       throw new InvalidEventException("event cannot be null", HttpStatus.UNPROCESSABLE_ENTITY);
     }
-
+    if (eventDto.getName() == null || eventDto.getType() == null
+        || eventDto.getDescription() == null
+        || eventDto.getPrice() == null || eventDto.getGroupId() == null
+        || eventDto.getCustomPairIdCoefficientPaying() == null
+        || eventDto.getCustomPairIdCoefficientPaying().getCoefficient() == null
+        || eventDto.getCustomPairIdCoefficientPaying().getId() == null) {
+      throw new InvalidEventException("null in event", HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     if (!isValidName(eventDto.getName())) {
       throw new InvalidEventException("Invalid event name", HttpStatus.UNPROCESSABLE_ENTITY);
     }
@@ -130,27 +153,43 @@ public class DataVerificationImpl implements DataVerification{
       throw new InvalidEventException("Invalid event description", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    if(eventDto.getType()!=0 && eventDto.getType()!=1){
+    if (eventDto.getType() != 0 && eventDto.getType() != 1) {
       throw new InvalidEventException("Invalid event type", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    if(eventDto.getPrice()<=0){
+    if (eventDto.getPrice() <= 0) {
       throw new InvalidEventException("Invalid event price", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     List<Long> userIdList = new ArrayList<>();
     userIdList.add(eventDto.getCustomPairIdCoefficientPaying().getId());
-    if (eventDto.getCustomPairIdCoefficientPaying().getCoefficient()<0)
+    if (eventDto.getCustomPairIdCoefficientPaying().getCoefficient() < 0) {
       throw new InvalidEventException("Coefficient < 0", HttpStatus.UNPROCESSABLE_ENTITY);
-    for(CustomPairIdCoefficient user : eventDto.getCustomPairIdCoefficientList()){
-      if (user.getCoefficient()<0)
+    }
+    for (CustomPairIdCoefficient user : eventDto.getCustomPairIdCoefficientList()) {
+      if (user.getId() == null || user.getCoefficient() == null) {
+        throw new InvalidEventException("null in event", HttpStatus.UNPROCESSABLE_ENTITY);
+      }
+      if (user.getCoefficient() < 0) {
         throw new InvalidEventException("Coefficient < 0", HttpStatus.UNPROCESSABLE_ENTITY);
+      }
       userIdList.add(user.getId());
     }
-
+    if (userIdList.size() < 2) {
+      throw new InvalidEventException("колличество людей в событие < 2",
+          HttpStatus.UNPROCESSABLE_ENTITY);
+    }
     Set<Long> setUserId = new HashSet<>(userIdList);
-    if(setUserId.size()<userIdList.size()){
+    if (setUserId.size() < userIdList.size()) {
       throw new InvalidEventException("Invalid usersId (event)", HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    if (eventDto.getType() == 1 && userIdList.size() > 2) {
+      throw new InvalidEventException("колличество людей в переводе > 2",
+          HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    if (eventDto.getType() == 1 && eventDto.getCustomPairIdCoefficientPaying().getCoefficient() !=0) {
+      throw new InvalidEventException("Coefficient!=0 в переводе",
+          HttpStatus.UNPROCESSABLE_ENTITY);
     }
   }
 }

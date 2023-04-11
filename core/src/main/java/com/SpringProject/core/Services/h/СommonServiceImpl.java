@@ -22,9 +22,8 @@ public class СommonServiceImpl implements CommonService {
   @Override
   public Boolean userInGroup(User user, Group group) {
     boolean bool = false;
-    int sizeGroup = group.getUserGroupList().size();
-    for (int i = 0; i < sizeGroup; i++) {
-      if (Objects.equals(group.getUserGroupList().get(i).getUser().getId(), user.getId())) {
+    for (UserGroup userGroup: group.getUserGroupList()) {
+      if (Objects.equals(userGroup.getUser().getId(), user.getId())) {
         bool = true;
         break;
       }
@@ -37,11 +36,9 @@ public class СommonServiceImpl implements CommonService {
     Optional<User> optionalUser = userRepository.findById(userId1);
     if(optionalUser.isEmpty())
       throw new NotFoundException();
-    int size = optionalUser.get().getFriends().size();
-    System.out.println(size);
-    for(int i=0; i<size; i++){
-      System.out.println(optionalUser.get().getFriends().get(i).getId());
-      if (Objects.equals(optionalUser.get().getFriends().get(i).getId(), userId2))
+    for(User friend: optionalUser.get().getFriends()){
+      System.out.println(friend.getId());
+      if (Objects.equals(friend.getId(), userId2))
         return true;
     }
     return false;
@@ -64,10 +61,9 @@ public class СommonServiceImpl implements CommonService {
 
   @Override
   public Boolean userIsOrganizer(User user, Group group) {
-    int sizeGroup = group.getUserGroupList().size();
-    for (int i = 0; i < sizeGroup; i++) {
-      if (Objects.equals(group.getUserGroupList().get(i).getUser().getId(), user.getId())) {
-        return (group.getUserGroupList().get(i).getRole() == 1);
+    for (UserGroup userGroup : group.getUserGroupList()) {
+      if (Objects.equals(userGroup.getUser().getId(), user.getId())) {
+        return (userGroup.getRole() == 1);
       }
     }
     return false; //

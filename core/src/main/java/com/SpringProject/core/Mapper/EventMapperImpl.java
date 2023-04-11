@@ -15,16 +15,17 @@ public class EventMapperImpl {
     eventDto.setUserPayingId(event.getUserPayingId());
     eventDto.setUserCreatorId(event.getUserCreatorId());
     eventDto.setUsernameCreator(event.getUsernameCreator());
-    eventDto.setType(eventDto.getType());
-    eventDto.setDescription(eventDto.getDescription());
-//    eventDto.setGroupId(event.getGroup().getId());
+    eventDto.setType(event.getType());
+    eventDto.setDescription(event.getDescription());
+    eventDto.setStatus(event.getStatus());
+    eventDto.setTime(event.getCreatedAt().toLocalDateTime());
     return eventDto;
   }
 
   public static List<EventDto> toEventDtoList(List<Event> eventList){
     List<EventDto> eventDtoList = new ArrayList<>();
-    for (int i=0; i < eventList.size(); i++ ){
-      eventDtoList.add(toEventDto(eventList.get(i)));
+    for (Event event : eventList) {
+      eventDtoList.add(toEventDto(event));
     }
     return eventDtoList;
   }

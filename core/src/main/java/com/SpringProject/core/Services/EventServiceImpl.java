@@ -6,6 +6,7 @@ import com.SpringProject.core.Entity.Expense;
 import com.SpringProject.core.Entity.Group;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Entity.UserEvent;
+import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Repository.DebtRepository;
 import com.SpringProject.core.Repository.EventRepository;
 import com.SpringProject.core.Repository.GroupRepository;
@@ -18,6 +19,8 @@ import com.SpringProject.core.dto.DescriptionDto;
 import com.SpringProject.core.dto.EventDto;
 import com.SpringProject.core.dto.ExpenseDto;
 import com.SpringProject.core.Mapper.EventMapperImpl;
+import com.SpringProject.core.dto.my.CustomPairIdCoefficient;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,34 +54,31 @@ public class EventServiceImpl implements EventService {
     Group group = optionalGroup.get();
     List<Optional<User>> optionalUserList = new ArrayList<>();
     int size = eventDto.getCustomPairIdCoefficientList().size();
-    for (int i = 0; i < size; i++) {
-      optionalUserList.add(
-          userRepository.findById(eventDto.getCustomPairIdCoefficientList().get(i).getId()));
-      if (optionalUserList.get(i).isEmpty()) {
-        throw new NotFoundException();
-      }
-      sum += eventDto.getCustomPairIdCoefficientList().get(i).getCoefficient();
+    for (CustomPairIdCoefficient IdCoefficientUser : eventDto.getCustomPairIdCoefficientList()) {
+      Optional<User> optionalUser = userRepository.findById(IdCoefficientUser.getId());
+      optionalUserList.add(optionalUser);
+      sum += IdCoefficientUser.getCoefficient();
     }
     if (sum == 0) {
       throw new BadRequestException("сумма коэффициентов = 0");
     }
 
     List<Long> userIdList = new ArrayList<>();
-    int countUserInGroup = group.getUserGroupList().size();
-    for (int i = 0; i < countUserInGroup; i++) {
-      userIdList.add(group.getUserGroupList().get(i).getUser().getId());
+    for (UserGroup userGroup :group.getUserGroupList()) {
+      userIdList.add(userGroup.getUser().getId());
     }
-    for (int i = 0; i < size; i++) {
-      if (!userIdList.contains(eventDto.getCustomPairIdCoefficientList().get(i).getId())) {
+    for (CustomPairIdCoefficient customPairIdCoefficient: eventDto.getCustomPairIdCoefficientList()) {
+      if (!userIdList.contains(customPairIdCoefficient.getId())) {
         throw new UserNotGroupException();
       }
     }
-    if (!userIdList.contains(eventDto.getUserPayingId())) {
+
+    if (!userIdList.contains(eventDto.getCustomPairIdCoefficientPaying().getId())) {
       throw new UserNotGroupException();
     }
 
     Event event = new Event();
-
+    event.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     event.setEventName(eventDto.getName());
     event.setStatus(0);
     event.setPrice(eventDto.getPrice());
@@ -113,7 +113,7 @@ public class EventServiceImpl implements EventService {
     }
 
     UserEvent userEvent = new UserEvent();
-    userEvent.setCoefficient(eventDto.getCustomPairIdCoefficientList().get(0).getCoefficient());
+    userEvent.setCoefficient(eventDto.getCustomPairIdCoefficientPaying().getCoefficient());
     userEvent.setUser(paying);
     userEvent.setEvent(event);
     userEvent.setGroupId(eventDto.getGroupId());
@@ -139,8 +139,8 @@ public class EventServiceImpl implements EventService {
       throw new BadRequestException("status != 0");
     }
     optionalEvent.get().setStatus(1);
-    for (int i = 0; i < optionalEvent.get().getExpenseList().size(); i++) {
-      Expense expense = optionalEvent.get().getExpenseList().get(i);
+    for (Expense expense : optionalEvent.get().getExpenseList()) {
+      //Expense expense = optionalEvent.get().getExpenseList().get(i);
       Debt debt = debtRepository.findByGroupAndUserFromAndUserTo
           (expense.getEvent().getGroup(), expense.getUserFrom(), expense.getUserTo());
       debt.setDebt(debt.getDebt() - expense.getTransferAmount());
@@ -191,18 +191,18 @@ public class EventServiceImpl implements EventService {
 
     EventDto eventDto = EventMapperImpl.toEventDto(optionalEvent.get());
     eventDto.setExpenseDtoList(new ArrayList<>());
-    for (int i = 0; i < optionalEvent.get().getUserEventList().size(); i++) {
+    for (UserEvent userEvent : optionalEvent.get().getUserEventList()) {
       ExpenseDto expenseDto = new ExpenseDto();
-      expenseDto.setUserId(optionalEvent.get().getUserEventList().get(i).getUser().getId());
+      expenseDto.setUserId(userEvent.getUser().getId());
       expenseDto.setUsername(userRepository.findById(expenseDto.getUserId()).get().getUsername());
-      expenseDto.setCoefficient(optionalEvent.get().getUserEventList().get(i).getCoefficient());
+      expenseDto.setCoefficient(userEvent.getCoefficient());
       boolean bool = true;
-      for (int j = 0; j < optionalEvent.get().getExpenseList().size(); j++) {
-        if (Objects.equals(optionalEvent.get().getExpenseList().get(j).getUserTo().getId(),
+      for (Expense expense : optionalEvent.get().getExpenseList()) {
+        if (Objects.equals(expense.getUserFrom().getId(),
             expenseDto.getUserId())) {
           DecimalFormat df = new DecimalFormat("#.##");
           expenseDto.setTransferAmount((df.format(
-              optionalEvent.get().getExpenseList().get(j).getTransferAmount())));
+              expense.getTransferAmount())));
           bool = false;
           break;
         }
@@ -265,6 +265,7 @@ public class EventServiceImpl implements EventService {
     }
 
     Event eventNew = new Event();
+    eventNew.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     eventNew.setEventName(descriptionDto.getNane());
     eventNew.setDescription(descriptionDto.getDescription());
     eventNew.setUserCreatorId(userIdCreator);
@@ -279,15 +280,11 @@ public class EventServiceImpl implements EventService {
 
     optionalEvent.get().setStatus(-1);
 
-    int size = optionalEvent.get().getExpenseList().size();
     Expense expense;
-    Expense expenseOld;
 
-    int sizeEvent = optionalEvent.get().getUserEventList().size();
-    for (int i = 0; i < size; i++) {
+    for (Expense expenseOld : optionalEvent.get().getExpenseList()) {
 
       expense = new Expense();
-      expenseOld = optionalEvent.get().getExpenseList().get(i);
       expense.setTransferAmount(expenseOld.getTransferAmount());
       expense.setEvent(eventNew);
       expense.setUserFrom(expenseOld.getUserTo());
@@ -296,29 +293,23 @@ public class EventServiceImpl implements EventService {
     }
 
     UserEvent userEvent;
-    UserEvent userEventOld;
-    for (int j = 0; j < sizeEvent; j++) {
+
+    for (UserEvent userEventOld : optionalEvent.get().getUserEventList()){
       userEvent = new UserEvent();
-      userEventOld = optionalEvent.get().getUserEventList().get(j);
       userEvent.setCoefficient(userEventOld.getCoefficient());
       userEvent.setUser(userEventOld.getUser());
       userEvent.setEvent(eventNew);
       userEvent.setGroupId(userEventOld.getGroupId());
       userEventOld.getUser().getUserEventList().add(userEvent);
-//          expenseOld.getUserFrom().getUserEventList().
-//              add(optionalEvent.get().getUserEventList().get(j));
     }
 
-    for (int i = 0; i < eventNew.getExpenseList().size(); i++) {
-      expense = eventNew.getExpenseList().get(i);
+    for (Expense expense1 : eventNew.getExpenseList()) {
       Debt debt = debtRepository.findByGroupAndUserFromAndUserTo
-          (expense.getEvent().getGroup(), expense.getUserFrom(), expense.getUserTo());
-      debt.setDebt(debt.getDebt() - expense.getTransferAmount());
-      // debtRepository.save(debt);
+          (expense1.getEvent().getGroup(), expense1.getUserFrom(), expense1.getUserTo());
+      debt.setDebt(debt.getDebt() - expense1.getTransferAmount());
       debt = debtRepository.findByGroupAndUserFromAndUserTo
-          (expense.getEvent().getGroup(), expense.getUserTo(), expense.getUserFrom());
-      debt.setDebt(debt.getDebt() + expense.getTransferAmount());
-      // debtRepository.save(debt);
+          (expense1.getEvent().getGroup(), expense1.getUserTo(), expense1.getUserFrom());
+      debt.setDebt(debt.getDebt() + expense1.getTransferAmount());
     }
     return eventRepository.save(eventNew).getId();
 
@@ -347,10 +338,9 @@ public class EventServiceImpl implements EventService {
     }
     List<EventDto> eventDtoList = new ArrayList<>();
     Event event;
-    int size = userEventList.size();
-    for (int i = 0; i < size; i++) {
-      if (Objects.equals(userEventList.get(i).getGroupId(), groupId)) {
-        event = userEventList.get(i).getEvent();
+    for (UserEvent userEvent : userEventList) {
+      if (Objects.equals(userEvent.getGroupId(), groupId)) {
+        event = userEvent.getEvent();
         if (typeList.contains(event.getType()) && statusList.contains(event.getStatus())) {
           eventDtoList.add(EventMapperImpl.toEventDto(event));
         }

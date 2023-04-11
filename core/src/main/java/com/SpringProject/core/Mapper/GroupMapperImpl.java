@@ -11,6 +11,7 @@ public class GroupMapperImpl {
     groupDto.setGroupName(group.getGroupName());
     groupDto.setTypeGroup(group.getTypeGroup());
     groupDto.setDescription(group.getDescription());
+    groupDto.setTime(group.getCreatedAt().toLocalDateTime());
     return groupDto;
   }
 
@@ -20,6 +21,7 @@ public class GroupMapperImpl {
     groupDto.setGroupName(group.getGroupName());
     groupDto.setTypeGroup(group.getTypeGroup());
     groupDto.setDescription(group.getDescription());
+    groupDto.setTime(group.getCreatedAt().toLocalDateTime());
     groupDto.setUuid(group.getUuid());
     return groupDto;
   }
