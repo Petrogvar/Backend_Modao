@@ -46,7 +46,7 @@ public class EventServiceImpl implements EventService {
     Optional<User> optionalUserPaying = userRepository.findById(
         eventDto.getCustomPairIdCoefficientPaying().getId());
     Optional<Group> optionalGroup = groupRepository.findById(eventDto.getGroupId());
-    if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty() || optionalUserPaying.isEmpty()) {
+    if (!optionalGroup.isPresent() || !optionalUserCreator.isPresent() || !optionalUserPaying.isPresent()) {
       throw new NotFoundException();
     }
 
@@ -129,7 +129,7 @@ public class EventServiceImpl implements EventService {
   public void confirmationEvent(Long userId, Long groupId, Long eventId) {
     Optional<User> optionalUser = userRepository.findById(userId);
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
-    if (optionalUser.isEmpty() || optionalEvent.isEmpty()) {
+    if (!optionalUser.isPresent() || !optionalEvent.isPresent()) {
       throw new NotFoundException();
     }
     if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
@@ -156,7 +156,7 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<EventDto> getСonfirmedEventMod0List(Long groupId, int type) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty()) {
+    if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
 
@@ -166,13 +166,18 @@ public class EventServiceImpl implements EventService {
     statusList.add(-2);
     List<Integer> typeList = new ArrayList<>();
     switch (type) {
-      case 0 -> typeList.add(0);
-      case 1 -> typeList.add(1);
-      case 2 -> {
+      case 0 :
+        typeList.add(0);
+        break;
+      case 1 :
+        typeList.add(1);
+        break;
+      case 2 :
         typeList.add(0);
         typeList.add(1);
-      }
-      default -> throw new BadRequestException("invalid type");
+        break;
+        default:
+          throw new BadRequestException("invalid type");
     }
     return EventMapperImpl.toEventDtoList(
         eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
@@ -182,7 +187,7 @@ public class EventServiceImpl implements EventService {
   @Override
   public EventDto getEvent(Long groupId, Long eventId) {
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
-    if (optionalEvent.isEmpty()) {
+    if (!optionalEvent.isPresent()) {
       throw new NotFoundException();
     }
     if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
@@ -218,7 +223,7 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<EventDto> getUnconfirmedEventList(Long groupId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty()) {
+    if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
 
@@ -236,7 +241,7 @@ public class EventServiceImpl implements EventService {
   public void unconfirmationEvent(Long userId, Long groupId, Long eventId) {
     Optional<User> optionalUser = userRepository.findById(userId);
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
-    if (optionalUser.isEmpty() || optionalEvent.isEmpty()) {
+    if (!optionalUser.isPresent() || !optionalEvent.isPresent()) {
       throw new NotFoundException();
     }
     if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
@@ -254,7 +259,7 @@ public class EventServiceImpl implements EventService {
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
     Optional<User> optionalUserCreator = userRepository.findById(userIdCreator);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalEvent.isEmpty() || optionalUserCreator.isEmpty() || optionalGroup.isEmpty()) {
+    if (!optionalEvent.isPresent() || !optionalUserCreator.isPresent() || !optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
     if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
@@ -318,7 +323,7 @@ public class EventServiceImpl implements EventService {
   @Override
   public List<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     List<UserEvent> userEventList = optionalUser.get().getUserEventList();
@@ -328,13 +333,18 @@ public class EventServiceImpl implements EventService {
     statusList.add(-2);
     List<Integer> typeList = new ArrayList<>();
     switch (type) {
-      case 0 -> typeList.add(0);
-      case 1 -> typeList.add(1);
-      case 2 -> {
+      case 0 :
+        typeList.add(0);
+        break;
+      case 1 :
+        typeList.add(1);
+        break;
+      case 2 :
         typeList.add(0);
         typeList.add(1);
-      }
-      default -> throw new BadRequestException("invalid type");
+        break;
+      default:
+        throw new BadRequestException("invalid type");
     }
     List<EventDto> eventDtoList = new ArrayList<>();
     Event event;

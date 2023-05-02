@@ -34,7 +34,7 @@ public class СommonServiceImpl implements CommonService {
   @Override
   public Boolean usersIsFriend(Long userId1, Long userId2) {
     Optional<User> optionalUser = userRepository.findById(userId1);
-    if(optionalUser.isEmpty())
+    if(!optionalUser.isPresent())
       throw new NotFoundException();
     for(User friend: optionalUser.get().getFriends()){
       System.out.println(friend.getId());
@@ -53,7 +53,7 @@ public class СommonServiceImpl implements CommonService {
   public Integer getRoleInGroup(Long userId, Long groupId) {
     Optional<UserGroup> optionalUserGroup = userGroupRepository.findByUserIdAndGroupId(userId,
         groupId);
-    if (optionalUserGroup.isEmpty()) {
+    if (!optionalUserGroup.isPresent()) {
       throw new NotRightException();
     }
     return optionalUserGroup.get().getRole();
@@ -73,7 +73,7 @@ public class СommonServiceImpl implements CommonService {
   public Boolean userIsOrganizerByUserIdAndGroupId(Long userId, Long groupId) {
     Optional<UserGroup> optionalUserGroup = userGroupRepository.findByUserIdAndGroupId(userId,
         groupId);
-    if (optionalUserGroup.isEmpty()) {
+    if (!optionalUserGroup.isPresent()) {
       throw new NotRightException();
     }
     return optionalUserGroup.get().getRole() == 1;

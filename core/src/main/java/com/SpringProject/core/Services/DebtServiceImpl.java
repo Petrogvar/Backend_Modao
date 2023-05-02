@@ -30,7 +30,7 @@ public class DebtServiceImpl implements DebtService{
     Optional<User> optionalUser = userRepository.findById(userId);
 
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty() || optionalUser.isEmpty())
+    if (!optionalGroup.isPresent() || !optionalUser.isPresent())
       throw new NotFoundException();
     boolean bool = true;
     for (UserGroup userGroup: optionalGroup.get().getUserGroupList()){

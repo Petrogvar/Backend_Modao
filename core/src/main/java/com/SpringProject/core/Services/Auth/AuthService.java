@@ -31,7 +31,7 @@ public class AuthService  {
 
   public JwtResponse login(@NonNull JwtRequest authRequest) {
     Optional<User> optionalUser = userRepository.getByLogin(authRequest.getLogin());
-    if (optionalUser.isEmpty())
+    if (!optionalUser.isPresent())
       throw new AuthException();
     if(authRequest.getLogin() == null || authRequest.getPassword()==null){
       throw new LoginException();

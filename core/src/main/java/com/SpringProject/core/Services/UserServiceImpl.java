@@ -38,7 +38,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDto getUserMyInfo(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     User user = optionalUser.get();
@@ -48,7 +48,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDto getNewUuid(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty())
+    if (!optionalUser.isPresent())
       throw new NotFoundException();
     String uuid = Uid.getUuid();
     Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
@@ -64,7 +64,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<UserDto> getListFriends(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if(optionalUser.isEmpty())
+    if(!optionalUser.isPresent())
       throw new NotFoundException();
     List<UserDto> userDtoList = new ArrayList<>();
     for (User friend : optionalUser.get().getFriends()){
@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDto getUser(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     return UserMapperImpl.toUserDtoWithoutUuid(optionalUser.get());
@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public void updateUser(Long userId, UserDto userDto) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     User user = optionalUser.get();
@@ -129,7 +129,7 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<GroupDto> getGroups(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     List<GroupDto> groupDtoList = new ArrayList<>();

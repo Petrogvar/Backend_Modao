@@ -39,7 +39,7 @@ public class InvitationServiceImpl implements InvitationService {
     Optional<User> optionalUser = userRepository.findById(userId);
     Optional<User> optionalUserFriends = userRepository.getByUuid(uuid);
 
-    if (optionalUser.isEmpty() || optionalUserFriends.isEmpty()) {
+    if (!optionalUser.isPresent() || !optionalUserFriends.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByUserIdAndUser(
@@ -64,7 +64,7 @@ public class InvitationServiceImpl implements InvitationService {
     Optional<User> optionalUser = userRepository.findById(userId);
     Optional<User> optionalUserFriends = userRepository.findById(userIdFriends);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalUserFriends.isEmpty() || optionalUser.isEmpty() || optionalGroup.isEmpty()) {
+    if (!optionalUserFriends.isPresent() || !optionalUser.isPresent() || !optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
 //    int size = optionalUser.get().getFriends().size();
@@ -105,12 +105,12 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public void declineInvitationFriend(Long userId, Long invitationId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByIdAndUser(
         invitationId, optionalUser.get());
-    if (optionalInvitation.isEmpty()) {
+    if (!optionalInvitation.isPresent()) {
       throw new NotFoundException();
     }
     invitationFriendRepository.delete(optionalInvitation.get());
@@ -121,12 +121,12 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public void declineInvitationInGroup(Long userId, Long invitationId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationInGroup> optionalInvitation = invitationInGroupRepository.getByIdAndUser(
         invitationId, optionalUser.get());
-    if (optionalInvitation.isEmpty()) {
+    if (!optionalInvitation.isPresent()) {
       throw new NotFoundException();
     }
     invitationInGroupRepository.delete(optionalInvitation.get());
@@ -136,16 +136,16 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public void acceptInvitationFriend(Long userId, Long invitationId) {
     Optional<User> optionalUserFriend = userRepository.findById(userId);
-    if (optionalUserFriend.isEmpty()) {
+    if (!optionalUserFriend.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByIdAndUser(
         invitationId, optionalUserFriend.get());
-    if (optionalInvitation.isEmpty()) {
+    if (!optionalInvitation.isPresent()) {
       throw new NotFoundException();
     }
     Optional<User> optionalUser = userRepository.findById(optionalInvitation.get().getUserId());
-    if (optionalUser.isEmpty())
+    if (!optionalUser.isPresent())
       throw new BadRequestException("123");
 
     Optional<InvitationFriend> optionalInvitationOld =  invitationFriendRepository.getByUserIdAndUser_Id(optionalUserFriend.get().getId(),
@@ -161,16 +161,16 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public void acceptInvitationInGroup(Long userId, Long invitationId) {
     Optional<User> optionalUserFriend = userRepository.findById(userId);
-    if (optionalUserFriend.isEmpty()) {
+    if (!optionalUserFriend.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationInGroup> optionalInvitation = invitationInGroupRepository.getByIdAndUser(
         invitationId, optionalUserFriend.get());
-    if (optionalInvitation.isEmpty()) {
+    if (!optionalInvitation.isPresent()) {
       throw new NotFoundException();
     }
     Optional<Group> optionalGroup = groupRepository.findById(optionalInvitation.get().getGroupId());
-    if (optionalGroup.isEmpty())
+    if (!optionalGroup.isPresent())
       throw new BadRequestException("123");
     invitationInGroupRepository.delete(optionalInvitation.get());
     invitationInGroupRepository.deleteAllByUserAndGroupId(optionalUserFriend.get(), optionalGroup.get().getId());
@@ -203,7 +203,7 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public List<InvitationInGroupDto> getInvitationsInGroup(Long userIdCreator) {
     Optional<User> optionalUser = userRepository.findById(userIdCreator);
-    if(optionalUser.isEmpty())
+    if(!optionalUser.isPresent())
       throw new NotFoundException();
     return InvitationMapperImpl.toGroupDtoList(optionalUser.get().getInvitationInGroupList());
   }
@@ -211,7 +211,7 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public List<InvitationFriendDto> getInvitationsFriend(Long userIdCreator) {
     Optional<User> optionalUser = userRepository.findById(userIdCreator);
-    if(optionalUser.isEmpty())
+    if(!optionalUser.isPresent())
       throw new NotFoundException();
     return InvitationMapperImpl.toFriendDtoList(optionalUser.get().getInvitationFriendList());
   }
@@ -219,7 +219,7 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public void createInvitationFriendByGroup(Long userIdCreator, Long groupId, Long userId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty())
+    if (!optionalGroup.isPresent())
       throw new NotFoundException();
     int size = optionalGroup.get().getUserGroupList().size();
     long id;

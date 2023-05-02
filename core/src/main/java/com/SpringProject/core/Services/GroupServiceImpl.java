@@ -42,7 +42,7 @@ public class GroupServiceImpl implements GroupService {
   @Override
   public GroupDto getGroup(Long groupId, int role) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty()) {
+    if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
     if (role == 1) {
@@ -68,7 +68,7 @@ public class GroupServiceImpl implements GroupService {
     group.setUuid(uuid);
     group.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     Optional<User> optionalUser = usersRepository.findById(userIdCreator);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
 
@@ -87,7 +87,7 @@ public class GroupServiceImpl implements GroupService {
   @Override
   public void updateGroup(Long groupId, GroupDto groupDto) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty()) {
+    if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
 
@@ -109,7 +109,7 @@ public class GroupServiceImpl implements GroupService {
   public List<UserDto> getUsersInGroup(Long groupId, Long userIdCreator) {
     Optional<User> optionalUserCreator = usersRepository.findById(userIdCreator);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty()) {
+    if (!optionalGroup.isPresent() || !optionalUserCreator.isPresent()) {
       throw new NotFoundException();
     }
     if (!commonService.userInGroup(optionalUserCreator.get(), optionalGroup.get())) {
@@ -125,11 +125,11 @@ public class GroupServiceImpl implements GroupService {
   @Override
   public void addUserInGroupByUuid(Long userId, String uuid) {
     Optional<Group> optionalGroup = groupRepository.getByUuid(uuid);
-    if (optionalGroup.isEmpty()) {
+    if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
     Optional<User> optionalUser = usersRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     if (commonService.userInGroup(optionalUser.get(), optionalGroup.get())) {
@@ -166,7 +166,7 @@ public class GroupServiceImpl implements GroupService {
   public List<UserDto> getOrganizersInGroup(Long groupId, Long userIdCreator) {
     Optional<User> optionalUserCreator = usersRepository.findById(userIdCreator);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty() || optionalUserCreator.isEmpty()) {
+    if (!optionalGroup.isPresent() || !optionalUserCreator.isPresent()) {
       throw new NotFoundException();
     }
     List<UserDto> userDtoList = new ArrayList<>();
@@ -181,7 +181,7 @@ public class GroupServiceImpl implements GroupService {
   @Override
   public GroupDto getNewUuid(Long groupId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty()) {
+    if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
     String uuid = Uid.getUuid();
