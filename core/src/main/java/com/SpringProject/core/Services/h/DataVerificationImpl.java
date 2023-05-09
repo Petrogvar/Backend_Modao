@@ -27,7 +27,7 @@ public class DataVerificationImpl implements DataVerification {
     }
 
 // Проверяем, что пароль имеет длину не менее 8 символов
-    if (password.length() < 8) {
+    if (password.length() < 6) {
       throw new InvalidPasswordException("Пароль слишком короткий");
     }
 
@@ -56,8 +56,8 @@ public class DataVerificationImpl implements DataVerification {
     }
 
     // Проверяем длину логина
-    if (login.length() < 6 || login.length() > 20) {
-      throw new InvalidLoginException("Логин должен быть от 6 до 20 символов");
+    if (login.length() < 3 || login.length() > 20) {
+      throw new InvalidLoginException("Логин должен быть от 3 до 20 символов");
     }
 
     // Проверяем наличие только букв и цифр

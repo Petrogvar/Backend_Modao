@@ -7,7 +7,19 @@ plugins {
 
 }
 //mainClassName = 'com.SpringProject.core.CoreApplication'
+//jar {
+//	manifest {
+//		attributes 'Main-Class': com.SpringProject.core.CoreApplication
+//	}
+//}
 
+jar {
+	manifest {
+		attributes(
+				'Main-Class': 'com.SpringProject.core.CoreApplication'
+		)
+	}
+}
 group = 'com.SpringProject'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
