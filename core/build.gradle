@@ -41,6 +41,8 @@ repositories {
 }
 
 dependencies {
+
+	implementation 'org.hibernate.validator:hibernate-validator:6.2.0.Final'
 	implementation 'org.json:json:20230227'
 	implementation 'com.google.firebase:firebase-admin:9.1.1'
 	implementation 'com.google.firebase:firebase-messaging:23.1.2'

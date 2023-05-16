@@ -65,6 +65,13 @@ public class GroupController {
     return groupService.getUsersInGroup(groupId, userId);
   }
 
+  @GetMapping("/archive/{groupId}")
+  void archiveGroup(@PathVariable Long groupId){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId);
+    groupService.archiveGroup(groupId);
+  }
+
 
   @GetMapping("/listOrganizers/{groupId}")
   List<UserDto> getOrganizersInGroup(@PathVariable Long groupId){

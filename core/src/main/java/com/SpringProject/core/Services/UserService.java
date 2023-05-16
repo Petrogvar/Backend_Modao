@@ -16,7 +16,7 @@ public interface UserService {
 
   void updateUser(Long id, UserDto userDto);
 
-  List<GroupDto> getGroups(Long userId);
+  List<GroupDto> getGroups(Long userId, Integer type);
 
   UserDto getUserMyInfo(Long userIdCreator);
 

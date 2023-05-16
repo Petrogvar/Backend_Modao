@@ -4,9 +4,12 @@ import com.SpringProject.core.dto.my.CustomPairIdCoefficient;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
 public class EventDto {
@@ -30,4 +33,13 @@ public class EventDto {
   private Long userCreatorId;
   //private Instant time;
   private List<ExpenseDto> expenseDtoList;
+
+  public EventDto(Long id, String eventName, String description, Double price, Integer type, LocalDateTime time) {
+    this.id = id;
+    this.name = eventName;
+    this.description =description;
+    this.price = price;
+    this.type = type;
+    this.time = time;
+  }
 }

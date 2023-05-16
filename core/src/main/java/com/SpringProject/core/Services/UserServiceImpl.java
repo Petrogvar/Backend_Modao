@@ -1,7 +1,5 @@
 package com.SpringProject.core.Services;
 
-import static java.lang.System.currentTimeMillis;
-
 import com.SpringProject.core.Entity.Token;
 import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Mapper.GroupMapperImpl;
@@ -19,10 +17,9 @@ import com.SpringProject.core.Mapper.UserMapperImpl;
 import java.security.SecureRandom;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
@@ -34,7 +31,7 @@ public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
   private final InvitationInGroupRepository invitationRepository;
   private final InvitationFriendRepository invitationFriendRepository;
-  private  final DataVerification dataVerification;
+  private final DataVerification dataVerification;
 
   @Override
   public UserDto getUserMyInfo(Long userId) {
@@ -49,11 +46,12 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserDto getNewUuid(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (!optionalUser.isPresent())
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
+    }
     String uuid = Uid.getUuid();
     Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
-    while(optionalUserTemp.isPresent()){
+    while (optionalUserTemp.isPresent()) {
       uuid = Uid.getUuid();
       optionalUserTemp = userRepository.getByUuid(uuid);
     }
@@ -65,10 +63,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<UserDto> getListFriends(Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if(!optionalUser.isPresent())
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
+    }
     List<UserDto> userDtoList = new ArrayList<>();
-    for (User friend : optionalUser.get().getFriends()){
+    for (User friend : optionalUser.get().getFriends()) {
       userDtoList.add(UserMapperImpl.toUserDtoWithoutUuid(friend));
     }
     return userDtoList;
@@ -96,7 +95,7 @@ public class UserServiceImpl implements UserService {
     String salt = BCrypt.gensalt(4, random);
     user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
 
-    Token token= new Token();
+    Token token = new Token();
     token.setUser(user);
     user.setToken(token);
 
@@ -106,7 +105,7 @@ public class UserServiceImpl implements UserService {
     user.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     String uuid = Uid.getUuid();
     Optional<User> optionalUserTemp = userRepository.getByUuid(uuid);
-    while(optionalUserTemp.isPresent()){
+    while (optionalUserTemp.isPresent()) {
       uuid = Uid.getUuid();
       optionalUserTemp = userRepository.getByUuid(uuid);
     }
@@ -117,9 +116,10 @@ public class UserServiceImpl implements UserService {
 
   @Override
   public void exitUser(Long userId) {
-    Optional<User> optionalUser =  userRepository.findById(userId);
-    if (!optionalUser.isPresent())
+    Optional<User> optionalUser = userRepository.findById(userId);
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
+    }
     optionalUser.get().getToken().setRegistrationToken(null);
     optionalUser.get().getToken().setRegistrationToken(null);
     optionalUser.get().getToken().setTime(null);
@@ -141,18 +141,22 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public List<GroupDto> getGroups(Long userId) {
+  public List<GroupDto> getGroups(Long userId, Integer type) {
     Optional<User> optionalUser = userRepository.findById(userId);
     if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
+    //проверка type
     List<GroupDto> groupDtoList = new ArrayList<>();
-    for (UserGroup userGroup:optionalUser.get().getUserGroupsList()) {
-      groupDtoList.add(
-          GroupMapperImpl.toGroupDtoWithoutUuid(userGroup.getGroup()));
+    for (UserGroup userGroup : optionalUser.get().getUserGroupsList()) {
+      if (type == 2 || Objects.equals(userGroup.getGroup().getType(), type)) {
+        groupDtoList.add(
+            GroupMapperImpl.toGroupDtoWithoutUuid(userGroup.getGroup()));
+      }
     }
     return groupDtoList;
   }
+
   @Override
   public void deleteUser(Long userId) {
     userRepository.deleteById(userId);

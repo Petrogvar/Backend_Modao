@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import liquibase.pro.packaged.G;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,7 @@ public class GroupServiceImpl implements GroupService {
       uuid = Uid.getUuid();
       optionalGroup = groupRepository.getByUuid(uuid);
     }
+    group.setTypeGroup(0);
     group.setUuid(uuid);
     group.setCreatedAt(new Timestamp(System.currentTimeMillis()));
     group.setUpdateTime(new Timestamp(System.currentTimeMillis()));
@@ -193,6 +195,16 @@ public class GroupServiceImpl implements GroupService {
     }
     optionalGroup.get().setUuid(uuid);
     return GroupMapperImpl.toGroupDto(optionalGroup.get());
+  }
+
+  @Override
+  public void archiveGroup(Long groupId) {
+    Optional<Group> optionalGroup =  groupRepository.findById(groupId);
+    if(!optionalGroup.isPresent()){
+      throw new NotFoundException();
+    }
+    optionalGroup.get().setTypeGroup(1);
+    groupRepository.save(optionalGroup.get());
   }
 
 

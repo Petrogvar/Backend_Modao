@@ -54,10 +54,10 @@ public class UserController {
     return userService.getUser(userId);
   }
 
-  @GetMapping("/listGroups")
-  public List<GroupDto> getGroups() {
+  @GetMapping("/listGroups/{type}")
+  public List<GroupDto> getGroups(@PathVariable Integer type) {
     Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
-    return userService.getGroups(userIdCreator);
+    return userService.getGroups(userIdCreator, type);
   }
 
   @PutMapping("/getNewUuid")

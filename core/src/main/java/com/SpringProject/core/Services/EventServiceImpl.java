@@ -28,6 +28,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,6 +56,9 @@ public class EventServiceImpl implements EventService {
     Optional<Group> optionalGroup = groupRepository.findById(eventDto.getGroupId());
     if (!optionalGroup.isPresent() || !optionalUserCreator.isPresent() || !optionalUserPaying.isPresent()) {
       throw new NotFoundException();
+    }
+    if (optionalGroup.get().getTypeGroup() == 1){
+      throw new BadRequestException("TypeGroup() == 1");
     }
 
     Double sum = eventDto.getCustomPairIdCoefficientPaying().getCoefficient();
@@ -166,7 +174,8 @@ public class EventServiceImpl implements EventService {
 
 
   @Override
-  public List<EventDto> getСonfirmedEventMod0List(Long groupId, int type) {
+  public Page<EventDto> getСonfirmedEventMod0List(Long groupId, int type, Integer offset,
+      Integer limit) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
@@ -191,9 +200,10 @@ public class EventServiceImpl implements EventService {
         default:
           throw new BadRequestException("invalid type");
     }
-    return EventMapperImpl.toEventDtoList(
-        eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
-            typeList));
+    Pageable pageable = PageRequest.of(offset, limit,  Sort.by(Direction.DESC, "createdAt"));
+    Page<Event> eventPage = eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
+            typeList, pageable);
+    return EventMapperImpl.fromEntityPage(eventPage);
   }
 
   @Override
@@ -244,9 +254,10 @@ public class EventServiceImpl implements EventService {
     List<Integer> typeList = new ArrayList<>();
     typeList.add(0);
     typeList.add(1);
-    return EventMapperImpl.toEventDtoList(
-        eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
-            typeList));
+    return null;
+//        EventMapperImpl.toEventDtoList(
+//        eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
+//            typeList, ));
   }
 
   @Override
