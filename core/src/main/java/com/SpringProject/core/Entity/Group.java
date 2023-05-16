@@ -33,6 +33,10 @@ public class Group {
   private String description;
   @Column(name = "created_at", nullable = false, updatable = false)
   private Timestamp createdAt;
+
+  @Column(name = "updateTime")
+  private Timestamp updateTime;
+
   @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserGroup> userGroupList;
 

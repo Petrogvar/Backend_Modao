@@ -67,6 +67,7 @@ public class GroupServiceImpl implements GroupService {
     }
     group.setUuid(uuid);
     group.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+    group.setUpdateTime(new Timestamp(System.currentTimeMillis()));
     Optional<User> optionalUser = usersRepository.findById(userIdCreator);
     if (!optionalUser.isPresent()) {
       throw new NotFoundException();

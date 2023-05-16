@@ -122,6 +122,7 @@ public class EventServiceImpl implements EventService {
     userEvent.setGroupId(eventDto.getGroupId());
     paying.getUserEventList().add(userEvent);
 
+    //group.setUpdateTime(new Timestamp(System.currentTimeMillis()));
     group.getEventList().add(event);
 
     for(UserGroup userGroup: optionalGroup.get().getUserGroupList()){
@@ -137,7 +138,8 @@ public class EventServiceImpl implements EventService {
   public void confirmationEvent(Long userId, Long groupId, Long eventId) {
     Optional<User> optionalUser = userRepository.findById(userId);
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
-    if (!optionalUser.isPresent() || !optionalEvent.isPresent()) {
+    Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    if (!optionalUser.isPresent() || !optionalEvent.isPresent() || !optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
     if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
@@ -146,6 +148,8 @@ public class EventServiceImpl implements EventService {
     if (optionalEvent.get().getStatus() != 0) {
       throw new BadRequestException("status != 0");
     }
+
+    optionalGroup.get().setUpdateTime(new Timestamp(System.currentTimeMillis()));
     optionalEvent.get().setStatus(1);
     for (Expense expense : optionalEvent.get().getExpenseList()) {
       //Expense expense = optionalEvent.get().getExpenseList().get(i);
@@ -315,6 +319,8 @@ public class EventServiceImpl implements EventService {
       userEvent.setGroupId(userEventOld.getGroupId());
       userEventOld.getUser().getUserEventList().add(userEvent);
     }
+
+    optionalGroup.get().setUpdateTime(new Timestamp(System.currentTimeMillis()));
 
     for (Expense expense1 : eventNew.getExpenseList()) {
       Debt debt = debtRepository.findByGroupAndUserFromAndUserTo
