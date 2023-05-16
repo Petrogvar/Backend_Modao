@@ -2,6 +2,7 @@ package com.SpringProject.core.Services;
 
 import static java.lang.System.currentTimeMillis;
 
+import com.SpringProject.core.Entity.Token;
 import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Mapper.GroupMapperImpl;
 import com.SpringProject.core.Repository.InvitationFriendRepository;
@@ -95,6 +96,9 @@ public class UserServiceImpl implements UserService {
     String salt = BCrypt.gensalt(4, random);
     user.setPassword(BCrypt.hashpw(user.getPassword(), salt));
 
+    Token token= new Token();
+    token.setUser(user);
+    user.setToken(token);
 
     user.setIdPicture(-1);
     user.setBank("-");
@@ -109,6 +113,16 @@ public class UserServiceImpl implements UserService {
     user.setUuid(uuid);
 
     return userRepository.save(user).getId();
+  }
+
+  @Override
+  public void exitUser(Long userId) {
+    Optional<User> optionalUser =  userRepository.findById(userId);
+    if (!optionalUser.isPresent())
+      throw new NotFoundException();
+    optionalUser.get().getToken().setRegistrationToken(null);
+    optionalUser.get().getToken().setRegistrationToken(null);
+    optionalUser.get().getToken().setTime(null);
   }
 
   //хз

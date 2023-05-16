@@ -44,14 +44,19 @@ public class AuthService  {
     }
     UserDto userDto = UserMapperImpl.toUserDto(optionalUser.get());
     if (BCrypt.checkpw(authRequest.getPassword(), optionalUser.get().getPassword())) {
-      ResponseEntity<String> responseEntity = firebase.registerServer(authRequest.getDeviceToken(), authRequest.getPackageName(),
-          authRequest.getAppVersion());
+
       final String accessToken = jwtProvider.generateAccessToken(userDto);
       final String refreshToken = jwtProvider.generateRefreshToken(userDto);
       Token token = optionalUser.get().getToken();
       token.setRefreshToken(refreshToken);
-      JSONObject jsonObject = new JSONObject(responseEntity.getBody());
-      token.setRegistrationToken(jsonObject.getString("token"));
+      if (authRequest.getDeviceToken() != null && authRequest.getPackageName() != null &&
+          authRequest.getAppVersion()!= null) {
+        ResponseEntity<String> responseEntity = firebase.registerServer(
+            authRequest.getDeviceToken(), authRequest.getPackageName(),
+            authRequest.getAppVersion());
+        JSONObject jsonObject = new JSONObject(responseEntity.getBody());
+        token.setRegistrationToken(jsonObject.getString("token"));
+      }
       token.setTime(new Timestamp(System.currentTimeMillis()));
      //refreshStorage.put(userDto.getLogin(), refreshToken);
       userRepository.save(optionalUser.get());

@@ -17,7 +17,7 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/dbchangelog-master.yml
 server:
-  port: 8080
+  port: 50000
   servlet:
     encoding:
       charset: UTF-8

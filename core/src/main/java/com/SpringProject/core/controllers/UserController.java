@@ -65,6 +65,11 @@ public class UserController {
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
     return userService.getNewUuid(userId);
   }
+  @GetMapping("/exitUser")
+  public void exitUser(){
+    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
+    userService.exitUser(userIdCreator);
+  }
 
   @GetMapping("/listFriends")
   List<UserDto> getListFriends(){
