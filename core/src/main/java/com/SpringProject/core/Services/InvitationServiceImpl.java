@@ -12,6 +12,7 @@ import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.InvitationFriendRepository;
 import com.SpringProject.core.Repository.InvitationInGroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
+import com.SpringProject.core.Services.Notification.Notification;
 import com.SpringProject.core.Services.h.CommonService;
 import com.SpringProject.core.controllers.Error.BadRequestException;
 import com.SpringProject.core.controllers.Error.NotFoundException;
@@ -32,6 +33,8 @@ public class InvitationServiceImpl implements InvitationService {
   private final GroupRepository groupRepository;
   private final CommonService commonService;
 
+  private final Notification notification;
+
   private final DebtRepository debtRepository;
 
   @Override
@@ -50,6 +53,8 @@ public class InvitationServiceImpl implements InvitationService {
     if (optionalUser.get().getFriends().contains(optionalUserFriends.get())) {
       throw new BadRequestException("пользователь уже в списке друзей");
     }
+
+    notification.newNotificationFriends(optionalUserFriends.get(), optionalUser.get());
 
     InvitationFriend invitation = new InvitationFriend();
     invitation.setUserId(userId);
@@ -99,6 +104,9 @@ public class InvitationServiceImpl implements InvitationService {
     invitation.setGroupId(groupId);
     invitation.setUser(optionalUserFriends.get());
     optionalUserFriends.get().getInvitationInGroupList().add(invitation);
+
+    notification.newNotificationGroup(optionalUserFriends.get(), optionalUser.get(), optionalGroup.get());
+
     userRepository.save(optionalUserFriends.get());
   }
 
@@ -219,6 +227,8 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public void createInvitationFriendByGroup(Long userIdCreator, Long groupId, Long userId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
+    Optional<User> optionalUser = userRepository.findById(userIdCreator);
+    Optional<User> optionalUserFriend = userRepository.findById(userId);
     if (!optionalGroup.isPresent())
       throw new NotFoundException();
     int size = optionalGroup.get().getUserGroupList().size();
@@ -245,6 +255,7 @@ public class InvitationServiceImpl implements InvitationService {
     if (userCreator.getFriends().contains(user)) {
       throw new BadRequestException("пользователь уже в списке друзей");
     }
+    //notification.newNotificationFriends(optionalUserFriends.get(), optionalUser.get());
     InvitationFriend invitation = new InvitationFriend();
     invitation.setUsername(userCreator.getUsername());
     invitation.setUserId(userCreator.getId());
