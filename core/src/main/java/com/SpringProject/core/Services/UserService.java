@@ -10,7 +10,7 @@ public interface UserService {
 
   Long createUser(UserDto userDto);
 
-
+  void exitUser(Long userId);
 
   void deleteUser(Long userId);
 
