@@ -22,4 +22,8 @@ public interface GroupService {
   GroupDto getNewUuid(Long groupId);
 
   void archiveGroup(Long groupId);
+
+  void archiveNoGroup(Long groupId);
+
+  void deleteUserInGroup(Long groupId, Long userId);
 }

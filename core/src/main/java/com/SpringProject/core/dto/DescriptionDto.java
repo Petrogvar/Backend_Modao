@@ -6,6 +6,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class DescriptionDto {
-  String nane;
+  String name;
   String description;
 }

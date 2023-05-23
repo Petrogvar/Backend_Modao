@@ -27,7 +27,6 @@ public class Group {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
   private String groupName;
-  private Integer type;
   private Integer typeGroup;
   @Column(unique=true)
   private String uuid;

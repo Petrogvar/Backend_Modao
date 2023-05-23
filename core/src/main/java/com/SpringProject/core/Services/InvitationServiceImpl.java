@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @Service
 @RequiredArgsConstructor
@@ -69,8 +70,13 @@ public class InvitationServiceImpl implements InvitationService {
     Optional<User> optionalUser = userRepository.findById(userId);
     Optional<User> optionalUserFriends = userRepository.findById(userIdFriends);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (!optionalUserFriends.isPresent() || !optionalUser.isPresent() || !optionalGroup.isPresent()) {
+
+    if (!optionalUserFriends.isPresent() || !optionalUser.isPresent()
+        || !optionalGroup.isPresent()) {
       throw new NotFoundException();
+    }
+    if (optionalGroup.get().getTypeGroup() == 1) {
+      throw new BadRequestException("archive group");
     }
 //    int size = optionalUser.get().getFriends().size();
 //    boolean userIsFriend = false;
@@ -105,7 +111,8 @@ public class InvitationServiceImpl implements InvitationService {
     invitation.setUser(optionalUserFriends.get());
     optionalUserFriends.get().getInvitationInGroupList().add(invitation);
 
-    notification.newNotificationGroup(optionalUserFriends.get(), optionalUser.get(), optionalGroup.get());
+    notification.newNotificationGroup(optionalUserFriends.get(), optionalUser.get(),
+        optionalGroup.get());
 
     userRepository.save(optionalUserFriends.get());
   }
@@ -122,8 +129,8 @@ public class InvitationServiceImpl implements InvitationService {
       throw new NotFoundException();
     }
     invitationFriendRepository.delete(optionalInvitation.get());
-   // String p = optionalInvitation.get().getUsername();
-   // System.out.println(p);
+    // String p = optionalInvitation.get().getUsername();
+    // System.out.println(p);
   }
 
   @Override
@@ -153,10 +160,12 @@ public class InvitationServiceImpl implements InvitationService {
       throw new NotFoundException();
     }
     Optional<User> optionalUser = userRepository.findById(optionalInvitation.get().getUserId());
-    if (!optionalUser.isPresent())
+    if (!optionalUser.isPresent()) {
       throw new BadRequestException("123");
+    }
 
-    Optional<InvitationFriend> optionalInvitationOld =  invitationFriendRepository.getByUserIdAndUser_Id(optionalUserFriend.get().getId(),
+    Optional<InvitationFriend> optionalInvitationOld = invitationFriendRepository.getByUserIdAndUser_Id(
+        optionalUserFriend.get().getId(),
         optionalInvitation.get().getUserId());
     optionalInvitationOld.ifPresent(invitationFriendRepository::delete);
 
@@ -178,15 +187,21 @@ public class InvitationServiceImpl implements InvitationService {
       throw new NotFoundException();
     }
     Optional<Group> optionalGroup = groupRepository.findById(optionalInvitation.get().getGroupId());
-    if (!optionalGroup.isPresent())
+    if (!optionalGroup.isPresent()) {
       throw new BadRequestException("123");
+    }
+
     invitationInGroupRepository.delete(optionalInvitation.get());
-    invitationInGroupRepository.deleteAllByUserAndGroupId(optionalUserFriend.get(), optionalGroup.get().getId());
+    if (optionalGroup.get().getTypeGroup() == 1) {
+      throw new BadRequestException("archive group");
+    }
+    invitationInGroupRepository.deleteAllByUserAndGroupId(optionalUserFriend.get(),
+        optionalGroup.get().getId());
     for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
       Debt debt = new Debt();
       Debt debtBack = new Debt();
       debtBack.setDebt(0D);
-      debt.setDebt(0D); 
+      debt.setDebt(0D);
       debtBack.setGroup(optionalGroup.get());
       debt.setGroup(optionalGroup.get());
       debtBack.setUserFrom(optionalUserFriend.get());
@@ -211,16 +226,18 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public List<InvitationInGroupDto> getInvitationsInGroup(Long userIdCreator) {
     Optional<User> optionalUser = userRepository.findById(userIdCreator);
-    if(!optionalUser.isPresent())
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
+    }
     return InvitationMapperImpl.toGroupDtoList(optionalUser.get().getInvitationInGroupList());
   }
 
   @Override
   public List<InvitationFriendDto> getInvitationsFriend(Long userIdCreator) {
     Optional<User> optionalUser = userRepository.findById(userIdCreator);
-    if(!optionalUser.isPresent())
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
+    }
     return InvitationMapperImpl.toFriendDtoList(optionalUser.get().getInvitationFriendList());
   }
 
@@ -229,22 +246,23 @@ public class InvitationServiceImpl implements InvitationService {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     Optional<User> optionalUser = userRepository.findById(userIdCreator);
     Optional<User> optionalUserFriend = userRepository.findById(userId);
-    if (!optionalGroup.isPresent())
+    if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
+    }
     int size = optionalGroup.get().getUserGroupList().size();
     long id;
-    User userCreator  =null;
+    User userCreator = null;
     User user = null;
-    for(int i=0; i<size; i++){
-      id  =  optionalGroup.get().getUserGroupList().get(i).getUser().getId();
-      if (id == userIdCreator){
+    for (int i = 0; i < size; i++) {
+      id = optionalGroup.get().getUserGroupList().get(i).getUser().getId();
+      if (id == userIdCreator) {
         userCreator = optionalGroup.get().getUserGroupList().get(i).getUser();
       }
-      if (id == userId){
+      if (id == userId) {
         user = optionalGroup.get().getUserGroupList().get(i).getUser();
       }
     }
-    if(user == null || userCreator == null){
+    if (user == null || userCreator == null) {
       throw new BadRequestException("123");
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByUserIdAndUser(

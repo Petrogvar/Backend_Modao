@@ -33,13 +33,15 @@ public class EventDto {
   private Long userCreatorId;
   //private Instant time;
   private List<ExpenseDto> expenseDtoList;
-
-  public EventDto(Long id, String eventName, String description, Double price, Integer type, LocalDateTime time) {
+  private Long deleteId;
+  public EventDto(Long id, String eventName, String description,
+      Double price, Integer type, LocalDateTime time, Long deleteId) {
     this.id = id;
     this.name = eventName;
     this.description =description;
     this.price = price;
     this.type = type;
     this.time = time;
+    this.deleteId = deleteId;
   }
 }

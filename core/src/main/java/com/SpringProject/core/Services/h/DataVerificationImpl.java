@@ -86,7 +86,7 @@ public class DataVerificationImpl implements DataVerification {
       throw new InvalidGroupException("Invalid group name", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
-    if (!isValidName(groupDto.getDescription())) {
+    if (groupDto.getDescription() != null && !isValidName(groupDto.getDescription())) {
       throw new InvalidGroupException("Invalid group description", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 

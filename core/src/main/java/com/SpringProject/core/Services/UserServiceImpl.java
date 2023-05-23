@@ -149,11 +149,14 @@ public class UserServiceImpl implements UserService {
     //проверка type
     List<GroupDto> groupDtoList = new ArrayList<>();
     for (UserGroup userGroup : optionalUser.get().getUserGroupsList()) {
-      if (type == 2 || Objects.equals(userGroup.getGroup().getType(), type)) {
+      if (type == 2 || userGroup.getGroup().getTypeGroup().equals(type)) {
         groupDtoList.add(
             GroupMapperImpl.toGroupDtoWithoutUuid(userGroup.getGroup()));
       }
     }
+    groupDtoList.sort((s1, s2) -> {
+      return s2.getUpdateTime().compareTo(s1.getUpdateTime());
+    });
     return groupDtoList;
   }
 

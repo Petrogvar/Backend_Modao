@@ -15,4 +15,5 @@ public class GroupDto {
   private String uuid;
   private Integer typeGroup;
   private LocalDateTime time;
+  private LocalDateTime updateTime;
 }

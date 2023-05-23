@@ -77,32 +77,33 @@ public class EventController {
     eventService.unconfirmationEvent(userId, groupId, eventId);
   }
 
-  @GetMapping("/listEventsConfirmed/0/{groupId}/{type}") // time
+  @GetMapping("/listEventsConfirmed/0/{groupId}/{type}/{time1}/{time2}") // time
   public Page<EventDto> getСonfirmedEventMod0List(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit" , defaultValue = "30") @Min(0) @Max(30) Integer limit,
-      @PathVariable Long groupId, @PathVariable int type) {
+      @PathVariable Long groupId, @PathVariable int type,
+  @PathVariable Long time1, @PathVariable Long time2) {
     Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
     if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId)) {
       throw new NotRightException();
     }
-    return eventService.getСonfirmedEventMod0List(groupId, type, offset, limit);
+    return eventService.getСonfirmedEventMod0List(groupId, type, offset, limit, time1, time2 );
   }
 
-  @GetMapping("/listEventsConfirmed/1/{groupId}/{type}") // time
+  @GetMapping("/listEventsConfirmed/1/{groupId}/{type}/{time1}/{time2}") // time
   public Page<EventDto> getСonfirmedEventMod1List(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit" , defaultValue = "30") @Min(0) @Max(30) Integer limit,
       @PathVariable Long groupId,
-      @PathVariable int type) {
+      @PathVariable int type, @PathVariable Long time1, @PathVariable Long time2) {
     Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
     if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId)) {
       throw new NotRightException();
     }
 
-    return eventService.getСonfirmedEventMod1List(groupId, userId, type, offset, limit);
+    return eventService.getСonfirmedEventMod1List(groupId, userId, type, offset, limit, time1, time2);
   }
 
   @GetMapping("/listEventsUnconfirmed/{groupId}") // time

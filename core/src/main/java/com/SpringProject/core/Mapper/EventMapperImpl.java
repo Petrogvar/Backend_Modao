@@ -24,6 +24,7 @@ public class EventMapperImpl  {
     eventDto.setDescription(event.getDescription());
     eventDto.setStatus(event.getStatus());
     eventDto.setTime(event.getCreatedAt().toLocalDateTime());
+    eventDto.setDeleteId(eventDto.getDeleteId());
     return eventDto;
   }
 
@@ -38,7 +39,7 @@ public class EventMapperImpl  {
     List<EventDto> dtoList = entityPage.getContent().stream()
         .map(entity -> new EventDto(entity.getId(), entity.getEventName(),
             entity.getDescription(), entity.getPrice(), entity.getType(),
-            entity.getCreatedAt().toLocalDateTime()) )
+            entity.getCreatedAt().toLocalDateTime(), entity.getDeleteId()) )
         .collect(Collectors.toList());
     return new PageImpl<>(dtoList, entityPage.getPageable(), entityPage.getTotalElements());
   }

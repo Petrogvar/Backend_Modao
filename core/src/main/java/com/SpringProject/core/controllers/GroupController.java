@@ -67,6 +67,20 @@ public class GroupController {
     groupService.archiveGroup(groupId);
   }
 
+  @GetMapping("/archiveNo/{groupId}")
+  void archiveNoGroup(@PathVariable Long groupId){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId);
+    groupService.archiveNoGroup(groupId);
+  }
+
+  @GetMapping("/deleteUser/{groupId}/{userId}")
+  void deleteUserInGroup(@PathVariable Long groupId, @PathVariable Long userId){
+    Long userIdCreator = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    commonService.userIsOrganizerByUserIdAndGroupId(userIdCreator, groupId);
+    groupService.deleteUserInGroup(groupId, userId);
+  }
+
   @GetMapping("/delete/{groupId}")
   void deleteGroup(@PathVariable Long groupId){
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();

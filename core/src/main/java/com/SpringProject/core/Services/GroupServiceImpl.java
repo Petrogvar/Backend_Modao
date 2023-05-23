@@ -7,6 +7,7 @@ import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Repository.DebtRepository;
 import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.InvitationInGroupRepository;
+import com.SpringProject.core.Repository.UserGroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Services.h.CommonService;
 import com.SpringProject.core.Services.h.DataVerification;
@@ -37,6 +38,7 @@ public class GroupServiceImpl implements GroupService {
 
   private final DataVerification dataVerification;
   private final InvitationInGroupRepository invitationRepository;
+  private final UserGroupRepository userGroupRepository;
 
   @Override
   public GroupDto getGroup(Long groupId, int role) {
@@ -201,6 +203,26 @@ public class GroupServiceImpl implements GroupService {
     }
     optionalGroup.get().setTypeGroup(1);
     groupRepository.save(optionalGroup.get());
+  }
+
+  @Override
+  public void archiveNoGroup(Long groupId) {
+    Optional<Group> optionalGroup =  groupRepository.findById(groupId);
+    if(!optionalGroup.isPresent()){
+      throw new NotFoundException();
+    }
+    optionalGroup.get().setTypeGroup(0);
+    groupRepository.save(optionalGroup.get());
+  }
+
+  @Override
+  public void deleteUserInGroup(Long groupId, Long userId) {
+    Optional<UserGroup> optionalUserGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
+    if (!optionalUserGroup.isPresent())
+      throw new NotFoundException();
+    if (optionalUserGroup.get().getRole() == 1)
+      throw new NotRightException();
+    userGroupRepository.delete(optionalUserGroup.get());
   }
 
 

@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 public class AuthService  {
 
   private final UserRepository userRepository;
-  private final Map<String, String> refreshStorage = new HashMap<>();
   private final JwtProvider jwtProvider;
   private  final Firebase firebase;
 
@@ -68,11 +67,12 @@ public class AuthService  {
     if (jwtProvider.validateRefreshToken(refreshToken)) {
       final Claims claims = jwtProvider.getRefreshClaims(refreshToken);
       final String login = claims.getSubject();
-      final String saveRefreshToken = refreshStorage.get(login);
+
       Optional<User> optionalUser = userRepository.getByLogin(login);
       if (!optionalUser.isPresent())
         throw new AuthException(); //aaaa
-      if (saveRefreshToken != null && optionalUser.get().getToken().getRefreshToken().equals(refreshToken)) {
+      final String saveRefreshToken = optionalUser.get().getToken().getRefreshToken();
+      if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
         final UserDto userDto = UserMapperImpl.toUserDto(optionalUser.get());
         final String accessToken = jwtProvider.generateAccessToken(userDto);
         return new JwtResponse(null, accessToken, null);

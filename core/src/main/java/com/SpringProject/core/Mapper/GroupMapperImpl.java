@@ -23,6 +23,7 @@ public class GroupMapperImpl {
     groupDto.setDescription(group.getDescription());
     groupDto.setTime(group.getCreatedAt().toLocalDateTime());
     groupDto.setUuid(group.getUuid());
+    groupDto.setUpdateTime(group.getUpdateTime().toLocalDateTime());
     return groupDto;
   }
 

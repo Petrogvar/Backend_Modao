@@ -23,7 +23,6 @@ import com.SpringProject.core.dto.my.CustomPairIdCoefficient;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,7 +45,7 @@ public class EventServiceImpl implements EventService {
   private final UserRepository userRepository;
   private final DataVerification dataVerification;
 
-  private  final Notification notification;
+  private final Notification notification;
 
   @Override
   public Long createEvent(EventDto eventDto, Long userIdCreator) {
@@ -55,10 +54,11 @@ public class EventServiceImpl implements EventService {
     Optional<User> optionalUserPaying = userRepository.findById(
         eventDto.getCustomPairIdCoefficientPaying().getId());
     Optional<Group> optionalGroup = groupRepository.findById(eventDto.getGroupId());
-    if (!optionalGroup.isPresent() || !optionalUserCreator.isPresent() || !optionalUserPaying.isPresent()) {
+    if (!optionalGroup.isPresent() || !optionalUserCreator.isPresent()
+        || !optionalUserPaying.isPresent()) {
       throw new NotFoundException();
     }
-    if (optionalGroup.get().getTypeGroup() == 1){
+    if (optionalGroup.get().getTypeGroup() == 1) {
       throw new BadRequestException("TypeGroup() == 1");
     }
 
@@ -76,10 +76,10 @@ public class EventServiceImpl implements EventService {
     }
 
     List<Long> userIdList = new ArrayList<>();
-    for (UserGroup userGroup :group.getUserGroupList()) {
+    for (UserGroup userGroup : group.getUserGroupList()) {
       userIdList.add(userGroup.getUser().getId());
     }
-    for (CustomPairIdCoefficient customPairIdCoefficient: eventDto.getCustomPairIdCoefficientList()) {
+    for (CustomPairIdCoefficient customPairIdCoefficient : eventDto.getCustomPairIdCoefficientList()) {
       if (!userIdList.contains(customPairIdCoefficient.getId())) {
         throw new BadRequestException("UserNotGroup");
       }
@@ -134,8 +134,8 @@ public class EventServiceImpl implements EventService {
     //group.setUpdateTime(new Timestamp(System.currentTimeMillis()));
     group.getEventList().add(event);
 
-    for(UserGroup userGroup: optionalGroup.get().getUserGroupList()){
-      if (userGroup.getRole() == 1){
+    for (UserGroup userGroup : optionalGroup.get().getUserGroupList()) {
+      if (userGroup.getRole() == 1) {
         notification.newNotificationEvent(userGroup.getUser(), event);
       }
     }
@@ -151,9 +151,13 @@ public class EventServiceImpl implements EventService {
     if (!optionalUser.isPresent() || !optionalEvent.isPresent() || !optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
+    if (optionalGroup.get().getTypeGroup() == 1) {
+      throw new BadRequestException("TypeGroup() == 1");
+    }
     if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
       throw new BadRequestException("событие не в группе");
     }
+
     if (optionalEvent.get().getStatus() != 0) {
       throw new BadRequestException("status != 0");
     }
@@ -176,7 +180,7 @@ public class EventServiceImpl implements EventService {
 
   @Override
   public Page<EventDto> getСonfirmedEventMod0List(Long groupId, int type, Integer offset,
-      Integer limit) {
+      Integer limit, Long time1, Long time2) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
     if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
@@ -188,22 +192,23 @@ public class EventServiceImpl implements EventService {
     statusList.add(-2);
     List<Integer> typeList = new ArrayList<>();
     switch (type) {
-      case 0 :
+      case 0:
         typeList.add(0);
         break;
-      case 1 :
+      case 1:
         typeList.add(1);
         break;
-      case 2 :
+      case 2:
         typeList.add(0);
         typeList.add(1);
         break;
-        default:
-          throw new BadRequestException("invalid type");
+      default:
+        throw new BadRequestException("invalid type");
     }
-    Pageable pageable = PageRequest.of(offset, limit,  Sort.by(Direction.DESC, "createdAt"));
-    Page<Event> eventPage = eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
-            typeList, pageable);
+    Pageable pageable = PageRequest.of(offset, limit, Sort.by(Direction.DESC, "createdAt"));
+    Page<Event> eventPage = eventRepository.findAllByGroupAndStatusInAndTypeInAndCreatedAtBetween(
+        optionalGroup.get(), statusList,
+        typeList, pageable, new Timestamp(time1), new Timestamp(time2));
     return EventMapperImpl.fromEntityPage(eventPage);
   }
 
@@ -281,8 +286,12 @@ public class EventServiceImpl implements EventService {
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
     Optional<User> optionalUserCreator = userRepository.findById(userIdCreator);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (!optionalEvent.isPresent() || !optionalUserCreator.isPresent() || !optionalGroup.isPresent()) {
+    if (!optionalEvent.isPresent() || !optionalUserCreator.isPresent()
+        || !optionalGroup.isPresent()) {
       throw new NotFoundException();
+    }
+    if (optionalGroup.get().getTypeGroup() == 1) {
+      throw new BadRequestException("archive group");
     }
     if (!Objects.equals(optionalEvent.get().getGroup().getId(), groupId)) {
       throw new BadRequestException("событие не в группе");
@@ -293,8 +302,9 @@ public class EventServiceImpl implements EventService {
 
     Event eventNew = new Event();
     eventNew.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-    eventNew.setEventName(descriptionDto.getNane());
-    eventNew.setDescription(descriptionDto.getDescription());
+    eventNew.setEventName("deleting" + descriptionDto.getName());
+
+    eventNew.setDescription(optionalEvent.get().getDescription());
     eventNew.setUserCreatorId(userIdCreator);
     eventNew.setUsernameCreator(optionalUserCreator.get().getUsername());
     eventNew.setStatus(-2);
@@ -303,6 +313,7 @@ public class EventServiceImpl implements EventService {
     eventNew.setGroup(optionalEvent.get().getGroup());
     eventNew.setUsernamePaying(optionalEvent.get().getUsernamePaying());
     eventNew.setUserPayingId(optionalEvent.get().getUserPayingId());
+    eventNew.setDeleteId(eventId);
     eventNew.setExpenseList(new ArrayList<>());
 
     optionalEvent.get().setStatus(-1);
@@ -321,7 +332,7 @@ public class EventServiceImpl implements EventService {
 
     UserEvent userEvent;
 
-    for (UserEvent userEventOld : optionalEvent.get().getUserEventList()){
+    for (UserEvent userEventOld : optionalEvent.get().getUserEventList()) {
       userEvent = new UserEvent();
       userEvent.setCoefficient(userEventOld.getCoefficient());
       userEvent.setUser(userEventOld.getUser());
@@ -340,13 +351,16 @@ public class EventServiceImpl implements EventService {
           (expense1.getEvent().getGroup(), expense1.getUserTo(), expense1.getUserFrom());
       debt.setDebt(debt.getDebt() + expense1.getTransferAmount());
     }
-    return eventRepository.save(eventNew).getId();
-
+    Long id = eventRepository.save(eventNew).getId();
+    optionalEvent.get().setDeleteId(id);
+    eventRepository.save(optionalEvent.get());
+    return id;
   }
 
   @Override
-  public Page<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type, Integer offset,
-      Integer limit) {
+  public Page<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type,
+      Integer offset,
+      Integer limit, Long time1, Long time2) {
     Optional<User> optionalUser = userRepository.findById(userId);
     if (!optionalUser.isPresent()) {
       throw new NotFoundException();
@@ -358,13 +372,13 @@ public class EventServiceImpl implements EventService {
     statusList.add(-2);
     List<Integer> typeList = new ArrayList<>();
     switch (type) {
-      case 0 :
+      case 0:
         typeList.add(0);
         break;
-      case 1 :
+      case 1:
         typeList.add(1);
         break;
-      case 2 :
+      case 2:
         typeList.add(0);
         typeList.add(1);
         break;
@@ -376,7 +390,9 @@ public class EventServiceImpl implements EventService {
     for (UserEvent userEvent : userEventList) {
       if (Objects.equals(userEvent.getGroupId(), groupId)) {
         event = userEvent.getEvent();
-        if (typeList.contains(event.getType()) && statusList.contains(event.getStatus())) {
+        if (typeList.contains(event.getType()) && statusList.contains(event.getStatus())
+            && event.getCreatedAt().getTime() >= time1
+            && event.getCreatedAt().getTime() <= time2) {
           eventDtoList.add(EventMapperImpl.toEventDto(event));
         }
       }
@@ -385,12 +401,14 @@ public class EventServiceImpl implements EventService {
     eventDtoList.sort((s1, s2) -> {
       return s2.getTime().compareTo(s1.getTime());
     });
-    if (offset*limit > eventDtoList.size())
+    if (offset * limit > eventDtoList.size()) {
       throw new BadRequestException("offset*limit > eventDtoList.size()");
-    if (((offset+1)*limit) <= eventDtoList.size())
-       eventDtoList1 = eventDtoList.subList(offset*limit, (((offset+1)*limit)));
-    else
-      eventDtoList1 = eventDtoList.subList(offset*limit, eventDtoList.size() );
+    }
+    if (((offset + 1) * limit) <= eventDtoList.size()) {
+      eventDtoList1 = eventDtoList.subList(offset * limit, (((offset + 1) * limit)));
+    } else {
+      eventDtoList1 = eventDtoList.subList(offset * limit, eventDtoList.size());
+    }
 
     Pageable pageable = PageRequest.of(offset, limit);
     return new PageImpl<>(eventDtoList1, pageable, eventDtoList1.size());

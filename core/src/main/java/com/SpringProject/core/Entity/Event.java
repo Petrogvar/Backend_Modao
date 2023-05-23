@@ -56,5 +56,6 @@ public class Event {
   private Double price;
   private String eventName;
   private Integer status;
+  private Long deleteId;
 
 }
