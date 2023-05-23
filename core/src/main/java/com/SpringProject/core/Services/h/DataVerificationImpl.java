@@ -26,9 +26,9 @@ public class DataVerificationImpl implements DataVerification {
       throw new InvalidPasswordException("password is null");
     }
 
-// Проверяем, что пароль имеет длину не менее 8 символов
+// Проверяем, что пароль имеет длину не менее 6 символов
     if (password.length() < 6) {
-      throw new InvalidPasswordException("Пароль слишком короткий");
+      throw new InvalidPasswordException("Пароль слишком короткий\n");
     }
 
     // Проверяем, что пароль содержит как минимум одну цифру
@@ -57,7 +57,7 @@ public class DataVerificationImpl implements DataVerification {
 
     // Проверяем длину логина
     if (login.length() < 3 || login.length() > 20) {
-      throw new InvalidLoginException("Логин должен быть от 3 до 20 символов");
+      throw new InvalidLoginException("Логин должен быть от 3 до 20 символов\n");
     }
 
     // Проверяем наличие только букв и цифр
@@ -138,7 +138,7 @@ public class DataVerificationImpl implements DataVerification {
       throw new InvalidEventException("event cannot be null", HttpStatus.UNPROCESSABLE_ENTITY);
     }
     if (eventDto.getName() == null || eventDto.getType() == null
-        || eventDto.getDescription() == null
+        //|| eventDto.getDescription() == null
         || eventDto.getPrice() == null || eventDto.getGroupId() == null
         || eventDto.getCustomPairIdCoefficientPaying() == null
         || eventDto.getCustomPairIdCoefficientPaying().getCoefficient() == null
@@ -148,8 +148,7 @@ public class DataVerificationImpl implements DataVerification {
     if (!isValidName(eventDto.getName())) {
       throw new InvalidEventException("Invalid event name", HttpStatus.UNPROCESSABLE_ENTITY);
     }
-
-    if (!isValidName(eventDto.getDescription())) {
+    if (eventDto.getDescription() != null && !isValidName(eventDto.getDescription())) {
       throw new InvalidEventException("Invalid event description", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 

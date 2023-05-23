@@ -9,8 +9,8 @@ import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Services.h.DataVerification;
 import com.SpringProject.core.Services.h.Uid;
-import com.SpringProject.core.controllers.Error.NotFoundException;
-import com.SpringProject.core.controllers.Error.LoginException;
+import com.SpringProject.core.controllers.Error.Exception.NotFoundException;
+import com.SpringProject.core.controllers.Error.Exception.LoginException;
 import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.Mapper.UserMapperImpl;
@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
 
     dataVerification.login(user.getLogin());
     if (userRepository.findByLogin(user.getLogin()) != null) {
-      throw new LoginException();
+      throw new LoginException("такой логин занят");
     }
     dataVerification.password(user.getPassword());
     dataVerification.isValidUsername(user.getUsername());

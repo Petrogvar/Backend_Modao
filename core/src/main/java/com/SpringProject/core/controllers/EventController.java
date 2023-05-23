@@ -2,7 +2,7 @@ package com.SpringProject.core.controllers;
 
 import com.SpringProject.core.Services.h.CommonService;
 import com.SpringProject.core.Services.EventService;
-import com.SpringProject.core.controllers.Error.NotRightException;
+import com.SpringProject.core.controllers.Error.Exception.NotRightException;
 import com.SpringProject.core.dto.DescriptionDto;
 import com.SpringProject.core.dto.EventDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
@@ -80,7 +80,7 @@ public class EventController {
   @GetMapping("/listEventsConfirmed/0/{groupId}/{type}") // time
   public Page<EventDto> getСonfirmedEventMod0List(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
-      @RequestParam(value = "limit" , defaultValue = "20") @Min(0) @Max(10) Integer limit,
+      @RequestParam(value = "limit" , defaultValue = "30") @Min(0) @Max(30) Integer limit,
       @PathVariable Long groupId, @PathVariable int type) {
     Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
@@ -91,14 +91,18 @@ public class EventController {
   }
 
   @GetMapping("/listEventsConfirmed/1/{groupId}/{type}") // time
-  public List<EventDto> getСonfirmedEventMod1List(@PathVariable Long groupId,
+  public Page<EventDto> getСonfirmedEventMod1List(
+      @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
+      @RequestParam(value = "limit" , defaultValue = "30") @Min(0) @Max(30) Integer limit,
+      @PathVariable Long groupId,
       @PathVariable int type) {
     Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
     if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId)) {
       throw new NotRightException();
     }
-    return eventService.getСonfirmedEventMod1List(groupId, userId, type);
+
+    return eventService.getСonfirmedEventMod1List(groupId, userId, type, offset, limit);
   }
 
   @GetMapping("/listEventsUnconfirmed/{groupId}") // time

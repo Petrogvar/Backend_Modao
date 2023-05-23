@@ -9,10 +9,6 @@ public class InvalidGroupException extends RuntimeException {
     super(message);
   }
 
-  public InvalidGroupException(String message, Throwable cause) {
-    super(message, cause);
-  }
-
   public InvalidGroupException(String message, HttpStatus httpStatus) {
     super(message);
     this.httpStatus = httpStatus;

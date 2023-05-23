@@ -12,4 +12,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 Page<Event> findAllByGroupAndStatusInAndTypeIn(
     Group group, List<Integer> statusList, List<Integer> typeList, Pageable pageable);
 
+List<Event> findAllByGroupAndStatusInAndTypeIn(
+    Group group, List<Integer> statusList, List<Integer> typeList);
+
 }

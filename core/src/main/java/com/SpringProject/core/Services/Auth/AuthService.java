@@ -4,10 +4,8 @@ import com.SpringProject.core.Entity.Token;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Services.Firebase.Firebase;
-import com.SpringProject.core.controllers.Error.AuthException;
-import com.SpringProject.core.controllers.Error.BadRequestException;
-import com.SpringProject.core.controllers.Error.LoginException;
-import com.SpringProject.core.controllers.Error.NotFoundException;
+import com.SpringProject.core.controllers.Error.Exception.AuthException;
+import com.SpringProject.core.controllers.Error.Exception.LoginException;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
 import com.SpringProject.core.dto.domain.JwtRequest;
@@ -40,7 +38,7 @@ public class AuthService  {
     if (!optionalUser.isPresent())
       throw new AuthException();
     if(authRequest.getLogin() == null || authRequest.getPassword()==null){
-      throw new LoginException();
+      throw new LoginException("123");
     }
     UserDto userDto = UserMapperImpl.toUserDto(optionalUser.get());
     if (BCrypt.checkpw(authRequest.getPassword(), optionalUser.get().getPassword())) {
@@ -104,7 +102,7 @@ public class AuthService  {
         return new JwtResponse(null, accessToken, newRefreshToken);
       }
     }
-    throw new LoginException();
+    throw new LoginException("123");
   }
 
   public JwtAuthentication getAuthInfo() {

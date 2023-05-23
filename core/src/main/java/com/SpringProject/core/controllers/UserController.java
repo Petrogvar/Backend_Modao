@@ -2,12 +2,11 @@ package com.SpringProject.core.controllers;
 
 import com.SpringProject.core.Services.UserService;
 import com.SpringProject.core.Services.h.CommonService;
-import com.SpringProject.core.controllers.Error.NotRightException;
+import com.SpringProject.core.controllers.Error.Exception.NotRightException;
 import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
 import java.util.List;
-import java.util.Objects;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -77,17 +76,6 @@ public class UserController {
     return userService.getListFriends(userId);
   }
 
-//  @PostMapping("/in")
-//  public Long authorization(@RequestBody UserDto userDto) {
-//    return userService.authorizationUser(userDto);
-//  }
-
-
-//  @PostMapping("/invitation/{uuid}")
-//  public void createInvitationInFriends(@PathVariable String uuid){
-//    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
-//    userService.createInvitationInFriends(userIdCreator, uuid);
-//  }
 
   @PostMapping("/reg")
   public Long create(@RequestBody UserDto userDto) {
@@ -100,9 +88,9 @@ public class UserController {
     userService.deleteUser(userId);
   }
 
-  @PutMapping("/{userId}")
-    //+++ проверки, несколько для каждой информации
-  void update(@PathVariable Long userId, @RequestBody UserDto userDto) {
+  @PutMapping("/update")
+  void update(@RequestBody UserDto userDto) {
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
     userService.updateUser(userId, userDto);
   }
 

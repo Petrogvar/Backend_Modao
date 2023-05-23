@@ -4,7 +4,7 @@ package com.SpringProject.core.controllers;
 import com.SpringProject.core.Services.Auth.AuthService;
 import com.SpringProject.core.Services.GroupService;
 import com.SpringProject.core.Services.h.CommonService;
-import com.SpringProject.core.controllers.Error.NotRightException;
+import com.SpringProject.core.controllers.Error.Exception.NotRightException;
 import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
@@ -45,11 +45,6 @@ public class GroupController {
     return groupService.createGroup(groupDto, userId);
   }
 
-//  @DeleteMapping("/{groupId}") /// +++
-//  void deleteGroup(@PathVariable Long groupId) {
-//    groupService.deleteGroup(groupId);
-//  }
-//
   @PutMapping("/update/{groupId}")
   void updateGroup(@PathVariable Long groupId, @RequestBody GroupDto groupDto) {
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
@@ -70,6 +65,13 @@ public class GroupController {
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
     commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId);
     groupService.archiveGroup(groupId);
+  }
+
+  @GetMapping("/delete/{groupId}")
+  void deleteGroup(@PathVariable Long groupId){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId);
+    groupService.deleteGroup(groupId);
   }
 
 

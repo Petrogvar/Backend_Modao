@@ -11,9 +11,9 @@ import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Services.h.CommonService;
 import com.SpringProject.core.Services.h.DataVerification;
 import com.SpringProject.core.Services.h.Uid;
-import com.SpringProject.core.controllers.Error.BadRequestException;
-import com.SpringProject.core.controllers.Error.NotFoundException;
-import com.SpringProject.core.controllers.Error.NotRightException;
+import com.SpringProject.core.controllers.Error.Exception.BadRequestException;
+import com.SpringProject.core.controllers.Error.Exception.NotFoundException;
+import com.SpringProject.core.controllers.Error.Exception.NotRightException;
 import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.Mapper.GroupMapperImpl;
@@ -22,8 +22,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
-import liquibase.pro.packaged.G;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -95,12 +93,10 @@ public class GroupServiceImpl implements GroupService {
     }
 
     dataVerification.group(groupDto);
-
     Group group = optionalGroup.get();
     group.setDescription(groupDto.getDescription());
     group.setGroupName(groupDto.getGroupName());
     groupRepository.save(group);
-
   }
 
   @Override

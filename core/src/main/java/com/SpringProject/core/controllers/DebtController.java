@@ -2,7 +2,7 @@ package com.SpringProject.core.controllers;
 
 import com.SpringProject.core.Services.h.CommonService;
 import com.SpringProject.core.Services.DebtService;
-import com.SpringProject.core.controllers.Error.NotRightException;
+import com.SpringProject.core.controllers.Error.Exception.NotRightException;
 import com.SpringProject.core.dto.DebtDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
 import java.util.List;

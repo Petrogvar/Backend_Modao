@@ -17,6 +17,7 @@ public interface EventService {
 
   Long deleteEvent(DescriptionDto descriptionDto, Long userIdCreator, Long groupId, Long eventId);
 
-  List<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type);
+  Page<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type, Integer offset,
+      Integer limit);
 }
 

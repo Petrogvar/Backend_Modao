@@ -2,7 +2,7 @@ package com.SpringProject.core.controllers;
 
 import com.SpringProject.core.Services.InvitationService;
 import com.SpringProject.core.Services.h.CommonService;
-import com.SpringProject.core.controllers.Error.NotRightException;
+import com.SpringProject.core.controllers.Error.Exception.NotRightException;
 import com.SpringProject.core.dto.InvitationFriendDto;
 import com.SpringProject.core.dto.InvitationInGroupDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;

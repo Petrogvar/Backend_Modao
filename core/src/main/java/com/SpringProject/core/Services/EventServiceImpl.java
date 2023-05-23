@@ -13,9 +13,8 @@ import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Services.Notification.Notification;
 import com.SpringProject.core.Services.h.DataVerification;
-import com.SpringProject.core.controllers.Error.BadRequestException;
-import com.SpringProject.core.controllers.Error.NotFoundException;
-import com.SpringProject.core.controllers.Error.UserNotGroupException;
+import com.SpringProject.core.controllers.Error.Exception.BadRequestException;
+import com.SpringProject.core.controllers.Error.Exception.NotFoundException;
 import com.SpringProject.core.dto.DescriptionDto;
 import com.SpringProject.core.dto.EventDto;
 import com.SpringProject.core.dto.ExpenseDto;
@@ -24,11 +23,13 @@ import com.SpringProject.core.dto.my.CustomPairIdCoefficient;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -80,12 +81,12 @@ public class EventServiceImpl implements EventService {
     }
     for (CustomPairIdCoefficient customPairIdCoefficient: eventDto.getCustomPairIdCoefficientList()) {
       if (!userIdList.contains(customPairIdCoefficient.getId())) {
-        throw new UserNotGroupException();
+        throw new BadRequestException("UserNotGroup");
       }
     }
 
     if (!userIdList.contains(eventDto.getCustomPairIdCoefficientPaying().getId())) {
-      throw new UserNotGroupException();
+      throw new BadRequestException("UserNotGroup");
     }
 
     Event event = new Event();
@@ -248,16 +249,14 @@ public class EventServiceImpl implements EventService {
     if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
-
     List<Integer> statusList = new ArrayList<>();
     statusList.add(0);
     List<Integer> typeList = new ArrayList<>();
     typeList.add(0);
     typeList.add(1);
-    return null;
-//        EventMapperImpl.toEventDtoList(
-//        eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
-//            typeList, ));
+    return EventMapperImpl.toEventDtoList(
+        eventRepository.findAllByGroupAndStatusInAndTypeIn(optionalGroup.get(), statusList,
+            typeList));
   }
 
   @Override
@@ -346,7 +345,8 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
-  public List<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type) {
+  public Page<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type, Integer offset,
+      Integer limit) {
     Optional<User> optionalUser = userRepository.findById(userId);
     if (!optionalUser.isPresent()) {
       throw new NotFoundException();
@@ -381,8 +381,19 @@ public class EventServiceImpl implements EventService {
         }
       }
     }
-    return eventDtoList;
-  }
+    List<EventDto> eventDtoList1;
+    eventDtoList.sort((s1, s2) -> {
+      return s2.getTime().compareTo(s1.getTime());
+    });
+    if (offset*limit > eventDtoList.size())
+      throw new BadRequestException("offset*limit > eventDtoList.size()");
+    if (((offset+1)*limit) <= eventDtoList.size())
+       eventDtoList1 = eventDtoList.subList(offset*limit, (((offset+1)*limit)));
+    else
+      eventDtoList1 = eventDtoList.subList(offset*limit, eventDtoList.size() );
 
+    Pageable pageable = PageRequest.of(offset, limit);
+    return new PageImpl<>(eventDtoList1, pageable, eventDtoList1.size());
+  }
 
 }

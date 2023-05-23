@@ -7,8 +7,8 @@ import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Repository.DebtRepository;
 import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
-import com.SpringProject.core.controllers.Error.NotFoundException;
-import com.SpringProject.core.controllers.Error.UserNotGroupException;
+import com.SpringProject.core.controllers.Error.Exception.BadRequestException;
+import com.SpringProject.core.controllers.Error.Exception.NotFoundException;
 import com.SpringProject.core.dto.DebtDto;
 import com.SpringProject.core.Mapper.DebtMapperImpl;
 import java.util.List;
@@ -40,7 +40,7 @@ public class DebtServiceImpl implements DebtService{
       }
     }
     if (bool)
-      throw new UserNotGroupException();
+      throw new BadRequestException("UserNotGroupException");
     List<Debt> debtList = debtRepository.findAllByGroupAndUserFrom(optionalGroup.get(), optionalUser.get());
     return DebtMapperImpl.toDebtDtoList(debtList);
   }
