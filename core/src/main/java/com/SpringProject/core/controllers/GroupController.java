@@ -63,14 +63,18 @@ public class GroupController {
   @GetMapping("/archive/{groupId}")
   void archiveGroup(@PathVariable Long groupId){
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
-    commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId);
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId)){
+      throw new NotRightException();
+    }
     groupService.archiveGroup(groupId);
   }
 
   @GetMapping("/archiveNo/{groupId}")
   void archiveNoGroup(@PathVariable Long groupId){
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
-    commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId);
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId)){
+      throw new NotRightException();
+    }
     groupService.archiveNoGroup(groupId);
   }
 

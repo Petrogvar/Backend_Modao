@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost/store
     username: postgres
-    password: "qwertygoha"
+    password: "qwerty"
   jpa:
     generate-ddl: true
     properties:
@@ -17,7 +17,7 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/dbchangelog-master.yml
 server:
-  port: 5000
+  port: 50000
   servlet:
     encoding:
       charset: UTF-8
@@ -25,3 +25,6 @@ jwt:
   secret:
     access: qBTmv4oXFFR2GwjexDJ4t6fsIUIUhhXqlktXjXdkcyygs8nPVEwMfo29VDRRepYDVV5IkIxBMzr7OEHXEHd37w==
     refresh: zL1HB3Pch05Avfynovxrf/kpF9O2m4NCWKJUjEp27s9J2jEG3ifiKCGylaZ8fDeoONSTJP/wAzKawB8F9rOMNg==
+firebase:
+  service-account-file=/path/to/serviceAccountKey:
+     json:

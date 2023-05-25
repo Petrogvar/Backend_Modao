@@ -3,7 +3,6 @@ package com.SpringProject.core.Services.Auth;
 import com.SpringProject.core.Entity.Token;
 import com.SpringProject.core.Entity.User;
 import com.SpringProject.core.Repository.UserRepository;
-import com.SpringProject.core.Services.Firebase.Firebase;
 import com.SpringProject.core.controllers.Error.Exception.AuthException;
 import com.SpringProject.core.controllers.Error.Exception.LoginException;
 import com.SpringProject.core.dto.UserDto;
@@ -30,7 +29,6 @@ public class AuthService  {
 
   private final UserRepository userRepository;
   private final JwtProvider jwtProvider;
-  private  final Firebase firebase;
 
   public JwtResponse login(@NonNull JwtRequest authRequest) {
     Optional<User> optionalUser = userRepository.getByLogin(authRequest.getLogin());

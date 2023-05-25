@@ -1,7 +1,8 @@
 package com.SpringProject.core.Services.Firebase;
 
-import com.google.firebase.messaging.FirebaseMessagingException;
-
 public interface FcmService {
-  public String sendNotification(String deviceToken, String title, String body);
+  public String sendNotification1(String deviceToken, String title, String body, String key, String value);
+
+  public String sendNotification2(String deviceToken, String title, String body, String key1, String value1, String key2, String value2);
+
 }
