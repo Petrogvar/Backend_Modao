@@ -15,7 +15,6 @@ import com.SpringProject.core.Services.Notification.Notification;
 import com.SpringProject.core.Services.h.DataVerification;
 import com.SpringProject.core.controllers.Error.Exception.BadRequestException;
 import com.SpringProject.core.controllers.Error.Exception.NotFoundException;
-import com.SpringProject.core.dto.DescriptionDto;
 import com.SpringProject.core.dto.EventDto;
 import com.SpringProject.core.dto.ExpenseDto;
 import com.SpringProject.core.Mapper.EventMapperImpl;
@@ -281,8 +280,7 @@ public class EventServiceImpl implements EventService {
   }
 
   @Override
-  public Long deleteEvent(DescriptionDto descriptionDto,
-      Long userIdCreator, Long groupId, Long eventId) {
+  public Long deleteEvent(Long userIdCreator, Long groupId, Long eventId) {
     Optional<Event> optionalEvent = eventRepository.findById(eventId);
     Optional<User> optionalUserCreator = userRepository.findById(userIdCreator);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
@@ -302,7 +300,7 @@ public class EventServiceImpl implements EventService {
 
     Event eventNew = new Event();
     eventNew.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-    eventNew.setEventName("deleting" + descriptionDto.getName());
+    eventNew.setEventName("Deleting " + optionalEvent.get().getEventName());
 
     eventNew.setDescription(optionalEvent.get().getDescription());
     eventNew.setUserCreatorId(userIdCreator);

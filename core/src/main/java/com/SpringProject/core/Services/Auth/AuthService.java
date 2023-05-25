@@ -46,16 +46,10 @@ public class AuthService  {
       final String refreshToken = jwtProvider.generateRefreshToken(userDto);
       Token token = optionalUser.get().getToken();
       token.setRefreshToken(refreshToken);
-      if (authRequest.getDeviceToken() != null && authRequest.getPackageName() != null &&
-          authRequest.getAppVersion()!= null) {
-        ResponseEntity<String> responseEntity = firebase.registerServer(
-            authRequest.getDeviceToken(), authRequest.getPackageName(),
-            authRequest.getAppVersion());
-        JSONObject jsonObject = new JSONObject(responseEntity.getBody());
-        token.setRegistrationToken(jsonObject.getString("token"));
+      if (authRequest.getDeviceToken() != null) {
+        token.setRegistrationToken(authRequest.getDeviceToken());
       }
       token.setTime(new Timestamp(System.currentTimeMillis()));
-     //refreshStorage.put(userDto.getLogin(), refreshToken);
       userRepository.save(optionalUser.get());
       return new JwtResponse(userDto.getId() ,accessToken, refreshToken);
     } else {

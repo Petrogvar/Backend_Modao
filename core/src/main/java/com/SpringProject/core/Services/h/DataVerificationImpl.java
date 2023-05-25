@@ -31,11 +31,6 @@ public class DataVerificationImpl implements DataVerification {
       throw new InvalidPasswordException("Пароль слишком короткий\n");
     }
 
-    // Проверяем, что пароль содержит как минимум одну цифру
-    if (!password.matches(".*\\d.*")) {
-      throw new InvalidPasswordException("Пароль должен содержать как минимум одну цифру");
-    }
-
     // Проверяем, что пароль содержит как минимум одну букву в верхнем регистре
     if (!password.matches(".*[A-Z].*")) {
       throw new InvalidPasswordException(
@@ -60,12 +55,12 @@ public class DataVerificationImpl implements DataVerification {
       throw new InvalidLoginException("Логин должен быть от 3 до 20 символов\n");
     }
 
-    // Проверяем наличие только букв и цифр
+    // Проверяем наличие только букв и цифр  +
     if (!login.matches("^[a-zA-Z0-9]*$")) {
       throw new InvalidLoginException("Логин должен содержать только буквы и цифры");
     }
 
-    // Проверяем, что логин не начинается с цифры
+    // Проверяем, что логин не начинается с цифры  +
     if (Character.isDigit(login.charAt(0))) {
       throw new InvalidLoginException("Логин не может начинаться с цифры");
     }
@@ -104,15 +99,6 @@ public class DataVerificationImpl implements DataVerification {
     String regex = "^[a-zA-Z0-9_.а-яА-ЯёЁ ]{1,20}$";
 
     return name.matches(regex);
-  }
-
-  private static boolean isValidDescription(String description) {
-    if (description == null || description.isEmpty()) {
-      return false;
-    }
-    String regex = "^[a-zA-Z0-9_.а-яА-ЯёЁ ]{1,50}$";
-
-    return description.matches(regex);
   }
 
 

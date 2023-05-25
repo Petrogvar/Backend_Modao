@@ -45,14 +45,13 @@ public class EventController {
   }
 
   @PutMapping("/delete/{groupId}/{eventId}")//+++ time
-  public Long deleteEvent(@RequestBody DescriptionDto descriptionDto,
-      @PathVariable Long groupId, @PathVariable Long eventId) {
+  public Long deleteEvent(@PathVariable Long groupId, @PathVariable Long eventId) {
     Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
     if (!commonService.userIsOrganizerByUserIdAndGroupId(userIdCreator, groupId)) {
       throw new NotRightException();
     }
-    return eventService.deleteEvent(descriptionDto, userIdCreator, groupId, eventId);
+    return eventService.deleteEvent(userIdCreator, groupId, eventId);
   }
 
   // time who

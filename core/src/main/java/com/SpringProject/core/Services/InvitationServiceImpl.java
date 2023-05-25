@@ -197,19 +197,21 @@ public class InvitationServiceImpl implements InvitationService {
     }
     invitationInGroupRepository.deleteAllByUserAndGroupId(optionalUserFriend.get(),
         optionalGroup.get().getId());
-    for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
-      Debt debt = new Debt();
-      Debt debtBack = new Debt();
-      debtBack.setDebt(0D);
-      debt.setDebt(0D);
-      debtBack.setGroup(optionalGroup.get());
-      debt.setGroup(optionalGroup.get());
-      debtBack.setUserFrom(optionalUserFriend.get());
-      debtBack.setUserTo(optionalGroup.get().getUserGroupList().get(i).getUser());
-      debt.setUserFrom(optionalGroup.get().getUserGroupList().get(i).getUser());
-      debt.setUserTo(optionalUserFriend.get());
-      debtRepository.save(debt);
-      debtRepository.save(debtBack);
+    if (!debtRepository.findByGroupAndUserFrom(optionalGroup.get(), optionalUserFriend.get()).isPresent()) {
+      for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
+        Debt debt = new Debt();
+        Debt debtBack = new Debt();
+        debtBack.setDebt(0D);
+        debt.setDebt(0D);
+        debtBack.setGroup(optionalGroup.get());
+        debt.setGroup(optionalGroup.get());
+        debtBack.setUserFrom(optionalUserFriend.get());
+        debtBack.setUserTo(optionalGroup.get().getUserGroupList().get(i).getUser());
+        debt.setUserFrom(optionalGroup.get().getUserGroupList().get(i).getUser());
+        debt.setUserTo(optionalUserFriend.get());
+        debtRepository.save(debt);
+        debtRepository.save(debtBack);
+      }
     }
     UserGroup userGroup = new UserGroup();
     if (optionalGroup.get().getTypeGroup() == 1) {

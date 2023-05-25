@@ -39,7 +39,7 @@ public class EventMapperImpl  {
     List<EventDto> dtoList = entityPage.getContent().stream()
         .map(entity -> new EventDto(entity.getId(), entity.getEventName(),
             entity.getDescription(), entity.getPrice(), entity.getType(),
-            entity.getCreatedAt().toLocalDateTime(), entity.getDeleteId()) )
+            entity.getCreatedAt().toLocalDateTime(), entity.getDeleteId(), entity.getStatus()) )
         .collect(Collectors.toList());
     return new PageImpl<>(dtoList, entityPage.getPageable(), entityPage.getTotalElements());
   }

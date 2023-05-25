@@ -35,7 +35,7 @@ public class EventDto {
   private List<ExpenseDto> expenseDtoList;
   private Long deleteId;
   public EventDto(Long id, String eventName, String description,
-      Double price, Integer type, LocalDateTime time, Long deleteId) {
+      Double price, Integer type, LocalDateTime time, Long deleteId, Integer status) {
     this.id = id;
     this.name = eventName;
     this.description =description;
@@ -43,5 +43,6 @@ public class EventDto {
     this.type = type;
     this.time = time;
     this.deleteId = deleteId;
+    this.status =status;
   }
 }

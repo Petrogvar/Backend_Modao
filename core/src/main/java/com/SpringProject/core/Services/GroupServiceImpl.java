@@ -137,19 +137,21 @@ public class GroupServiceImpl implements GroupService {
       throw new BadRequestException("пользователь уже в группе");
     }
     invitationRepository.deleteAllByUserAndGroupId(optionalUser.get(), optionalGroup.get().getId());
-    for (UserGroup userGroup: optionalGroup.get().getUserGroupList()) {
-      Debt debt = new Debt();
-      Debt debtBack = new Debt();
-      debtBack.setDebt(0D);
-      debt.setDebt(0D);
-      debtBack.setGroup(optionalGroup.get());
-      debt.setGroup(optionalGroup.get());
-      debtBack.setUserFrom(optionalUser.get());
-      debtBack.setUserTo(userGroup.getUser());
-      debt.setUserFrom(userGroup.getUser());
-      debt.setUserTo(optionalUser.get());
-      debtRepository.save(debt);
-      debtRepository.save(debtBack);
+    if (!debtRepository.findByGroupAndUserFrom(optionalGroup.get(), optionalUser.get()).isPresent()) {
+      for (UserGroup userGroup : optionalGroup.get().getUserGroupList()) {
+        Debt debt = new Debt();
+        Debt debtBack = new Debt();
+        debtBack.setDebt(0D);
+        debt.setDebt(0D);
+        debtBack.setGroup(optionalGroup.get());
+        debt.setGroup(optionalGroup.get());
+        debtBack.setUserFrom(optionalUser.get());
+        debtBack.setUserTo(userGroup.getUser());
+        debt.setUserFrom(userGroup.getUser());
+        debt.setUserTo(optionalUser.get());
+        debtRepository.save(debt);
+        debtRepository.save(debtBack);
+      }
     }
     UserGroup userGroup = new UserGroup();
     if (optionalGroup.get().getTypeGroup() == 1) {

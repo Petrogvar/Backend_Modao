@@ -12,6 +12,7 @@ public class GroupMapperImpl {
     groupDto.setTypeGroup(group.getTypeGroup());
     groupDto.setDescription(group.getDescription());
     groupDto.setTime(group.getCreatedAt().toLocalDateTime());
+    groupDto.setUpdateTime(group.getUpdateTime().toLocalDateTime());
     return groupDto;
   }
 

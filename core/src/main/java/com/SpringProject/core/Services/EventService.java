@@ -1,6 +1,5 @@
 package com.SpringProject.core.Services;
 
-import com.SpringProject.core.dto.DescriptionDto;
 import com.SpringProject.core.dto.EventDto;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -16,7 +15,7 @@ public interface EventService {
 
   void unconfirmationEvent(Long userId, Long groupId,  Long eventId);
 
-  Long deleteEvent(DescriptionDto descriptionDto, Long userIdCreator, Long groupId, Long eventId);
+  Long deleteEvent(Long userIdCreator, Long groupId, Long eventId);
 
   Page<EventDto> getСonfirmedEventMod1List(Long groupId, Long userId, int type, Integer offset,
       Integer limit, Long time1, Long time2 );
