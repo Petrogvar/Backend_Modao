@@ -26,7 +26,7 @@ public class NotificationImpl implements Notification {
         (new Timestamp(System.currentTimeMillis())).getTime()) {
       return;
     }
-    String title = "friend invitation";
+    String title = "Friend invitation";
     String body = userFrom.getUsername() + " invited you to friends";
 
     fcmService.sendNotification1(userTo.getToken().getRegistrationToken(), title, body, "action",
@@ -39,11 +39,11 @@ public class NotificationImpl implements Notification {
         (new Timestamp(System.currentTimeMillis())).getTime()) {
       return;
     }
-    String title = "event confirmation";
+    String title = "Event confirmation";
     String body = event.getEventName() + " event requires confirmation";
 
     fcmService.sendNotification2(userTo.getToken().getRegistrationToken(), title, body, "action",
-        "move to notification",
+        "move to data confirmation",
         "groupID",
         event.getGroup().getId().toString());
   }
@@ -55,7 +55,7 @@ public class NotificationImpl implements Notification {
         (new Timestamp(System.currentTimeMillis())).getTime()) {
       return;
     }
-    String title = "group invitation";
+    String title = "Group invitation";
     String body = userFrom.getUsername() + " invited you to the group " + group.getGroupName();
     fcmService.sendNotification1(userTo.getToken().getRegistrationToken(), title, body, "action",
         "move to notification");

@@ -59,11 +59,6 @@ public class DataVerificationImpl implements DataVerification {
     if (!login.matches("^[a-zA-Z0-9]*$")) {
       throw new InvalidLoginException("Логин должен содержать только буквы и цифры");
     }
-
-    // Проверяем, что логин не начинается с цифры  +
-    if (Character.isDigit(login.charAt(0))) {
-      throw new InvalidLoginException("Логин не может начинаться с цифры");
-    }
   }
 
   @Override
@@ -79,10 +74,6 @@ public class DataVerificationImpl implements DataVerification {
 
     if (!isValidName(groupDto.getGroupName())) {
       throw new InvalidGroupException("Invalid group name", HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-
-    if (groupDto.getDescription() != null && !isValidName(groupDto.getDescription())) {
-      throw new InvalidGroupException("Invalid group description", HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
     Integer typeGroup = groupDto.getTypeGroup();

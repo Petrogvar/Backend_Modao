@@ -10,6 +10,7 @@ import com.SpringProject.core.Entity.UserGroup;
 import com.SpringProject.core.Repository.DebtRepository;
 import com.SpringProject.core.Repository.EventRepository;
 import com.SpringProject.core.Repository.GroupRepository;
+import com.SpringProject.core.Repository.UserGroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
 import com.SpringProject.core.Services.Notification.Notification;
 import com.SpringProject.core.Services.h.DataVerification;
@@ -43,7 +44,7 @@ public class EventServiceImpl implements EventService {
   private final GroupRepository groupRepository;
   private final UserRepository userRepository;
   private final DataVerification dataVerification;
-
+  private final UserGroupRepository userGroupRepository;
   private final Notification notification;
 
   @Override
@@ -132,10 +133,16 @@ public class EventServiceImpl implements EventService {
 
     //group.setUpdateTime(new Timestamp(System.currentTimeMillis()));
     group.getEventList().add(event);
-
-    for (UserGroup userGroup : optionalGroup.get().getUserGroupList()) {
-      if (userGroup.getRole() == 1) {
-        notification.newNotificationEvent(userGroup.getUser(), event);
+    Optional<UserGroup> optionalUserGroup = userGroupRepository.findByUserIdAndGroupId(
+        optionalUserCreator.get().getId(), optionalGroup.get().getId());
+    if (!optionalUserGroup.isPresent()) {
+      throw new NotFoundException();
+    }
+    if (optionalUserGroup.get().getRole() != 1) {
+      for (UserGroup userGroup : optionalGroup.get().getUserGroupList()) {
+        if (userGroup.getRole() == 1) {
+          notification.newNotificationEvent(userGroup.getUser(), event);
+        }
       }
     }
     return eventRepository.save(event).getId();

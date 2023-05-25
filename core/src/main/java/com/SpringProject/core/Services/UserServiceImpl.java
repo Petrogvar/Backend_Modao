@@ -121,11 +121,11 @@ public class UserServiceImpl implements UserService {
       throw new NotFoundException();
     }
     optionalUser.get().getToken().setRegistrationToken(null);
-    optionalUser.get().getToken().setRegistrationToken(null);
+    optionalUser.get().getToken().setRefreshToken(null);
     optionalUser.get().getToken().setTime(null);
+    userRepository.save(optionalUser.get());
   }
 
-  //хз
   @Override
   public void updateUser(Long userId, UserDto userDto) {
     Optional<User> optionalUser = userRepository.findById(userId);
