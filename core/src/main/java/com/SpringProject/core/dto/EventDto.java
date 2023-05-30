@@ -31,7 +31,6 @@ public class EventDto {
   private String usernamePaying;
   private String usernameCreator;
   private Long userCreatorId;
-  //private Instant time;
   private List<ExpenseDto> expenseDtoList;
   private Long deleteId;
   public EventDto(Long id, String eventName, String description,

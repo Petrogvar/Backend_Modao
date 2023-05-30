@@ -24,7 +24,7 @@ public class EventMapperImpl  {
     eventDto.setDescription(event.getDescription());
     eventDto.setStatus(event.getStatus());
     eventDto.setTime(event.getCreatedAt().toLocalDateTime());
-    eventDto.setDeleteId(eventDto.getDeleteId());
+    eventDto.setDeleteId(event.getDeleteId());
     return eventDto;
   }
 

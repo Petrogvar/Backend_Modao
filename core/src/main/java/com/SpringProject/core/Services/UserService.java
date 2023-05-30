@@ -12,8 +12,6 @@ public interface UserService {
 
   void exitUser(Long userId);
 
-  void deleteUser(Long userId);
-
   void updateUser(Long id, UserDto userDto);
 
   List<GroupDto> getGroups(Long userId, Integer type);
@@ -24,5 +22,4 @@ public interface UserService {
 
   List<UserDto> getListFriends(Long userId);
 
-  //Long authorizationUser(UserDto userDto);
 }

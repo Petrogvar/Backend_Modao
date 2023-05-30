@@ -62,7 +62,7 @@ public class AuthService  {
 
       Optional<User> optionalUser = userRepository.getByLogin(login);
       if (!optionalUser.isPresent())
-        throw new AuthException(); //aaaa
+        throw new AuthException();
       final String saveRefreshToken = optionalUser.get().getToken().getRefreshToken();
       if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
         final UserDto userDto = UserMapperImpl.toUserDto(optionalUser.get());
@@ -80,14 +80,14 @@ public class AuthService  {
       final String login = claims.getSubject();
       Optional<User> optionalUser = userRepository.getByLogin(login);
       if (!optionalUser.isPresent())
-        throw new AuthException(); //aaaa
+        throw new AuthException();
       String saveRefreshToken = optionalUser.get().getToken().getRefreshToken();
       if (saveRefreshToken != null && saveRefreshToken.equals(refreshToken)) {
         final UserDto userDto = UserMapperImpl.toUserDto(optionalUser.get());
         final String accessToken = jwtProvider.generateAccessToken(userDto);
         final String newRefreshToken = jwtProvider.generateRefreshToken(userDto);
         Token token = optionalUser.get().getToken();
-        //firebase.registerServer()
+
         token.setRefreshToken(newRefreshToken);
         token.setTime(new Timestamp(System.currentTimeMillis()));
         userRepository.save(optionalUser.get());

@@ -115,7 +115,6 @@ public class DataVerificationImpl implements DataVerification {
       throw new InvalidEventException("event cannot be null", HttpStatus.UNPROCESSABLE_ENTITY);
     }
     if (eventDto.getName() == null || eventDto.getType() == null
-        //|| eventDto.getDescription() == null
         || eventDto.getPrice() == null || eventDto.getGroupId() == null
         || eventDto.getCustomPairIdCoefficientPaying() == null
         || eventDto.getCustomPairIdCoefficientPaying().getCoefficient() == null

@@ -146,7 +146,6 @@ public class UserServiceImpl implements UserService {
     if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
-    //проверка type
     List<GroupDto> groupDtoList = new ArrayList<>();
     for (UserGroup userGroup : optionalUser.get().getUserGroupsList()) {
       if (type == 2 || userGroup.getGroup().getTypeGroup().equals(type)) {
@@ -160,9 +159,5 @@ public class UserServiceImpl implements UserService {
     return groupDtoList;
   }
 
-  @Override
-  public void deleteUser(Long userId) {
-    userRepository.deleteById(userId);
-  }
 
 }

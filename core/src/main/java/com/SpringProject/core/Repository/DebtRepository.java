@@ -11,5 +11,6 @@ public interface DebtRepository extends JpaRepository<Debt, Long> {
   Debt findByGroupAndUserFromAndUserTo (Group group, User userFrom, User userTo);
   List<Debt> findAllByGroupAndUserFrom (Group group, User userFrom);
 
+  void deleteAllByGroupId(Long groupId);
   Optional<Debt> findByGroupAndUserFrom(Group group, User userFrom);
 }

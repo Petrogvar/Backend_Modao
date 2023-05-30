@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost/store
     username: postgres
-    password: "qwerty"
+    password: "qwertygoha"
   jpa:
     generate-ddl: true
     properties:
@@ -17,7 +17,7 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/dbchangelog-master.yml
 server:
-  port: 50000
+  port: 5000
   servlet:
     encoding:
       charset: UTF-8

@@ -32,7 +32,7 @@ public class GroupController {
   }
 
 
-  @GetMapping("/info/{groupId}") //may ++
+  @GetMapping("/info/{groupId}")
   public GroupDto getGroup(@PathVariable Long groupId) {
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
     int role = commonService.getRoleInGroup(userId, groupId);
@@ -78,17 +78,12 @@ public class GroupController {
     groupService.archiveNoGroup(groupId);
   }
 
-  @GetMapping("/deleteUser/{groupId}/{userId}")
-  void deleteUserInGroup(@PathVariable Long groupId, @PathVariable Long userId){
-    Long userIdCreator = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
-    commonService.userIsOrganizerByUserIdAndGroupId(userIdCreator, groupId);
-    groupService.deleteUserInGroup(groupId, userId);
-  }
-
   @GetMapping("/delete/{groupId}")
   void deleteGroup(@PathVariable Long groupId){
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
-    commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId);
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId)){
+      throw new NotRightException();
+    }
     groupService.deleteGroup(groupId);
   }
 

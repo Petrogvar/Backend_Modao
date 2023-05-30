@@ -55,8 +55,7 @@ public class User {
 
   @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
   Token token;
-//  @ManyToMany(mappedBy = "userList", cascade = CascadeType.ALL)
-//  private List<Event> eventList;
+
 
 
 }

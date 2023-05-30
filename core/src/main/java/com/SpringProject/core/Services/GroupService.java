@@ -25,5 +25,4 @@ public interface GroupService {
 
   void archiveNoGroup(Long groupId);
 
-  void deleteUserInGroup(Long groupId, Long userId);
 }

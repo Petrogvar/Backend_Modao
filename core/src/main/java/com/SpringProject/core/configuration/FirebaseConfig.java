@@ -18,7 +18,7 @@ public class FirebaseConfig {
   public FirebaseApp firebaseApp() throws IOException {
 
     FileInputStream serviceAccount =
-        new FileInputStream( /*"/root/serviceAccountKey.json"*/ "C:/Users/1/Backend_Modao/Backend_Modao/core/src/main/resources/serviceAccountKey.json");
+        new FileInputStream( "/root/serviceAccountKey.json" );
 
     FirebaseOptions options = new FirebaseOptions.Builder()
         .setCredentials(GoogleCredentials.fromStream(serviceAccount))

@@ -19,6 +19,7 @@ import com.SpringProject.core.controllers.Error.Exception.NotFoundException;
 import com.SpringProject.core.dto.InvitationFriendDto;
 import com.SpringProject.core.dto.InvitationInGroupDto;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,6 +46,9 @@ public class InvitationServiceImpl implements InvitationService {
 
     if (!optionalUser.isPresent() || !optionalUserFriends.isPresent()) {
       throw new NotFoundException();
+    }
+    if (Objects.equals(optionalUserFriends.get().getId(), optionalUser.get().getId())){
+      throw new BadRequestException("это вы");
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByUserIdAndUser(
         optionalUser.get().getId(), optionalUserFriends.get());
@@ -75,22 +79,12 @@ public class InvitationServiceImpl implements InvitationService {
         || !optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
+    if (Objects.equals(optionalUserFriends.get().getId(), optionalUser.get().getId())){
+      throw new BadRequestException("это вы");
+    }
     if (optionalGroup.get().getTypeGroup() == 1) {
       throw new BadRequestException("archive group");
     }
-//    int size = optionalUser.get().getFriends().size();
-//    boolean userIsFriend = false;
-//    System.out.println(optionalUser.get().getFriends().get(0).getId());
-//    System.out.println(optionalUserFriends.get().getId());
-//    for (int i=0; i<size; i++){
-//      if (Objects.equals(optionalUser.get().getFriends().get(i).getId(),
-//          optionalUserFriends.get().getId())){
-//        userIsFriend =true;
-//        break;
-//      }
-//    }
-//    if (!userIsFriend)
-//      throw new NotFoundException();
     if (!optionalUser.get().getFriends().contains(optionalUserFriends.get())) {
       throw new NotFoundException();
     }
@@ -129,8 +123,6 @@ public class InvitationServiceImpl implements InvitationService {
       throw new NotFoundException();
     }
     invitationFriendRepository.delete(optionalInvitation.get());
-    // String p = optionalInvitation.get().getUsername();
-    // System.out.println(p);
   }
 
   @Override
@@ -275,7 +267,6 @@ public class InvitationServiceImpl implements InvitationService {
     if (userCreator.getFriends().contains(user)) {
       throw new BadRequestException("пользователь уже в списке друзей");
     }
-    //notification.newNotificationFriends(optionalUserFriends.get(), optionalUser.get());
     InvitationFriend invitation = new InvitationFriend();
     invitation.setUsername(userCreator.getUsername());
     invitation.setUserId(userCreator.getId());

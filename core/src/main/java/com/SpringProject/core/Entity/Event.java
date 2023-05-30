@@ -42,15 +42,14 @@ public class Event {
   @OneToMany(mappedBy = "event", cascade = CascadeType.ALL)
   private List<UserEvent> userEventList;
 
-  //  @ManyToMany(fetch = FetchType.LAZY)
-//  private List<User> userList;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private Timestamp createdAt;
 
-  private Long userPayingId; // ->user
-  private String usernamePaying; //del
-  private Long userCreatorId; // ->user
-  private String usernameCreator; //del
+  private Long userPayingId;
+  private String usernamePaying;
+  private Long userCreatorId;
+  private String usernameCreator;
   private String description;
   private Integer type;
   private Double price;

@@ -90,7 +90,7 @@ public class EventServiceImpl implements EventService {
     }
 
     Event event = new Event();
-    event.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+    event.setCreatedAt(new Timestamp(System.currentTimeMillis()+ 1000*60*60*3));
     event.setEventName(eventDto.getName());
     event.setStatus(0);
     event.setPrice(eventDto.getPrice());
@@ -131,7 +131,6 @@ public class EventServiceImpl implements EventService {
     userEvent.setGroupId(eventDto.getGroupId());
     paying.getUserEventList().add(userEvent);
 
-    //group.setUpdateTime(new Timestamp(System.currentTimeMillis()));
     group.getEventList().add(event);
     Optional<UserGroup> optionalUserGroup = userGroupRepository.findByUserIdAndGroupId(
         optionalUserCreator.get().getId(), optionalGroup.get().getId());
@@ -171,7 +170,6 @@ public class EventServiceImpl implements EventService {
     optionalGroup.get().setUpdateTime(new Timestamp(System.currentTimeMillis()));
     optionalEvent.get().setStatus(1);
     for (Expense expense : optionalEvent.get().getExpenseList()) {
-      //Expense expense = optionalEvent.get().getExpenseList().get(i);
       Debt debt = debtRepository.findByGroupAndUserFromAndUserTo
           (expense.getEvent().getGroup(), expense.getUserFrom(), expense.getUserTo());
       debt.setDebt(debt.getDebt() - expense.getTransferAmount());
@@ -235,19 +233,39 @@ public class EventServiceImpl implements EventService {
       expenseDto.setUserId(userEvent.getUser().getId());
       expenseDto.setUsername(userRepository.findById(expenseDto.getUserId()).get().getUsername());
       expenseDto.setCoefficient(userEvent.getCoefficient());
-      boolean bool = true;
-      for (Expense expense : optionalEvent.get().getExpenseList()) {
-        if (Objects.equals(expense.getUserFrom().getId(),
-            expenseDto.getUserId())) {
-          DecimalFormat df = new DecimalFormat("#.##");
-          expenseDto.setTransferAmount((df.format(
-              expense.getTransferAmount())));
-          bool = false;
-          break;
+      if (optionalEvent.get().getStatus() != -2) {
+        boolean bool = true;
+
+        for (Expense expense : optionalEvent.get().getExpenseList()) {
+          if (Objects.equals(expense.getUserFrom().getId(),
+              expenseDto.getUserId())) {
+            DecimalFormat df = new DecimalFormat("#.##");
+            expenseDto.setTransferAmount((df.format(
+                expense.getTransferAmount())));
+            bool = false;
+            break;
+          }
+        }
+        if (bool) {
+          expenseDto.setTransferAmount("0");
         }
       }
-      if (bool) {
-        expenseDto.setTransferAmount("0");
+      else {
+        boolean bool = true;
+
+        for (Expense expense : optionalEvent.get().getExpenseList()) {
+          if (Objects.equals(expense.getUserTo().getId(),
+              expenseDto.getUserId())) {
+            DecimalFormat df = new DecimalFormat("#.##");
+            expenseDto.setTransferAmount((df.format(
+                expense.getTransferAmount())));
+            bool = false;
+            break;
+          }
+        }
+        if (bool) {
+          expenseDto.setTransferAmount("0");
+        }
       }
       eventDto.getExpenseDtoList().add(expenseDto);
     }
@@ -306,7 +324,7 @@ public class EventServiceImpl implements EventService {
     }
 
     Event eventNew = new Event();
-    eventNew.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+    eventNew.setCreatedAt(new Timestamp(System.currentTimeMillis()+ 1000*60*60*3));
     eventNew.setEventName("Deleting " + optionalEvent.get().getEventName());
 
     eventNew.setDescription(optionalEvent.get().getDescription());
@@ -323,11 +341,10 @@ public class EventServiceImpl implements EventService {
 
     optionalEvent.get().setStatus(-1);
 
-    Expense expense;
 
     for (Expense expenseOld : optionalEvent.get().getExpenseList()) {
 
-      expense = new Expense();
+      Expense expense = new Expense();
       expense.setTransferAmount(expenseOld.getTransferAmount());
       expense.setEvent(eventNew);
       expense.setUserFrom(expenseOld.getUserTo());

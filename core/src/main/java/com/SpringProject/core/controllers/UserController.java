@@ -24,6 +24,7 @@ public class UserController {
   private final UserService userService;
 
   private final CommonService commonService;
+
   public UserController(UserService userService, CommonService commonService) {
     this.userService = userService;
     this.commonService = commonService;
@@ -32,47 +33,57 @@ public class UserController {
 
   @GetMapping("/myInfo")
   public UserDto getMyInfo() {
-    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
+    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext()
+        .getAuthentication()).getId();
     return userService.getUserMyInfo(userIdCreator);
   }
 
   @GetMapping("/InfoByGroup/{groupId}/{userId}")
   public UserDto getInfoByGroup(@PathVariable Long groupId, @PathVariable Long userId) {
-    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
-    if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId)  ||
-    !commonService.userInGroupByUserIdAndGroupId(userIdCreator,groupId))
+    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext()
+        .getAuthentication()).getId();
+    if (!commonService.userInGroupByUserIdAndGroupId(userId, groupId) ||
+        !commonService.userInGroupByUserIdAndGroupId(userIdCreator, groupId)) {
       throw new NotRightException();
+    }
     return userService.getUser(userIdCreator);
   }
 
   @GetMapping("/InfoFriend/{userId}")
   public UserDto getInfoFriend(@PathVariable Long userId) {
-    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
-    if (!commonService.usersIsFriend(userIdCreator, userId))
+    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext()
+        .getAuthentication()).getId();
+    if (!commonService.usersIsFriend(userIdCreator, userId)) {
       throw new NotRightException();
+    }
     return userService.getUser(userId);
   }
 
   @GetMapping("/listGroups/{type}")
   public List<GroupDto> getGroups(@PathVariable Integer type) {
-    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
+    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext()
+        .getAuthentication()).getId();
     return userService.getGroups(userIdCreator, type);
   }
 
   @PutMapping("/getNewUuid")
   UserDto getNewUuid() {
-    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
+        .getAuthentication()).getId();
     return userService.getNewUuid(userId);
   }
+
   @GetMapping("/exitUser")
-  public void exitUser(){
-    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext().getAuthentication()).getId();
+  public void exitUser() {
+    Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext()
+        .getAuthentication()).getId();
     userService.exitUser(userIdCreator);
   }
 
   @GetMapping("/listFriends")
-  List<UserDto> getListFriends(){
-    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+  List<UserDto> getListFriends() {
+    Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
+        .getAuthentication()).getId();
     return userService.getListFriends(userId);
   }
 
@@ -82,15 +93,10 @@ public class UserController {
     return userService.createUser(userDto);
   }
 
-  @DeleteMapping("/{userId}")
-    //+++ проверки // may del
-  void delete(@PathVariable Long userId) {
-    userService.deleteUser(userId);
-  }
-
   @PutMapping("/update")
   void update(@RequestBody UserDto userDto) {
-    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
+        .getAuthentication()).getId();
     userService.updateUser(userId, userDto);
   }
 

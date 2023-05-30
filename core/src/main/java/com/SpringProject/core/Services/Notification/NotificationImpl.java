@@ -3,8 +3,6 @@ package com.SpringProject.core.Services.Notification;
 import com.SpringProject.core.Entity.Event;
 import com.SpringProject.core.Entity.Group;
 import com.SpringProject.core.Entity.User;
-//import com.SpringProject.core.Services.Firebase.FcmService;
-
 import com.SpringProject.core.Services.Firebase.FcmService;
 import java.sql.Timestamp;
 import org.springframework.stereotype.Service;

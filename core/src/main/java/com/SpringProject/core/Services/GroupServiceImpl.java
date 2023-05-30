@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -68,7 +69,7 @@ public class GroupServiceImpl implements GroupService {
     }
     group.setTypeGroup(0);
     group.setUuid(uuid);
-    group.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+    group.setCreatedAt(new Timestamp(System.currentTimeMillis()+ 1000*60*60*3));
     group.setUpdateTime(new Timestamp(System.currentTimeMillis()));
     Optional<User> optionalUser = usersRepository.findById(userIdCreator);
     if (!optionalUser.isPresent()) {
@@ -102,7 +103,14 @@ public class GroupServiceImpl implements GroupService {
   }
 
   @Override
+  @Transactional
   public void deleteGroup(Long id) {
+    Optional<Group> optionalGroup = groupRepository.findById(id);
+    if( !optionalGroup.isPresent() ){
+      throw new NotFoundException();
+    }
+
+    debtRepository.deleteAllByGroupId(id);
     groupRepository.deleteById(id);
   }
 
@@ -137,7 +145,6 @@ public class GroupServiceImpl implements GroupService {
       throw new BadRequestException("пользователь уже в группе");
     }
     invitationRepository.deleteAllByUserAndGroupId(optionalUser.get(), optionalGroup.get().getId());
-    if (!debtRepository.findByGroupAndUserFrom(optionalGroup.get(), optionalUser.get()).isPresent()) {
       for (UserGroup userGroup : optionalGroup.get().getUserGroupList()) {
         Debt debt = new Debt();
         Debt debtBack = new Debt();
@@ -151,7 +158,7 @@ public class GroupServiceImpl implements GroupService {
         debt.setUserTo(optionalUser.get());
         debtRepository.save(debt);
         debtRepository.save(debtBack);
-      }
+
     }
     UserGroup userGroup = new UserGroup();
     if (optionalGroup.get().getTypeGroup() == 1) {
@@ -217,15 +224,7 @@ public class GroupServiceImpl implements GroupService {
     groupRepository.save(optionalGroup.get());
   }
 
-  @Override
-  public void deleteUserInGroup(Long groupId, Long userId) {
-    Optional<UserGroup> optionalUserGroup = userGroupRepository.findByUserIdAndGroupId(userId, groupId);
-    if (!optionalUserGroup.isPresent())
-      throw new NotFoundException();
-    if (optionalUserGroup.get().getRole() == 1)
-      throw new NotRightException();
-    userGroupRepository.delete(optionalUserGroup.get());
-  }
+
 
 
 }

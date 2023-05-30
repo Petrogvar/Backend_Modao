@@ -66,7 +66,7 @@ public class СommonServiceImpl implements CommonService {
         return (userGroup.getRole() == 1);
       }
     }
-    return false; //
+    return false;
   }
 
   @Override

@@ -32,7 +32,7 @@ public class EventController {
     this.commonService = commonService;
   }
 
-  @PostMapping("/create")//+++ time
+  @PostMapping("/create")
   public Long createEvent(@RequestBody EventDto eventDto) {
     Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
@@ -44,7 +44,7 @@ public class EventController {
     return eventId;
   }
 
-  @PutMapping("/delete/{groupId}/{eventId}")//+++ time
+  @PutMapping("/delete/{groupId}/{eventId}")
   public Long deleteEvent(@PathVariable Long groupId, @PathVariable Long eventId) {
     Long userIdCreator = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
@@ -54,7 +54,6 @@ public class EventController {
     return eventService.deleteEvent(userIdCreator, groupId, eventId);
   }
 
-  // time who
   @PutMapping("/confirmation/{groupId}/{eventId}")
   public void confirmationEvent(@PathVariable Long groupId, @PathVariable Long eventId) {
     Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
@@ -76,7 +75,7 @@ public class EventController {
     eventService.unconfirmationEvent(userId, groupId, eventId);
   }
 
-  @GetMapping("/listEventsConfirmed/0/{groupId}/{type}/{time1}/{time2}") // time
+  @GetMapping("/listEventsConfirmed/0/{groupId}/{type}/{time1}/{time2}")
   public Page<EventDto> getСonfirmedEventMod0List(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit" , defaultValue = "30") @Min(0) @Max(30) Integer limit,
@@ -90,7 +89,7 @@ public class EventController {
     return eventService.getСonfirmedEventMod0List(groupId, type, offset, limit, time1, time2 );
   }
 
-  @GetMapping("/listEventsConfirmed/1/{groupId}/{type}/{time1}/{time2}") // time
+  @GetMapping("/listEventsConfirmed/1/{groupId}/{type}/{time1}/{time2}")
   public Page<EventDto> getСonfirmedEventMod1List(
       @RequestParam(value = "offset", defaultValue = "0") @Min(0) Integer offset,
       @RequestParam(value = "limit" , defaultValue = "30") @Min(0) @Max(30) Integer limit,
@@ -105,7 +104,7 @@ public class EventController {
     return eventService.getСonfirmedEventMod1List(groupId, userId, type, offset, limit, time1, time2);
   }
 
-  @GetMapping("/listEventsUnconfirmed/{groupId}") // time
+  @GetMapping("/listEventsUnconfirmed/{groupId}")
   public List<EventDto> getUnconfirmedEventList(@PathVariable Long groupId) {
     Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
@@ -116,7 +115,7 @@ public class EventController {
   }
 
 
-  @GetMapping("/info/{groupId}/{eventId}") // time
+  @GetMapping("/info/{groupId}/{eventId}")
   public EventDto getEvent(@PathVariable Long groupId, @PathVariable Long eventId) {
     Long userId = ((JwtAuthentication) SecurityContextHolder.getContext()
         .getAuthentication()).getId();
