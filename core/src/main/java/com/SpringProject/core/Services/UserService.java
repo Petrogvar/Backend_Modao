@@ -10,13 +10,11 @@ public interface UserService {
 
   Long createUser(UserDto userDto);
 
-
-
-  void deleteUser(Long userId);
+  void exitUser(Long userId);
 
   void updateUser(Long id, UserDto userDto);
 
-  List<GroupDto> getGroups(Long userId);
+  List<GroupDto> getGroups(Long userId, Integer type);
 
   UserDto getUserMyInfo(Long userIdCreator);
 
@@ -24,5 +22,4 @@ public interface UserService {
 
   List<UserDto> getListFriends(Long userId);
 
-  //Long authorizationUser(UserDto userDto);
 }

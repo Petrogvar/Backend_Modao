@@ -12,15 +12,18 @@ import com.SpringProject.core.Repository.GroupRepository;
 import com.SpringProject.core.Repository.InvitationFriendRepository;
 import com.SpringProject.core.Repository.InvitationInGroupRepository;
 import com.SpringProject.core.Repository.UserRepository;
+import com.SpringProject.core.Services.Notification.Notification;
 import com.SpringProject.core.Services.h.CommonService;
-import com.SpringProject.core.controllers.Error.BadRequestException;
-import com.SpringProject.core.controllers.Error.NotFoundException;
+import com.SpringProject.core.controllers.Error.Exception.BadRequestException;
+import com.SpringProject.core.controllers.Error.Exception.NotFoundException;
 import com.SpringProject.core.dto.InvitationFriendDto;
 import com.SpringProject.core.dto.InvitationInGroupDto;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,8 @@ public class InvitationServiceImpl implements InvitationService {
   private final GroupRepository groupRepository;
   private final CommonService commonService;
 
+  private final Notification notification;
+
   private final DebtRepository debtRepository;
 
   @Override
@@ -39,17 +44,22 @@ public class InvitationServiceImpl implements InvitationService {
     Optional<User> optionalUser = userRepository.findById(userId);
     Optional<User> optionalUserFriends = userRepository.getByUuid(uuid);
 
-    if (optionalUser.isEmpty() || optionalUserFriends.isEmpty()) {
+    if (!optionalUser.isPresent() || !optionalUserFriends.isPresent()) {
       throw new NotFoundException();
+    }
+    if (Objects.equals(optionalUserFriends.get().getId(), optionalUser.get().getId())){
+      throw new BadRequestException("это вы");
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByUserIdAndUser(
         optionalUser.get().getId(), optionalUserFriends.get());
     if (optionalInvitation.isPresent()) {
-      throw new BadRequestException();
+      throw new BadRequestException("приглашение уже отправлено");
     }
     if (optionalUser.get().getFriends().contains(optionalUserFriends.get())) {
-      throw new BadRequestException();
+      throw new BadRequestException("пользователь уже в списке друзей");
     }
+
+    notification.newNotificationFriends(optionalUserFriends.get(), optionalUser.get());
 
     InvitationFriend invitation = new InvitationFriend();
     invitation.setUserId(userId);
@@ -64,32 +74,27 @@ public class InvitationServiceImpl implements InvitationService {
     Optional<User> optionalUser = userRepository.findById(userId);
     Optional<User> optionalUserFriends = userRepository.findById(userIdFriends);
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalUserFriends.isEmpty() || optionalUser.isEmpty() || optionalGroup.isEmpty()) {
+
+    if (!optionalUserFriends.isPresent() || !optionalUser.isPresent()
+        || !optionalGroup.isPresent()) {
       throw new NotFoundException();
     }
-//    int size = optionalUser.get().getFriends().size();
-//    boolean userIsFriend = false;
-//    System.out.println(optionalUser.get().getFriends().get(0).getId());
-//    System.out.println(optionalUserFriends.get().getId());
-//    for (int i=0; i<size; i++){
-//      if (Objects.equals(optionalUser.get().getFriends().get(i).getId(),
-//          optionalUserFriends.get().getId())){
-//        userIsFriend =true;
-//        break;
-//      }
-//    }
-//    if (!userIsFriend)
-//      throw new NotFoundException();
+    if (Objects.equals(optionalUserFriends.get().getId(), optionalUser.get().getId())){
+      throw new BadRequestException("это вы");
+    }
+    if (optionalGroup.get().getTypeGroup() == 1) {
+      throw new BadRequestException("archive group");
+    }
     if (!optionalUser.get().getFriends().contains(optionalUserFriends.get())) {
       throw new NotFoundException();
     }
     if (commonService.userInGroup(optionalUserFriends.get(), optionalGroup.get())) {
-      throw new BadRequestException();
+      throw new BadRequestException("пользователь уже в группе");
     }
     Optional<InvitationInGroup> optionalInvitation = invitationInGroupRepository.getByUserIdAndUserAndGroupId(
         userId, optionalUserFriends.get(), groupId);
     if (optionalInvitation.isPresent()) {
-      throw new BadRequestException();
+      throw new BadRequestException("приглашение уже отправлено");
     }
 
     InvitationInGroup invitation = new InvitationInGroup();
@@ -99,34 +104,36 @@ public class InvitationServiceImpl implements InvitationService {
     invitation.setGroupId(groupId);
     invitation.setUser(optionalUserFriends.get());
     optionalUserFriends.get().getInvitationInGroupList().add(invitation);
+
+    notification.newNotificationGroup(optionalUserFriends.get(), optionalUser.get(),
+        optionalGroup.get());
+
     userRepository.save(optionalUserFriends.get());
   }
 
   @Override
   public void declineInvitationFriend(Long userId, Long invitationId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByIdAndUser(
         invitationId, optionalUser.get());
-    if (optionalInvitation.isEmpty()) {
+    if (!optionalInvitation.isPresent()) {
       throw new NotFoundException();
     }
     invitationFriendRepository.delete(optionalInvitation.get());
-   // String p = optionalInvitation.get().getUsername();
-   // System.out.println(p);
   }
 
   @Override
   public void declineInvitationInGroup(Long userId, Long invitationId) {
     Optional<User> optionalUser = userRepository.findById(userId);
-    if (optionalUser.isEmpty()) {
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationInGroup> optionalInvitation = invitationInGroupRepository.getByIdAndUser(
         invitationId, optionalUser.get());
-    if (optionalInvitation.isEmpty()) {
+    if (!optionalInvitation.isPresent()) {
       throw new NotFoundException();
     }
     invitationInGroupRepository.delete(optionalInvitation.get());
@@ -136,19 +143,21 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public void acceptInvitationFriend(Long userId, Long invitationId) {
     Optional<User> optionalUserFriend = userRepository.findById(userId);
-    if (optionalUserFriend.isEmpty()) {
+    if (!optionalUserFriend.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByIdAndUser(
         invitationId, optionalUserFriend.get());
-    if (optionalInvitation.isEmpty()) {
+    if (!optionalInvitation.isPresent()) {
       throw new NotFoundException();
     }
     Optional<User> optionalUser = userRepository.findById(optionalInvitation.get().getUserId());
-    if (optionalUser.isEmpty())
-      throw new BadRequestException();
+    if (!optionalUser.isPresent()) {
+      throw new BadRequestException("123");
+    }
 
-    Optional<InvitationFriend> optionalInvitationOld =  invitationFriendRepository.getByUserIdAndUser_Id(optionalUserFriend.get().getId(),
+    Optional<InvitationFriend> optionalInvitationOld = invitationFriendRepository.getByUserIdAndUser_Id(
+        optionalUserFriend.get().getId(),
         optionalInvitation.get().getUserId());
     optionalInvitationOld.ifPresent(invitationFriendRepository::delete);
 
@@ -161,32 +170,40 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public void acceptInvitationInGroup(Long userId, Long invitationId) {
     Optional<User> optionalUserFriend = userRepository.findById(userId);
-    if (optionalUserFriend.isEmpty()) {
+    if (!optionalUserFriend.isPresent()) {
       throw new NotFoundException();
     }
     Optional<InvitationInGroup> optionalInvitation = invitationInGroupRepository.getByIdAndUser(
         invitationId, optionalUserFriend.get());
-    if (optionalInvitation.isEmpty()) {
+    if (!optionalInvitation.isPresent()) {
       throw new NotFoundException();
     }
     Optional<Group> optionalGroup = groupRepository.findById(optionalInvitation.get().getGroupId());
-    if (optionalGroup.isEmpty())
-      throw new BadRequestException();
+    if (!optionalGroup.isPresent()) {
+      throw new BadRequestException("123");
+    }
+
     invitationInGroupRepository.delete(optionalInvitation.get());
-    invitationInGroupRepository.deleteAllByUserAndGroupId(optionalUserFriend.get(), optionalGroup.get().getId());
-    for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
-      Debt debt = new Debt();
-      Debt debtBack = new Debt();
-      debtBack.setDebt(0D);
-      debt.setDebt(0D); 
-      debtBack.setGroup(optionalGroup.get());
-      debt.setGroup(optionalGroup.get());
-      debtBack.setUserFrom(optionalUserFriend.get());
-      debtBack.setUserTo(optionalGroup.get().getUserGroupList().get(i).getUser());
-      debt.setUserFrom(optionalGroup.get().getUserGroupList().get(i).getUser());
-      debt.setUserTo(optionalUserFriend.get());
-      debtRepository.save(debt);
-      debtRepository.save(debtBack);
+    if (optionalGroup.get().getTypeGroup() == 1) {
+      throw new BadRequestException("archive group");
+    }
+    invitationInGroupRepository.deleteAllByUserAndGroupId(optionalUserFriend.get(),
+        optionalGroup.get().getId());
+    if (!debtRepository.findByGroupAndUserFrom(optionalGroup.get(), optionalUserFriend.get()).isPresent()) {
+      for (int i = 0; i < optionalGroup.get().getUserGroupList().size(); i++) {
+        Debt debt = new Debt();
+        Debt debtBack = new Debt();
+        debtBack.setDebt(0D);
+        debt.setDebt(0D);
+        debtBack.setGroup(optionalGroup.get());
+        debt.setGroup(optionalGroup.get());
+        debtBack.setUserFrom(optionalUserFriend.get());
+        debtBack.setUserTo(optionalGroup.get().getUserGroupList().get(i).getUser());
+        debt.setUserFrom(optionalGroup.get().getUserGroupList().get(i).getUser());
+        debt.setUserTo(optionalUserFriend.get());
+        debtRepository.save(debt);
+        debtRepository.save(debtBack);
+      }
     }
     UserGroup userGroup = new UserGroup();
     if (optionalGroup.get().getTypeGroup() == 1) {
@@ -203,47 +220,52 @@ public class InvitationServiceImpl implements InvitationService {
   @Override
   public List<InvitationInGroupDto> getInvitationsInGroup(Long userIdCreator) {
     Optional<User> optionalUser = userRepository.findById(userIdCreator);
-    if(optionalUser.isEmpty())
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
+    }
     return InvitationMapperImpl.toGroupDtoList(optionalUser.get().getInvitationInGroupList());
   }
 
   @Override
   public List<InvitationFriendDto> getInvitationsFriend(Long userIdCreator) {
     Optional<User> optionalUser = userRepository.findById(userIdCreator);
-    if(optionalUser.isEmpty())
+    if (!optionalUser.isPresent()) {
       throw new NotFoundException();
+    }
     return InvitationMapperImpl.toFriendDtoList(optionalUser.get().getInvitationFriendList());
   }
 
   @Override
   public void createInvitationFriendByGroup(Long userIdCreator, Long groupId, Long userId) {
     Optional<Group> optionalGroup = groupRepository.findById(groupId);
-    if (optionalGroup.isEmpty())
+    Optional<User> optionalUser = userRepository.findById(userIdCreator);
+    Optional<User> optionalUserFriend = userRepository.findById(userId);
+    if (!optionalGroup.isPresent()) {
       throw new NotFoundException();
+    }
     int size = optionalGroup.get().getUserGroupList().size();
     long id;
-    User userCreator  =null;
+    User userCreator = null;
     User user = null;
-    for(int i=0; i<size; i++){
-      id  =  optionalGroup.get().getUserGroupList().get(i).getUser().getId();
-      if (id == userIdCreator){
+    for (int i = 0; i < size; i++) {
+      id = optionalGroup.get().getUserGroupList().get(i).getUser().getId();
+      if (id == userIdCreator) {
         userCreator = optionalGroup.get().getUserGroupList().get(i).getUser();
       }
-      if (id == userId){
+      if (id == userId) {
         user = optionalGroup.get().getUserGroupList().get(i).getUser();
       }
     }
-    if(user == null || userCreator == null){
-      throw new BadRequestException();
+    if (user == null || userCreator == null) {
+      throw new BadRequestException("123");
     }
     Optional<InvitationFriend> optionalInvitation = invitationFriendRepository.getByUserIdAndUser(
         userIdCreator, user);
     if (optionalInvitation.isPresent()) {
-      throw new BadRequestException();
+      throw new BadRequestException("приглашение уже отправлено");
     }
     if (userCreator.getFriends().contains(user)) {
-      throw new BadRequestException();
+      throw new BadRequestException("пользователь уже в списке друзей");
     }
     InvitationFriend invitation = new InvitationFriend();
     invitation.setUsername(userCreator.getUsername());

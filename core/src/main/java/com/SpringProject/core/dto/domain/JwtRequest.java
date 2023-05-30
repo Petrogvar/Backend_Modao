@@ -9,4 +9,8 @@ public class JwtRequest {
   private String login;
   private String password;
 
+  private String deviceToken;
+  private String packageName;
+  private String appVersion;
+
 }

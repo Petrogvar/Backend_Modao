@@ -4,7 +4,7 @@ package com.SpringProject.core.controllers;
 import com.SpringProject.core.Services.Auth.AuthService;
 import com.SpringProject.core.Services.GroupService;
 import com.SpringProject.core.Services.h.CommonService;
-import com.SpringProject.core.controllers.Error.NotRightException;
+import com.SpringProject.core.controllers.Error.Exception.NotRightException;
 import com.SpringProject.core.dto.GroupDto;
 import com.SpringProject.core.dto.UserDto;
 import com.SpringProject.core.dto.domain.JwtAuthentication;
@@ -32,7 +32,7 @@ public class GroupController {
   }
 
 
-  @GetMapping("/info/{groupId}") //may ++
+  @GetMapping("/info/{groupId}")
   public GroupDto getGroup(@PathVariable Long groupId) {
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
     int role = commonService.getRoleInGroup(userId, groupId);
@@ -42,25 +42,51 @@ public class GroupController {
   @PostMapping("/create")
   public Long createGroup(@RequestBody GroupDto groupDto) {
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
-   // System.out.println(((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId());
     return groupService.createGroup(groupDto, userId);
   }
 
-//  @DeleteMapping("/{groupId}") /// +++
-//  void deleteGroup(@PathVariable Long groupId) {
-//    groupService.deleteGroup(groupId);
-//  }
-//
-//  @PutMapping("/{groupId}") /// ++++
-//  void updateGroup(@PathVariable Long groupId, @RequestBody GroupDto groupDto) {
-//    groupService.updateGroup(groupId, groupDto);
-//  }
+  @PutMapping("/update/{groupId}")
+  void updateGroup(@PathVariable Long groupId, @RequestBody GroupDto groupDto) {
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId))
+      throw new NotRightException();
+    groupService.updateGroup(groupId, groupDto);
+  }
+
 
   @GetMapping("/listUsers/{groupId}")
   List<UserDto> getUsersInGroup(@PathVariable Long groupId){
     Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
     return groupService.getUsersInGroup(groupId, userId);
   }
+
+  @GetMapping("/archive/{groupId}")
+  void archiveGroup(@PathVariable Long groupId){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId)){
+      throw new NotRightException();
+    }
+    groupService.archiveGroup(groupId);
+  }
+
+  @GetMapping("/archiveNo/{groupId}")
+  void archiveNoGroup(@PathVariable Long groupId){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId)){
+      throw new NotRightException();
+    }
+    groupService.archiveNoGroup(groupId);
+  }
+
+  @GetMapping("/delete/{groupId}")
+  void deleteGroup(@PathVariable Long groupId){
+    Long userId = ((JwtAuthentication)SecurityContextHolder.getContext().getAuthentication()).getId();
+    if(!commonService.userIsOrganizerByUserIdAndGroupId(userId, groupId)){
+      throw new NotRightException();
+    }
+    groupService.deleteGroup(groupId);
+  }
+
 
   @GetMapping("/listOrganizers/{groupId}")
   List<UserDto> getOrganizersInGroup(@PathVariable Long groupId){
@@ -85,4 +111,6 @@ public class GroupController {
     }
     return groupService.getNewUuid(groupId);
   }
+
+
 }

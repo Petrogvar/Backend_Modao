@@ -1,6 +1,16 @@
 package com.SpringProject.core.controllers.Error;
 
 
+import com.SpringProject.core.controllers.Error.Exception.AuthException;
+import com.SpringProject.core.controllers.Error.Exception.BadRequestException;
+import com.SpringProject.core.controllers.Error.Exception.LoginException;
+import com.SpringProject.core.controllers.Error.Exception.NotFoundException;
+import com.SpringProject.core.controllers.Error.Exception.NotRightException;
+import com.SpringProject.core.controllers.Error.Invalid.InvalidEventException;
+import com.SpringProject.core.controllers.Error.Invalid.InvalidGroupException;
+import com.SpringProject.core.controllers.Error.Invalid.InvalidLoginException;
+import com.SpringProject.core.controllers.Error.Invalid.InvalidNameException;
+import com.SpringProject.core.controllers.Error.Invalid.InvalidPasswordException;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
@@ -13,20 +23,42 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ControllerError extends ResponseEntityExceptionHandler {
 
-  @ExceptionHandler(NotFoundException.class)
-  protected ResponseEntity<AwesomeException> handleThereIsNoSuchUserException() {
-    return new ResponseEntity<>(new AwesomeException("not found"), HttpStatus.NOT_FOUND);
+  @ExceptionHandler(InvalidPasswordException.class)
+  protected ResponseEntity<AwesomeException> handlePasswordException(InvalidPasswordException ex) {
+    return new ResponseEntity<>(new AwesomeException(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
   }
+
+  @ExceptionHandler(InvalidNameException.class)
+  protected ResponseEntity<AwesomeException> handleNameException(InvalidNameException ex) {
+    return new ResponseEntity<>(new AwesomeException(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+
+  @ExceptionHandler(InvalidLoginException.class)
+  protected ResponseEntity<AwesomeException> handleLoginException(InvalidLoginException ex) {
+    return new ResponseEntity<>(new AwesomeException(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+
+  @ExceptionHandler(InvalidGroupException.class)
+  protected ResponseEntity<AwesomeException> handleGroupException(InvalidGroupException ex) {
+    return new ResponseEntity<>(new AwesomeException(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+
+  @ExceptionHandler(InvalidEventException.class)
+  protected ResponseEntity<AwesomeException> handleEventException(InvalidEventException ex) {
+    return new ResponseEntity<>(new AwesomeException(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+  }
+
+
+
+  @ExceptionHandler(NotFoundException.class)
+  protected ResponseEntity<AwesomeException> handleThereIsNoSuchUserException(NotFoundException ex) {
+    return new ResponseEntity<>(new AwesomeException(ex.getMessage()), HttpStatus.NOT_FOUND);
+  }
+
 
   @ExceptionHandler(LoginException.class)
-  protected ResponseEntity<AwesomeException> loginException() {
-    return new ResponseEntity<>(new AwesomeException("login already exists"),
-        HttpStatus.BAD_REQUEST);
-  }
-
-  @ExceptionHandler(UserNotGroupException.class)
-  protected ResponseEntity<AwesomeException> UserNotGroupException() {
-    return new ResponseEntity<>(new AwesomeException("the user is not in the group"),
+  protected ResponseEntity<AwesomeException> loginException(LoginException ex) {
+    return new ResponseEntity<>(new AwesomeException(ex.getMessage()),
         HttpStatus.BAD_REQUEST);
   }
 
@@ -37,8 +69,8 @@ public class ControllerError extends ResponseEntityExceptionHandler {
   }
 
   @ExceptionHandler(BadRequestException.class)
-  protected ResponseEntity<AwesomeException> BadRequestException() {
-    return new ResponseEntity<>(new AwesomeException("BAD_REQUEST"),
+  protected ResponseEntity<AwesomeException> BadRequestException(BadRequestException ex) {
+    return new ResponseEntity<>(new AwesomeException(ex.getMessage()),
         HttpStatus.BAD_REQUEST);
   }
 

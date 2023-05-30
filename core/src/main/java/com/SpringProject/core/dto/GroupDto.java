@@ -1,5 +1,6 @@
 package com.SpringProject.core.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,4 +14,6 @@ public class GroupDto {
   private String description;
   private String uuid;
   private Integer typeGroup;
+  private LocalDateTime time;
+  private LocalDateTime updateTime;
 }

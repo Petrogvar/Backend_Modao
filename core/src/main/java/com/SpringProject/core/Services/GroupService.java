@@ -20,4 +20,9 @@ public interface GroupService {
   List<UserDto> getOrganizersInGroup(Long groupId, Long userIdCreator);
 
   GroupDto getNewUuid(Long groupId);
+
+  void archiveGroup(Long groupId);
+
+  void archiveNoGroup(Long groupId);
+
 }
